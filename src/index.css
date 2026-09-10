@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Red+Rose:wght@400;600;700&family=Montserrat:wght@400;500;600;700&family=Laila:wght@600&family=Cormorant:ital,wght@1,600&family=Open+Sans:wght@400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ctiks-cream font-body text-ctiks-red antialiased;
+  }
+
+  /* Keyboard focus stays visible everywhere; pointer focus does not. */
+  :focus-visible {
+    outline: 2px solid theme('colors.ctiks.red');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
