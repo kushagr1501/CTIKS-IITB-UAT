@@ -8,7 +8,7 @@ import { ASSETS } from '../../assets/assets';
  */
 export default function Hero() {
   return (
-    <section className="relative isolate h-[400px] sm:h-[531px] overflow-hidden bg-ctiks-clay">
+    <section className="relative isolate min-h-[400px] h-[calc(100svh-170px)] sm:min-h-0 sm:h-[531px] overflow-hidden bg-ctiks-clay">
       <img
         src={ASSETS.heroBackdrop.path}
         alt=""
@@ -24,7 +24,7 @@ export default function Hero() {
         }}
       />
 
-      <div className="flex h-full flex-col items-center justify-end pb-[26px] text-center">
+      <div className="flex h-full flex-col items-center justify-center pt-[20%] sm:pt-[15%] pb-4 sm:pb-0 text-center">
         <p className="font-deva text-[44px] font-semibold uppercase text-ctiks-gold sm:text-[56px] lg:text-[70px]">
           ज्ञानमयं तपः
         </p>
