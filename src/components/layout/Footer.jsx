@@ -12,6 +12,16 @@ function SocialIcon({ d }) {
 }
 
 function Column({ heading, links }) {
+  const handleNavClick = (e, href) => {
+    if (href && href.startsWith('/') && !href.startsWith('//')) {
+      e.preventDefault();
+      if (window.location.pathname !== href) {
+        window.history.pushState({}, '', href);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col gap-5 min-w-[140px]">
       <h3 className="border-b border-white/20 pb-3 font-display text-[13px] font-bold uppercase tracking-[2.5px] text-ctiks-gold">
@@ -22,6 +32,7 @@ function Column({ heading, links }) {
           <li key={link.label}>
             <a
               href={link.href}
+              onClick={(e) => handleNavClick(e, link.href)}
               className="font-body text-[14px] text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all duration-300"
             >
               {link.label}
@@ -33,11 +44,12 @@ function Column({ heading, links }) {
   );
 }
 
-export default function Footer() {
+export default function Footer({ showConnect = true }) {
   return (
     <footer>
       {/* Top Section - Connect with Us */}
-      <div className="relative isolate pt-16 pb-24 lg:pt-24 lg:pb-32 bg-ctiks-cream overflow-hidden">
+      {showConnect && (
+        <div className="relative isolate pt-16 pb-24 lg:pt-24 lg:pb-32 bg-ctiks-cream overflow-hidden">
         <div
           aria-hidden="true"
           className="absolute inset-0 -z-10 mix-blend-multiply pointer-events-none"
@@ -84,6 +96,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Bottom Section - Dark Red (Enhanced Layout) */}
       <div className="bg-ctiks-red">

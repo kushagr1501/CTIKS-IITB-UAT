@@ -14,6 +14,17 @@ export default function Nav({ current = '/' }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleNavClick = (e, href) => {
+    if (href && href.startsWith('/') && !href.startsWith('//')) {
+      e.preventDefault();
+      if (window.location.pathname !== href) {
+        window.history.pushState({}, '', href);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+      setOpen(false);
+    }
+  };
+
   return (
     <nav aria-label="Primary" className="bg-ctiks-sand sticky top-0 z-50 shadow-sm border-b border-ctiks-red/10">
       
@@ -58,6 +69,7 @@ export default function Nav({ current = '/' }) {
               <li key={item.label} className="flex flex-col items-start md:items-center gap-1.5 group">
                 <a
                   href={item.href}
+                  onClick={(e) => handleNavClick(e, item.href)}
                   aria-current={active ? 'page' : undefined}
                   className={`
                     flex items-center justify-between w-full md:w-auto font-body text-[16px] md:text-[13px] lg:text-[15px] xl:text-[17px] 

@@ -5,6 +5,16 @@ import { ASSETS } from '../../assets/assets';
  * The "IIT BOMBAY" lockup sits on an exported 257 x 53 SVG tab.
  */
 export default function Header() {
+  const handleNavClick = (e, href) => {
+    if (href && href.startsWith('/') && !href.startsWith('//')) {
+      e.preventDefault();
+      if (window.location.pathname !== href) {
+        window.history.pushState({}, '', href);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+    }
+  };
+
   return (
     <header className="bg-ctiks-cream">
       <div className="mx-auto flex max-w-masthead flex-row items-center justify-between gap-2 px-3 py-[20px] md:gap-8 md:px-6 md:py-[30px]">
@@ -19,7 +29,11 @@ export default function Header() {
         </a>
 
         <div className="flex flex-1 flex-col items-center gap-1.5 md:gap-3">
-          <a href="/" className="w-full text-center uppercase text-ctiks-maroon">
+          <a
+            href="/"
+            onClick={(e) => handleNavClick(e, '/')}
+            className="w-full text-center uppercase text-ctiks-maroon"
+          >
             <span className="block font-display text-[10px] sm:text-[14px] md:text-[24px] font-normal tracking-wide md:tracking-[1.44px]">
               Centre for Traditional
             </span>
@@ -41,7 +55,7 @@ export default function Header() {
           </div>
         </div>
 
-        <a href="/" className="shrink-0">
+        <a href="/" onClick={(e) => handleNavClick(e, '/')} className="shrink-0">
           <img
             src={ASSETS.ctiksLogo.path}
             alt="Centre for Traditional Indian Knowledge and Skills"
