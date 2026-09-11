@@ -6,12 +6,12 @@ import { ASSETS } from '../../assets/assets';
  */
 export default function AboutHero() {
   return (
-    <section className="relative isolate flex min-h-[500px] flex-col items-center justify-center gap-6 overflow-hidden border-b-2 border-ctiks-maroon px-6 py-[140px] text-center sm:px-20">
+    <section className="relative isolate flex min-h-[400px] sm:min-h-[500px] flex-col items-center justify-center gap-6 overflow-hidden border-b-2 border-ctiks-maroon px-6 py-[100px] sm:py-[140px] text-center sm:px-20">
       <img
         src={ASSETS.aboutHeroBackdrop.path}
         alt=""
         aria-hidden="true"
-        className="absolute inset-0 -z-10 h-full w-full object-cover"
+        className="absolute inset-0 -z-10 h-full w-full object-cover object-[20%_center] sm:object-center"
       />
       <div
         aria-hidden="true"

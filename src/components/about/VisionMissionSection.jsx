@@ -14,9 +14,9 @@ const MISSION_ITEMS = [
 
 export default function VisionMissionSection() {
   return (
-    <section className="bg-ctiks-cream px-6 py-16 sm:px-12 md:px-16 lg:py-20 flex justify-center">
+    <section className="bg-ctiks-cream px-6 py-8 sm:px-12 md:px-16 lg:py-16 flex justify-center">
       <div className="mx-auto w-full max-w-shell">
-        <div className="relative isolate px-8 py-16 sm:px-16 md:px-24">
+        <div className="relative isolate px-6 py-10 sm:p-16 md:p-20">
           <img
             src={ASSETS.eventsPanel.path}
             alt=""
@@ -27,7 +27,7 @@ export default function VisionMissionSection() {
             <h2 className="font-display text-[28px] font-semibold text-ctiks-maroon sm:text-[36px] text-center">
               Our Vision
             </h2>
-            <p className="border-l-4 border-ctiks-gold pl-6 font-body text-[17px] leading-[1.7] text-[#4a4235] sm:text-[19px]">
+            <p className="font-body text-[17px] leading-[1.7] text-[#4a4235] sm:text-[19px] text-center sm:text-left">
               {VISION_BODY}
             </p>
           </div>
