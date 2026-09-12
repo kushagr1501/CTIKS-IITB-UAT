@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Lenis from 'lenis';
 import Home from './pages/Home';
 import AboutUs from './pages/AboutUs';
+import People from './pages/People';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -39,6 +40,10 @@ export default function App() {
 
   if (currentPath === '/about-us' || currentPath === '/about') {
     return <AboutUs />;
+  }
+
+  if (currentPath === '/people') {
+    return <People />;
   }
 
   return <Home />;
