@@ -38,7 +38,7 @@ export default function Header() {
               Centre for Traditional
             </span>
             <span className="block font-display text-[12px] sm:text-[16px] md:text-[34px] font-semibold leading-tight">
-              Indian Knowledge and Skill
+              Indian Knowledge and Skills
             </span>
           </a>
 
