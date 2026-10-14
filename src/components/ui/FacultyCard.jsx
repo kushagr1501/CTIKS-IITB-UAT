@@ -1,4 +1,17 @@
+import { useState } from 'react';
 import { ASSETS } from '../../assets/assets';
+
+function getInitials(name) {
+  return name
+    .replace(/^Prof\.\s*/i, '')
+    .replace(/^Dr\.\s*/i, '')
+    .split(' ')
+    .filter(Boolean)
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
 
 /**
  * Core-faculty card: red vertical accent bar, a rectangular portrait, the
@@ -6,6 +19,7 @@ import { ASSETS } from '../../assets/assets';
  * then research tags. Two per row on desktop.
  */
 export default function FacultyCard({ name, role, department, tags, image, website }) {
+  const [imgError, setImgError] = useState(false);
   const CardTag = website ? 'a' : 'article';
   const linkProps = website
     ? {
@@ -39,13 +53,20 @@ export default function FacultyCard({ name, role, department, tags, image, websi
       )}
 
       <div className="shrink-0 flex justify-center sm:justify-start">
-        <img
-          src={image}
-          alt={name}
-          width={170}
-          height={203}
-          className="h-[220px] w-[180px] sm:h-[203px] sm:w-[170px] object-cover rounded sm:rounded-none shadow-sm sm:shadow-none"
-        />
+        {imgError || !image ? (
+          <div className="h-[220px] w-[180px] sm:h-[203px] sm:w-[170px] bg-[#f2ede4] border border-[#e2d8c6] flex flex-col items-center justify-center text-ctiks-maroon font-display text-2xl font-bold shadow-sm">
+            <span>{getInitials(name)}</span>
+          </div>
+        ) : (
+          <img
+            src={image}
+            alt={name}
+            onError={() => setImgError(true)}
+            width={170}
+            height={203}
+            className="h-[220px] w-[180px] sm:h-[203px] sm:w-[170px] object-cover rounded sm:rounded-none shadow-sm sm:shadow-none"
+          />
+        )}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 min-w-0">

@@ -1,8 +1,23 @@
+import { useState } from 'react';
+
+function getInitials(name) {
+  return name
+    .replace(/^Prof\.\s*/i, '')
+    .replace(/^Dr\.\s*/i, '')
+    .split(' ')
+    .filter(Boolean)
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
+
 /**
  * Associate-faculty card: thinner red accent, a circular avatar instead of
  * a rectangular portrait, no role badge. Three per row on desktop.
  */
 export default function AssociateFacultyCard({ name, department, tags, image, website }) {
+  const [imgError, setImgError] = useState(false);
   const CardTag = website ? 'a' : 'article';
   const linkProps = website
     ? {
@@ -35,13 +50,20 @@ export default function AssociateFacultyCard({ name, department, tags, image, we
 
       <div>
         <div className="flex items-center sm:items-start gap-4 sm:gap-6 pr-6 sm:pr-0">
-          <img
-            src={image}
-            alt={name}
-            width={96}
-            height={96}
-            className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-full object-cover shadow-sm"
-          />
+          {imgError || !image ? (
+            <div className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-full bg-[#f2ede4] border border-[#e2d8c6] flex items-center justify-center text-ctiks-maroon font-display text-xl font-bold shadow-sm">
+              <span>{getInitials(name)}</span>
+            </div>
+          ) : (
+            <img
+              src={image}
+              alt={name}
+              onError={() => setImgError(true)}
+              width={96}
+              height={96}
+              className="h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-full object-cover shadow-sm"
+            />
+          )}
           <div className="flex-1 min-w-0">
             <h3 className={`pt-1 sm:pt-2 font-body text-[19px] sm:text-[22px] lg:text-[24px] font-semibold leading-[1.3] text-ctiks-maroon ${website ? 'group-hover:text-ctiks-red transition-colors' : ''}`}>
               {name}

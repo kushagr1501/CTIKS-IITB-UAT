@@ -16,6 +16,7 @@ let ok = 0;
 let failed = 0;
 
 for (const { file, remote } of ASSET_LIST) {
+  if (!remote) continue;
   try {
     const res = await fetch(remote);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
