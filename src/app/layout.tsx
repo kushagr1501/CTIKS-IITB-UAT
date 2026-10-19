@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Footer from '@/components/layout/Footer';
+import PageMotion from '@/components/providers/PageMotion';
+import 'lenis/dist/lenis.css';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -34,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       {/* Browser extensions can add body attributes before React hydrates. */}
       <body suppressHydrationWarning className="flex min-h-screen flex-col">
-        {children}
+        <PageMotion>{children}</PageMotion>
         <Footer />
       </body>
     </html>

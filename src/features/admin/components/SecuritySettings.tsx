@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from '@/config/password-policy';
 import { apiJson } from '../api-client';
+import PasswordInput from '@/components/ui/PasswordInput';
 
 export default function SecuritySettings() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function SecuritySettings() {
   }
 
   return (
-    <>
+    <div className="mx-auto w-full max-w-xl">
       <h1 className="font-display text-3xl text-ctiks-maroon">Change password</h1>
       <p className="mb-7 mt-2 text-sm text-stone-600">Change your account password.</p>
       {error && (
@@ -55,7 +56,7 @@ export default function SecuritySettings() {
           {message}
         </p>
       )}
-      <div className="max-w-xl">
+      <div>
         <section className="admin-panel">
           <h2 className="text-xl font-semibold">Set a new password</h2>
           <p className="mb-6 mt-2 text-sm leading-6 text-stone-600">
@@ -63,50 +64,38 @@ export default function SecuritySettings() {
           </p>
           <form onSubmit={changePassword} className="space-y-4">
             {/* Browser extensions can add fdprocessedid to these controls before hydration. */}
-            <label className="admin-label">
-              Current password
-              <input
-                suppressHydrationWarning
-                name="currentPassword"
-                type="password"
-                className="admin-input"
-                autoComplete="current-password"
-                required
-                maxLength={MAX_PASSWORD_LENGTH}
-              />
-            </label>
-            <label className="admin-label">
-              New password
-              <input
-                suppressHydrationWarning
-                name="newPassword"
-                type="password"
-                className="admin-input"
-                autoComplete="new-password"
-                required
-                minLength={MIN_PASSWORD_LENGTH}
-                maxLength={MAX_PASSWORD_LENGTH}
-              />
-            </label>
-            <label className="admin-label">
-              Confirm new password
-              <input
-                suppressHydrationWarning
-                name="confirmPassword"
-                type="password"
-                className="admin-input"
-                autoComplete="new-password"
-                required
-                minLength={MIN_PASSWORD_LENGTH}
-                maxLength={MAX_PASSWORD_LENGTH}
-              />
-            </label>
+            <PasswordInput
+              label="Current password"
+              suppressHydrationWarning
+              name="currentPassword"
+              autoComplete="current-password"
+              required
+              maxLength={MAX_PASSWORD_LENGTH}
+            />
+            <PasswordInput
+              label="New password"
+              suppressHydrationWarning
+              name="newPassword"
+              autoComplete="new-password"
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              maxLength={MAX_PASSWORD_LENGTH}
+            />
+            <PasswordInput
+              label="Confirm new password"
+              suppressHydrationWarning
+              name="confirmPassword"
+              autoComplete="new-password"
+              required
+              minLength={MIN_PASSWORD_LENGTH}
+              maxLength={MAX_PASSWORD_LENGTH}
+            />
             <button suppressHydrationWarning className="admin-primary" disabled={busy}>
               {busy ? 'Please wait…' : 'Update password'}
             </button>
           </form>
         </section>
       </div>
-    </>
+    </div>
   );
 }

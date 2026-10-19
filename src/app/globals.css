@@ -252,6 +252,16 @@
     @apply bg-ctiks-cream font-body text-ctiks-red antialiased;
   }
 
+  html.lenis {
+    scroll-behavior: auto;
+  }
+
+  a, button, input, select, textarea {
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-duration: 160ms;
+    transition-timing-function: ease-out;
+  }
+
   /* Keyboard focus stays visible everywhere; pointer focus does not. */
   :focus-visible {
     outline: 2px solid theme('colors.ctiks.red');

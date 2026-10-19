@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import PasswordInput from '@/components/ui/PasswordInput';
 import { MAX_PASSWORD_LENGTH } from '@/config/password-policy';
 import { apiJson } from '../api-client';
 
@@ -55,17 +56,13 @@ export default function LoginForm() {
             maxLength={254}
           />
         </label>
-        <label className="admin-label">
-          Password
-          <input
-            name="password"
-            type="password"
-            className="admin-input"
-            autoComplete="current-password"
-            required
-            maxLength={MAX_PASSWORD_LENGTH}
-          />
-        </label>
+        <PasswordInput
+          label="Password"
+          name="password"
+          autoComplete="current-password"
+          required
+          maxLength={MAX_PASSWORD_LENGTH}
+        />
         {error && (
           <p role="alert" className="admin-error">
             {error}

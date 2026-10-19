@@ -49,7 +49,7 @@ export default function AccountNavigation({ area }: { area: 'admin' | 'faculty' 
         </Link>
       ))}
       <Link
-        href="/people"
+        href="/"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View website (opens in a new tab)"
