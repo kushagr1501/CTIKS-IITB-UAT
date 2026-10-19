@@ -31,6 +31,7 @@ export default function FacultyDirectory({ faculty }: { faculty: PublicFaculty[]
         <CoreFacultySection
           faculty={core.map((person) => ({
             ...cardProps(person),
+            tags: person.interests.split(',').slice(0, 3).join(', '),
             profileUrl: `/people/${person.slug}`,
             role: person.designation || 'Core Faculty Member',
           }))}

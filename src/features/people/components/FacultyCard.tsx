@@ -51,8 +51,6 @@ export default function FacultyCard({
   image,
   website,
   profileUrl,
-  biography,
-  publicEmail,
 }: CoreFaculty) {
   const linked = Boolean(profileUrl || website);
 
@@ -117,9 +115,9 @@ export default function FacultyCard({
           <span aria-hidden="true" className="h-1 w-11 bg-[#fbb841]" />
         </div>
 
-        <p className="font-body text-[14px] sm:text-[16px] leading-[1.4] text-[#4a4235]">{tags}</p>
-        {biography && <p className="font-body text-[14px] leading-relaxed text-[#4a4235]">{biography}</p>}
-        {publicEmail && <p className="break-all font-body text-[14px] text-ctiks-red">{publicEmail}</p>}
+        <p className="line-clamp-3 font-body text-[14px] sm:text-[16px] leading-[1.4] text-[#4a4235]">
+          {tags}
+        </p>
       </div>
     </CardContainer>
   );
