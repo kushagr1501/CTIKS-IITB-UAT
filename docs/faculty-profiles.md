@@ -1,9 +1,33 @@
-# Faculty academic profiles — schema phase
+# Faculty academic profiles
 
-This phase supplies the database foundation. The current admin editor, read-only
-faculty dashboard, public People cards and account permissions continue to work
-as before. Self-editing, review endpoints and full public profile pages are the
-next implementation phase; the schema alone does not enable them.
+The database foundation and public profile pages are implemented. Core faculty
+cards open `/people/[slug]` in the same tab; personal websites remain separate
+external links within the profile. The current admin editor and read-only faculty
+dashboard continue to work as before. Self-editing and review endpoints are the
+next implementation phase.
+
+## Public profile pages
+
+Only visible CORE profiles have detail pages. Unknown, hidden and non-core slugs
+return the profile-unavailable page. Current basic details come from the existing
+profile columns so legacy admin edits appear immediately. Extended academic
+content comes exclusively from the PUBLISHED revision. Drafts and private
+account/review fields are excluded by an explicit Prisma projection, also tested
+against isolated database fixtures. Metadata and page rendering share one
+request-scoped lookup. All core professors use the same academic section layout.
+Missing sections display `Not added yet.`; missing current/past course groups
+also display that message. Sample entries are never substituted on actual pages.
+
+Profiles support research, education, experience, current/past teaching,
+publications grouped by type, patents, current/graduated students and public
+contact information. New academic entries will appear after the editing and
+publication workflow is connected. The design combines a patterned red banner,
+bordered portrait/biography introduction, compact white academic panels and gold
+timeline accents. Section links appear on desktop and are hidden on mobile/tablet. Teaching uses two
+desktop columns; graduated/current students have separate sections. Publication
+types use keyboard-accessible tabs. Existing non-core directory links keep their
+prior behaviour. Student portraits and downloadable document attachments require
+additional stored fields/upload support; no placeholder photos or downloads are shown.
 
 ## One identity, several content revisions
 
@@ -76,12 +100,13 @@ qualifications or split prose into tags automatically. In the future editor,
 confirmed tags become the single tag source for both the directory and full
 profile; retain legacy interest text only as a fallback until that conversion.
 
-During this schema-only phase the existing profile columns remain the live source.
+Until the editing workflow is enabled, the existing profile columns remain the
+live source for basic public details.
 `sourceProfileVersion` records the version copied into each revision. Before
 activating the editor, reconcile any admin edits made since this migration. A
 stale baseline must be refreshed through a new snapshot before opening a draft;
 never overwrite a professor's working draft. The next phase must integrate both
-admin writes and faculty writes before switching public reads to revisions.
+admin writes and faculty writes before switching basic public fields to revisions.
 New profiles created during the interim may have no revision; initialize them
 from their current data when the new workflow is enabled.
 

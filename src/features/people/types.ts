@@ -7,10 +7,12 @@ export type Faculty = {
   website?: string;
   biography?: string;
   publicEmail?: string;
+  profileUrl?: string;
 };
 
 export type PublicFaculty = {
   id: string;
+  slug: string;
   name: string;
   category: 'CORE' | 'ADJUNCT' | 'ASSOCIATE' | 'VISITING';
   designation: string;

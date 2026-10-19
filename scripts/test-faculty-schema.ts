@@ -3,6 +3,9 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { config } from 'dotenv';
 import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '../src/generated/prisma/client';
+import { publicCoreProfileQuery } from '../src/server/faculty/public-profile-query';
 
 config({ path: ['.env.migrations.local', '.env.local'], quiet: true });
 if (!process.env.DIRECT_URL) throw new Error('Configure the migration-owner DIRECT_URL first.');
@@ -137,6 +140,56 @@ try {
     0,
   );
   console.log('PASS structured sections accept entries without changing published content');
+
+  // Exercise the exact Prisma projection used by the public profile page.
+  const prisma = new PrismaClient({
+    adapter: new PrismaPg(
+      { connectionString: connection.toString(), max: 1, options: `-c search_path=${schema}` },
+      { schema },
+    ),
+  });
+  try {
+    const baselineId = baselines.find((row) => row.facultyId === facultyId)!.id;
+    await db.query(
+      `INSERT INTO faculty_education (id, "revisionId", title)
+      VALUES ($1, $2, 'Approved qualification')`,
+      [randomUUID(), baselineId],
+    );
+    const profile = await prisma.facultyProfile.findFirst(publicCoreProfileQuery(facultyId));
+    assert.ok(profile);
+    assert.equal(profile.revisions.length, 1);
+    assert.deepEqual(
+      profile.revisions[0].education.map((entry) => entry.title),
+      ['Approved qualification'],
+    );
+    assert.equal(profile.revisions[0].courses.length, 0, 'draft courses stay private');
+    const publicJson = JSON.stringify(profile);
+    for (const privateKey of [
+      'userId',
+      'loginEmail',
+      'password',
+      'reviewNote',
+      'submittedById',
+      'reviewedById',
+      'sourceProfileVersion',
+    ])
+      assert.equal(publicJson.includes(`"${privateKey}"`), false, privateKey);
+    assert.equal(
+      await prisma.facultyProfile.findFirst(publicCoreProfileQuery(fixtures[1].id)),
+      null,
+      'hidden faculty stay private',
+    );
+    assert.equal(
+      await prisma.facultyProfile.findFirst(publicCoreProfileQuery(fixtures[2].id)),
+      null,
+      'non-core profiles have no core detail route',
+    );
+    assert.equal(await prisma.facultyProfile.findFirst(publicCoreProfileQuery('missing-professor')), null);
+    await db.query('DELETE FROM faculty_education WHERE "revisionId" = $1', [baselineId]);
+    console.log('PASS public profile query excludes hidden faculty, drafts and private metadata');
+  } finally {
+    await prisma.$disconnect();
+  }
 
   await db.query(
     `UPDATE faculty_profile_revisions SET status = 'SUBMITTED', "submittedById" = $2,
