@@ -1,0 +1,92 @@
+{
+  "slug": "nagendra-pavana",
+  "collectedOn": "2026-10-19",
+  "primarySource": "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
+  "sources": [
+    "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
+    "https://www.sanskritfromhome.org/api/homepagetutor.php",
+    "https://research.iimb.ac.in/books/12/",
+    "https://www.cvv.ac.in/wp-content/uploads/2023/07/Prospectus-2023-24-Dt-26-06-2023.pdf",
+    "https://lms.cvv.ac.in/learning/course/info.php?id=89",
+    "https://lms.cvv.ac.in/learning/course/info.php?id=15",
+    "https://lms.cvv.ac.in/learning/course/info.php?id=459"
+  ],
+  "biography": "Nagendra Pavana is a Sanskrit scholar whose work focuses on Vyākaraṇa, Sanskrit literature and Indian knowledge systems. His education combines gurukula training with a doctorate in Vyākaraṇa from Karnataka Samskrit University. He has taught Sanskrit grammar, contributed to digital Sanskrit learning resources and co-authored Introduction to Indian Knowledge System: Concepts and Applications.",
+  "researchTags": [
+    "Sanskrit grammar (Vyākaraṇa)",
+    "Sanskrit literature",
+    "Indian knowledge systems",
+    "Indian philosophy",
+    "Vedas and Vedāṅgas",
+    "Indian classical music"
+  ],
+  "researchOverview": "His scholarly interests include Pāṇinian grammar and the Mahābhāṣya, Sanskrit poetry and aesthetics, Indian philosophical traditions, the Vedas and Vedāṅgas. His educational work also includes Sanskrit e-learning resources.",
+  "education": [
+    {
+      "title": "Ph.D. (Vyākaraṇa)",
+      "institution": "Karnataka Samskrit University, Bengaluru",
+      "description": "Research on the Mahābhāṣya under Prof. B. V. Venkataramana.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
+    },
+    {
+      "title": "M.A. (Vidvat Uttama)",
+      "institution": "Karnataka Samskrit University, Bengaluru",
+      "description": "First rank.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Assistant Professor",
+      "organisation": "School of Vedic Knowledge Systems, Chinmaya Vishwavidyapeeth",
+      "periodText": "Listed in 2023–24 prospectus",
+      "sourceUrl": "https://www.cvv.ac.in/wp-content/uploads/2023/07/Prospectus-2023-24-Dt-26-06-2023.pdf"
+    },
+    {
+      "title": "Sanskrit e-learning contributor",
+      "organisation": "Vyoma Linguistic Labs",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
+    }
+  ],
+  "courses": [
+    {
+      "title": "Indian Knowledge Systems – 1",
+      "periodText": "Chinmaya Vishwavidyapeeth",
+      "status": "PREVIOUS",
+      "sourceUrl": "https://lms.cvv.ac.in/learning/course/info.php?id=89"
+    },
+    {
+      "title": "Kāvyaṁ alaṅkāraśca",
+      "periodText": "Chinmaya Vishwavidyapeeth",
+      "status": "PREVIOUS",
+      "sourceUrl": "https://lms.cvv.ac.in/learning/course/info.php?id=15"
+    },
+    {
+      "title": "Prauḍhamanoramā – 2",
+      "periodText": "Chinmaya Vishwavidyapeeth",
+      "status": "PREVIOUS",
+      "sourceUrl": "https://lms.cvv.ac.in/learning/course/info.php?id=459"
+    }
+  ],
+  "publications": [
+    {
+      "type": "BOOK",
+      "title": "Introduction to Indian Knowledge System: Concepts and Applications",
+      "authors": "B. Mahadevan; Vinayak Rajat Bhat; Nagendra Pavana R.N.",
+      "venue": "PHI Learning · ISBN 9789391818203",
+      "year": 2022,
+      "url": "https://research.iimb.ac.in/books/12/",
+      "sourceUrl": "https://research.iimb.ac.in/books/12/"
+    }
+  ],
+  "patents": [],
+  "students": [],
+  "reviewNotes": [
+    "The supplied profile page contains Lorem ipsum placeholder text. Only the matching tutor_id 18984714 biography in the publisher’s public teacher endpoint was used.",
+    "The source biography is undated; relative durations and its current CVV appointment/project statements are not treated as current 2026 facts. CTIKS identity and appointment fields remain unchanged.",
+    "Degrees are verified but graduation dates were unavailable. Gurukula training is summarized in the source notes rather than represented as university degrees.",
+    "Public LMS listings establish teaching history, not a current semester assignment. Current teaching remains empty.",
+    "Students, patents, current office details and a current professional email were not confirmed. They remain empty.",
+    "The IIM Bangalore record and publisher differ in author ordering. Author order follows the publisher’s title-page order: Mahadevan, Bhat, Pavana."
+  ]
+}
