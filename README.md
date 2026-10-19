@@ -4,6 +4,38 @@ Website and administration portal for the Centre for Traditional Indian Knowledg
 and Skills, IIT Bombay. Built with Next.js 16, React 19, TypeScript, Tailwind CSS,
 Prisma/PostgreSQL, Better Auth, and Redis.
 
+## Website snapshots
+
+Captured from the local UAT site on 19 October 2026.
+
+### Landing page
+
+The public homepage with institute branding and the main introduction.
+
+![CTIKS landing page](docs/screenshots/landing-page.jpg)
+
+### Admin panel — faculty directory
+
+Search and filter faculty profiles, manage visibility, and edit directory entries.
+
+![Faculty administration panel](docs/screenshots/admin-faculty.jpg)
+
+### Admin panel — Activities
+
+Manage news, announcements, and events from one place.
+
+![Activities administration panel](docs/screenshots/admin-activities.jpg)
+
+<details>
+<summary>Activity editor</summary>
+
+Create an activity with categories, a description, optional dates and location,
+and a custom link label.
+
+![Activity editor](docs/screenshots/admin-activity-editor.jpg)
+
+</details>
+
 ## Local setup
 
 Use Node.js 22.12+ and Docker Desktop (or an existing Redis service).
