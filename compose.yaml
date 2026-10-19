@@ -1,0 +1,24 @@
+name: ctiks-web
+services:
+  redis:
+    image: redis:8.2-alpine
+    command: [redis-server, /usr/local/etc/redis/redis.conf]
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:16379:6379'
+    volumes:
+      - redis-data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+    secrets:
+      - redis_credentials
+    mem_limit: 256m
+    healthcheck:
+      test: [CMD-SHELL, 'redis-cli ping 2>&1 | grep -q NOAUTH']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+secrets:
+  redis_credentials:
+    file: ./.private/redis-credentials.conf
+volumes:
+  redis-data:

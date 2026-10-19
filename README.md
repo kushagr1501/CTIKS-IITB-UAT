@@ -1,83 +1,58 @@
-# CTIKS — Homepage (React)
+# CTIKS IIT Bombay — UAT
 
-Homepage for the Centre for Traditional Indian Knowledge and Skills, IIT Bombay,
-built from the Figma frame `CITKS` (`node-id=9:215`).
+Website and administration portal for the Centre for Traditional Indian Knowledge
+and Skills, IIT Bombay. Built with Next.js 16, React 19, TypeScript, Tailwind CSS,
+Prisma/PostgreSQL, Better Auth, and Redis.
 
-Stack: React 18 + JavaScript + Tailwind CSS 3 + Vite.
+## Local setup
 
-## First run
+Use Node.js 22.12+ and Docker Desktop (or an existing Redis service).
 
-```bash
-npm install
-npm run fetch:assets   # do this before npm run dev — see below
-npm run dev
+1. Run `npm ci`.
+2. Copy `.env.example` to `.env.local`. Configure PostgreSQL runtime and migration
+   connections, a random authentication secret, the site URL, and the admin email.
+3. Run `npm run redis:setup` and `npm run redis:up`, or configure your own Redis URL.
+4. Run `npm run db:generate` and `npm run db:migrate` against the intended database.
+5. For a fresh deployment, follow [backend setup](docs/backend.md) to seed the
+   initial administrator/faculty records and provision the restricted database role.
+6. Run `npm run dev` and open http://127.0.0.1:3000.
+
+The dev and build commands generate the Prisma client automatically. Generated
+administrator credentials are stored locally in `.private/admin-credentials.txt`.
+Environment files, credentials, generated clients, build output, and temporary
+previews are excluded from Git. Only `.env.example` belongs in the repository.
+
+## Project structure
+
+- `src/app/` — public pages, administration/faculty portals, and API routes.
+- `src/features/` — feature components, content, forms, and presentation helpers.
+- `src/components/` — shared layout and UI components.
+- `src/server/` — authentication, database access, validation, permissions, and auditing.
+- `prisma/` — database schema and versioned migrations.
+- `public/assets/` — local website images and design assets.
+- `scripts/` — database/Redis setup and isolated integration checks.
+- `tests/` — unit tests.
+- `docs/` — architecture, backend operation, and Activities CMS documentation.
+
+## Verification
+
+```sh
+npm run typecheck
+npm run lint
+npm test
+npm run build
 ```
 
-## Assets — read this first
+`npm run test:integration` additionally requires PostgreSQL migration-owner access
+and Redis. It creates and removes a random test schema and Redis namespace; see
+[backend setup](docs/backend.md). It does not seed activities into the application's
+live schema.
 
-`npm run fetch:assets` downloads all 22 exported images and SVGs from Figma into
-`public/assets/`. **The Figma export URLs expire roughly 7 days after
-2026-09-10.** After that the script fails and the assets have to be re-exported
-from the file. Once downloaded, commit `public/assets/` — nothing at runtime
-touches Figma.
+## Production
 
-Until the fetch runs, the page renders with correct layout, colour and type but
-broken image slots.
+Configure the deployment's environment and persistent services, apply migrations
+with `npm run db:migrate`, then run `npm run build` and `npm start`. Hosting,
+backups, HTTPS, and institute SMTP/storage provisioning are deployment concerns.
+Pushing this repository does not deploy the site or copy database contents.
 
-## Structure
-
-```
-src/
-  assets/assets.js          asset registry (local path + origin URL)
-  data/homepage.js          all copy and link targets — swap for a CMS later
-  components/
-    ui/                     Button, Chip, SectionHeading
-    layout/                 Header, Nav, Footer
-    sections/               Hero, Programmes, UpcomingEvents, Announcements
-  pages/Home.jsx            page composition
-```
-
-## Design tokens
-
-Defined once in `tailwind.config.js` under `theme.extend`, not repeated as hex
-literals in components.
-
-| Token          | Hex       | Role                          |
-| -------------- | --------- | ----------------------------- |
-| `ctiks-cream`  | `#fff7ed` | Page ground                   |
-| `ctiks-sand`   | `#ffe8c8` | Nav band, announcement cards  |
-| `ctiks-gold`   | `#ffcb65` | Hero motto, accent band       |
-| `ctiks-rule`   | `#f9c531` | Footer top rule               |
-| `ctiks-red`    | `#aa1313` | Primary                       |
-| `ctiks-maroon` | `#820d0d` | Masthead title                |
-| `ctiks-clay`   | `#a88f6e` | Hero base under the photo     |
-
-Type roles: `font-display` (Red Rose), `font-body` (Montserrat), `font-deva`
-(Laila, for ज्ञानमयं तपः), `font-motto` (Cormorant italic), `font-link`
-(Open Sans, footer only).
-
-## Deliberate departures from the Figma file
-
-The file is a flat 1440 px composition with absolute positioning throughout.
-This build changes that where fidelity is unaffected:
-
-- **Flow, not offsets.** Sections stack; nothing is positioned by `top:` value.
-  The page is responsive down to mobile, which the file does not specify — the
-  breakpoints are my reading of the desktop intent, so check them.
-- **Deduplicated components.** The action button is drawn six times in the file;
-  it is one `<Button>` with three variants here. The three programme blocks are
-  one `<ProgrammeBlock>` fed by data. Announcement rows likewise.
-- **Copy corrections.** The file has "Indian Knowledge  and Skill" (double space,
-  singular) in the masthead but "Skills" in the footer, and lowercases the start
-  of the Areas of Interest sentence. Masthead is left as designed; the sentence
-  is sentence-cased. Flag if the masthead should read "Skills".
-- **Accessibility floor.** Visible keyboard focus, `prefers-reduced-motion`
-  respected, decorative images marked `aria-hidden`, real landmarks and heading
-  order. None of this is specified in the file.
-
-## Known gaps
-
-- The Activities dropdown renders its chevron but has no menu — the file does
-  not design the open state.
-- Links point at path strings. Wire to a router when routing is decided.
-- Only the homepage exists.
+See [architecture](docs/architecture.md) and [Activities CMS](docs/activities.md).

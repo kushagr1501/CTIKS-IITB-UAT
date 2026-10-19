@@ -1,0 +1,264 @@
+.footer {
+  position: relative;
+  isolation: isolate;
+  flex-shrink: 0;
+  overflow: hidden;
+  padding: 24px 16px;
+  background: red;
+  color: white;
+}
+.background {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 50%;
+  width: 1440px;
+  min-width: 100%;
+  height: 484px;
+  min-height: 100%;
+  max-width: none;
+  object-fit: cover;
+  opacity: 0.8;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.surface {
+  position: relative;
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 28px 24px 0;
+  background: #aa1313;
+}
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  padding-bottom: 24px;
+}
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  min-width: 0;
+}
+.logos {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.iitbLogo {
+  display: block;
+  width: 80px;
+  flex-shrink: 0;
+}
+.iitbLogo img {
+  width: 100%;
+  height: auto;
+}
+.ctiksLogo {
+  display: block;
+  position: relative;
+  width: 80px;
+  aspect-ratio: 171.779 / 169.031;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.ctiksLogo img {
+  position: absolute;
+  width: 112%;
+  height: 112.38%;
+  left: -5.6%;
+  top: -4.97%;
+  max-width: none;
+}
+.brandText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 176px;
+  max-width: 100%;
+  gap: 10px;
+  text-align: center;
+}
+.brandText p {
+  font-family: Inter, sans-serif;
+}
+.brandName {
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+.affiliation {
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.8);
+}
+.brandRule {
+  height: 3px;
+  width: 49px;
+  background: #f8c846;
+}
+.divider {
+  background: #c16542;
+  height: 1px;
+}
+.navigation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+  min-width: 0;
+}
+.column {
+  min-width: 0;
+}
+.heading {
+  font-family: 'Red Rose', serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffcb65;
+}
+.headingRule {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  height: 2px;
+  background: #c22825;
+}
+.headingRule span {
+  height: 2px;
+  width: 49px;
+  background: #f8c846;
+}
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+.links a {
+  display: inline-block;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: white;
+}
+.links a:hover {
+  color: #ffcb65;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.copyright {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px 0 20px;
+  text-align: center;
+}
+.copyright p {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 400;
+}
+@media (min-width: 360px) {
+  .navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 640px) {
+  .footer {
+    padding: 32px 24px;
+  }
+  .surface {
+    padding: 36px 36px 0;
+  }
+  .brand {
+    gap: 24px;
+  }
+  .logos {
+    gap: 20px;
+  }
+  .iitbLogo,
+  .ctiksLogo {
+    width: 112px;
+  }
+  .brandText {
+    width: 244px;
+  }
+  .brandName {
+    font-size: 14px;
+  }
+  .affiliation {
+    font-size: 12px;
+  }
+  .navigation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+}
+@media (min-width: 1024px) {
+  .top {
+    grid-template-columns: 280px 1px minmax(0, 1fr);
+    gap: 32px;
+  }
+  .divider {
+    height: 100%;
+    width: 1px;
+  }
+}
+@media (min-width: 1440px) {
+  .top {
+    grid-template-columns: 280px 1px minmax(0, 1fr);
+    gap: 48px;
+  }
+  .navigation {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 48px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .brand {
+    display: grid;
+    grid-template-columns: clamp(44px, 12vw, 96px) minmax(0, 1fr) clamp(44px, 12vw, 96px);
+    align-items: center;
+    gap: clamp(8px, 2vw, 20px);
+    width: 100%;
+  }
+  .logos {
+    display: contents;
+  }
+  .iitbLogo {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+  }
+  .ctiksLogo {
+    grid-column: 3;
+    grid-row: 1;
+    width: 100%;
+  }
+  .brandText {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    width: 100%;
+    max-width: 300px;
+    gap: 8px;
+  }
+  .brandName {
+    font-size: clamp(11px, 3vw, 14px);
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+  .brandName br {
+    display: none;
+  }
+  .brandRule {
+    width: 36px;
+    height: 2px;
+  }
+}

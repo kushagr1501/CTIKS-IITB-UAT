@@ -1,0 +1,53 @@
+.hero::before {
+  background-image: url('/assets/figma/phd-pattern.png');
+}
+.comingSoon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 188px;
+  height: 53px;
+  color: black;
+  font-size: 18px;
+  font-weight: 600;
+}
+.comingSoon img {
+  position: absolute;
+  inset: 0;
+}
+.comingSoon span {
+  position: relative;
+}
+.disciplines {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.discipline h3 {
+  font-size: 21px;
+  font-weight: 600;
+  color: #aa1313;
+  margin-bottom: 24px;
+  line-height: 1.45;
+}
+.discipline h4 {
+  font-weight: 600;
+  color: #aa1313;
+  margin-bottom: 6px;
+}
+.disciplineBody {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  line-height: 1.65;
+}
+.discipline ul {
+  list-style: disc;
+  padding-left: 22px;
+}
+@media (max-width: 767px) {
+  .discipline h3 {
+    font-size: 19px;
+  }
+}

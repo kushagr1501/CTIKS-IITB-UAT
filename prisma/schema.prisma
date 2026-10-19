@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  CORE_FACULTY
+}
+
+enum FacultyCategory {
+  CORE
+  ADJUNCT
+  ASSOCIATE
+  VISITING
+}
+
+model User {
+  id             String          @id
+  name           String
+  email          String          @unique
+  image          String?
+  role           Role            @default(CORE_FACULTY)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  accounts       Account[]
+  facultyProfile FacultyProfile?
+  auditEvents    AuditEvent[]
+
+  @@map("users")
+}
+
+model Account {
+  id                    String    @id
+  userId                String    @unique
+  password              String?
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model FacultyProfile {
+  id           String          @id @default(uuid())
+  slug         String          @unique
+  name         String
+  category     FacultyCategory
+  designation  String          @default("")
+  department   String
+  interests    String
+  biography    String          @default("")
+  imageUrl     String          @default("")
+  websiteUrl   String          @default("")
+  publicEmail  String          @default("")
+  displayOrder Int             @default(0)
+  visible      Boolean         @default(false)
+  version      Int             @default(1)
+  userId       String?         @unique
+  user         User?           @relation(fields: [userId], references: [id], onDelete: Restrict)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  @@index([visible, category, displayOrder])
+  @@map("faculty_profiles")
+}
+
+model AuditEvent {
+  id               String   @id @default(uuid())
+  actorId          String?
+  actorEmail       String?
+  actorName        String?
+  action           String
+  targetId         String?
+  targetName       String?
+  before           Json?
+  after            Json?
+  details          Json?
+  deduplicationKey String?  @unique
+  createdAt        DateTime @default(now())
+  actor            User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([createdAt, id])
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+  @@index([targetId, createdAt])
+  @@map("audit_events")
+}
+
+enum ActivitySection {
+  NEWS
+  ANNOUNCEMENT
+  EVENT
+  CAMPUS_UPDATE
+}
+
+model Activity {
+  id              String            @id @default(uuid())
+  title           String
+  description     String
+  sections        ActivitySection[]
+  imageUrl        String            @default("")
+  eventStartAt    DateTime?          @db.Timestamptz(3)
+  eventEndAt      DateTime?          @db.Timestamptz(3)
+  venue           String            @default("")
+  registrationUrl String            @default("")
+  linkLabel       String            @default("")
+  visible         Boolean           @default(true)
+  version         Int               @default(1)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+
+  @@index([visible, createdAt, id])
+  @@index([sections], type: Gin)
+  @@map("activities")
+}

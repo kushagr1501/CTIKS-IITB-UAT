@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400&family=Red+Rose:wght@400;600;700&family=Montserrat:wght@400;500;600;700&family=Laila:wght@600&family=Cormorant:ital,wght@1,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .admin-label { @apply flex flex-col gap-2 text-sm font-medium text-stone-700; }
+  .admin-input { @apply w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm font-normal text-stone-900 placeholder:text-stone-400 focus:border-ctiks-red focus:outline-none focus:ring-1 focus:ring-ctiks-red; }
+  .admin-primary { @apply inline-flex items-center justify-center rounded-lg bg-ctiks-red px-4 py-2.5 text-sm font-semibold text-white hover:bg-ctiks-maroon disabled:cursor-wait disabled:opacity-60; }
+  .admin-secondary { @apply inline-flex items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 disabled:cursor-wait disabled:opacity-60; }
+  .admin-error { @apply rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800; }
+  .admin-success { @apply rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800; }
+  .admin-panel { @apply rounded-xl border border-stone-200 bg-white p-5 shadow-sm sm:p-7; }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    @apply bg-ctiks-cream font-body text-ctiks-red antialiased;
+  }
+
+  /* Keyboard focus stays visible everywhere; pointer focus does not. */
+  :focus-visible {
+    outline: 2px solid theme('colors.ctiks.red');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
