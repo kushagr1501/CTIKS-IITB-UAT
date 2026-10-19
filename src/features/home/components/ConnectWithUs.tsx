@@ -51,7 +51,7 @@ export default function ConnectWithUs() {
               <div className="font-motto flex flex-col items-center lg:items-start text-2xl font-bold text-ctiks-red leading-tight">
                 Knowledge
                 <br />
-                inContinuity
+                in Continuity
                 <div className="h-0.5 w-10 bg-ctiks-gold mt-3" />
               </div>
             </div>
