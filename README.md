@@ -49,10 +49,25 @@ Use Node.js 22.12+ and Docker Desktop (or an existing Redis service).
    initial administrator/faculty records and provision the restricted database role.
 6. Run `npm run dev` and open http://127.0.0.1:3000.
 
-The dev and build commands generate the Prisma client automatically. Generated
+Development generates the Prisma client when missing, after schema changes, or
+after a Prisma version change. Production builds always regenerate it. Generated
 administrator credentials are stored locally in `.private/admin-credentials.txt`.
 Environment files, generated credential files, generated clients, build output, and temporary
 previews are excluded from Git. Only `.env.example` belongs in the repository.
+
+### Development speed
+
+`npm run dev` uses Turbopack with its persistent compilation cache and warms the
+main public pages sequentially in the background. Wait for **Main pages ready**
+when previewing the entire site. The first run after installing dependencies or
+changing shared code still needs compilation. Database-backed pages continue to
+read current data; the warm-up does not cache application records.
+
+Keep `.next` between restarts to reuse the compiler cache. If a bundler-specific
+issue occurs, `npm run dev:webpack` starts the Webpack fallback. Set
+`CTIKS_DEV_WARMUP=0` to skip background warm-up. Port overrides such as
+`npm run dev -- --port 3001` are supported; match `BETTER_AUTH_URL` to that origin
+when testing account login locally.
 
 The existing UAT administrator login is shared in [UAT admin access](docs/uat-admin-access.md)
 at the repository owner's request. It applies to the existing UAT database.
