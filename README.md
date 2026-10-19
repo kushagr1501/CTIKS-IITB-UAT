@@ -19,8 +19,11 @@ Use Node.js 22.12+ and Docker Desktop (or an existing Redis service).
 
 The dev and build commands generate the Prisma client automatically. Generated
 administrator credentials are stored locally in `.private/admin-credentials.txt`.
-Environment files, credentials, generated clients, build output, and temporary
+Environment files, generated credential files, generated clients, build output, and temporary
 previews are excluded from Git. Only `.env.example` belongs in the repository.
+
+The existing UAT administrator login is shared in [UAT admin access](docs/uat-admin-access.md)
+at the repository owner's request. It applies to the existing UAT database.
 
 ## Project structure
 
