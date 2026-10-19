@@ -25,7 +25,7 @@ export default function ConnectWithUs() {
         />
 
         <div className="relative z-10 mx-auto max-w-shell px-6">
-          <div className="flex flex-col items-center text-center gap-12 lg:flex-row lg:text-left lg:justify-between">
+          <div className="flex flex-col items-center text-center gap-12 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:text-left">
 
             {/* Left: Text */}
             <div className="flex flex-col items-center lg:items-start gap-4">
@@ -47,7 +47,7 @@ export default function ConnectWithUs() {
             </div>
 
             {/* Right: Knowledge in Continuity */}
-            <div className="flex flex-col lg:flex-row items-center gap-6 lg:border-l lg:border-ctiks-gold lg:pl-10">
+            <div className="flex flex-col lg:flex-row items-center gap-6 lg:justify-self-end lg:border-l lg:border-ctiks-gold lg:pl-10">
               <div className="font-motto flex flex-col items-center lg:items-start text-2xl font-bold text-ctiks-red leading-tight">
                 Knowledge
                 <br />
