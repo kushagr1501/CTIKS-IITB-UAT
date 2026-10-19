@@ -14,3 +14,5 @@ docs/research-source.html
 docs/research-design/
 *.log
 .DS_Store
+
+.vercel
