@@ -1,5 +1,9 @@
 # Nagendra Pavana — sourced faculty content
 
+**Historical collection — superseded.** This broader import was rolled back at
+the user's request. Use the [reviewed replacement](../reviewed-2026-10-19/README.md)
+for current Neon content restricted to the specified teacher website.
+
 Collected 19 October 2026 for the existing `nagendra-pavana` profile.
 Structured data and entry-level sources are in [content.json](content.json).
 

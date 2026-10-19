@@ -1,5 +1,9 @@
 # Vijayaraghavan M. Chariar — sourced faculty content
 
+**Historical collection — superseded.** This import was rolled back at the user's
+request. Use the [reviewed replacement](../reviewed-2026-10-19/README.md) for the
+current Neon content and the requested IIT Bombay website sources.
+
 Collected 19 October 2026 for the existing `vijayaraghavan-m-chariar` profile.
 The machine-readable collection is [content.json](content.json). Each academic
 entry records its source URL and CV page. Biography and research descriptions

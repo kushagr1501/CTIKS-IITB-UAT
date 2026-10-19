@@ -1,0 +1,102 @@
+{
+  "slug": "nagendra-pavana",
+  "primarySource": "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
+  "collectedOn": "2026-10-19",
+  "expectedRestoredRevision": 3,
+  "websiteUrl": "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
+  "publicEmail": "",
+  "biography": "Nagendra Pavana is a Sanskrit scholar trained in traditional and modern systems of Vyākaraṇa. He studied at Om Shantidhama Gurukulam, Arsha Gurukula and Dattashrama, and completed a Ph.D. in Vyākaraṇa at Karnataka Samskrit University, Bengaluru. His work includes teaching Sanskrit grammar and developing Sanskrit e-learning resources with Vyoma Linguistic Labs.",
+  "researchTags": ["Vyākaraṇa Śāstra", "Śikṣāśāstra", "Vedāṅgas", "Sanskrit literature", "Carnatic music"],
+  "researchOverview": "His interests include Pāṇinian grammar, the Mahābhāṣya, Sanskrit poetry and aesthetics, Indian philosophy, the Vedas and Vedāṅgas, and Indian classical music.",
+  "officeAddress": "",
+  "publicPhone": "",
+  "education": [
+    {
+      "title": "Ph.D. (Vyākaraṇa)",
+      "institution": "Karnataka Samskrit University, Bengaluru",
+      "description": "Thesis: पातञ्जलमहाभाष्यस्थेषु बहुसमाधानस्थलेषु समाधानयुक्तीनां प्राबल्यदौर्बल्यविवेचनम्. Supervisor: Prof. B. V. Venkataramana.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    },
+    {
+      "title": "M.A. (Vidvat Uttama)",
+      "institution": "Karnataka Samskrit University, Bengaluru",
+      "description": "First rank.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    },
+    {
+      "title": "Vyākaraṇa-Ratna",
+      "institution": "Tenali examinations",
+      "description": "Completed all 14 levels of the traditional examinations.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    },
+    {
+      "title": "Gurukula study of Yajurveda and Pāṇinīya Vyākaraṇa",
+      "institution": "Om Shantidhama Gurukulam",
+      "description": "Traditional primary education alongside modern subjects.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    },
+    {
+      "title": "Advanced study of Vedāṅgas and Vyākaraṇa",
+      "institution": "Arsha Gurukula, Khanpur, Haryana",
+      "description": "Studied with Acharya Pradyumna ji and other scholars.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    },
+    {
+      "title": "Advanced study of the Mahābhāṣya",
+      "institution": "Dattashrama, Somapura",
+      "description": "Studied with Mahamahopadhyaya So. Ti. Nagaraja.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    }
+  ],
+  "experience": [
+    {
+      "title": "Assistant Professor",
+      "organisation": "School of Vedic Knowledge Systems, Chinmaya Vishwavidyapeeth, Kochi",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    },
+    {
+      "title": "Sanskrit e-learning contributor",
+      "organisation": "Vyoma Linguistic Labs",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714"
+    }
+  ],
+  "courses": [
+    {
+      "title": "Repeat & Memorize Bhagavad Gita -  Using an Interactive Interface",
+      "status": "PREVIOUS",
+      "periodText": "Vyoma Samskrta Pathasala",
+      "description": "Pre-recorded Multimedia · Sanskrit",
+      "sourceUrl": "https://www.sanskritfromhome.org/course-details/repeat-memorize-bhagavadgita-interactive-tool-38769"
+    },
+    {
+      "title": "Repeat & Memorize Ashtadhyayi - Using an Interactive Interface",
+      "status": "PREVIOUS",
+      "periodText": "Vyoma Samskrta Pathasala",
+      "description": "Pre-recorded Multimedia · Sanskrit",
+      "sourceUrl": "https://www.sanskritfromhome.org/course-details/repeat_and_memorize_ashtadhyayi-30410"
+    },
+    {
+      "title": "Ashtadhyayi Sutrapathah - Audio tool for Memorisation",
+      "status": "PREVIOUS",
+      "periodText": "Vyoma Samskrta Pathasala",
+      "description": "Pre-recorded Audio · Sanskrit",
+      "sourceUrl": "https://www.sanskritfromhome.org/course-details/ashtadhyayi-sutrapatha-7230"
+    }
+  ],
+  "publications": [],
+  "patents": [],
+  "students": [],
+  "sources": [
+    "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
+    "https://www.sanskritfromhome.org/api/tutor_details.php?tutor_id=18984714",
+    "https://www.sanskritfromhome.org/api/Course_Filter.php?EncodeUrl=%5B%7B%22Course%20Division%22%3A%5B%22Course%22%5D%7D%5D&TeacherId=18984714"
+  ],
+  "reviewNotes": [
+    "The HTML has placeholder text because its client-side loading is failing. Its actual profile JavaScript calls tutor_details.php for tutor_id 18984714; that exact successful response is the primary factual record.",
+    "Only this profile and its own same-site course endpoint are used. No previous CVV, IIM Bangalore, publisher, IIT Bombay directory, Springer or Brill material is reused.",
+    "The biography is undated. Relative teaching durations and the current CVV/project claims are not asserted as current 2026 facts. CVV is retained only as an undated role in work history.",
+    "Vyakarana-Ratna is a traditional examination title, not a university degree; it is labelled accordingly.",
+    "Three course resources explicitly match tutor 18984714 and have status Completed. They are shown as recorded teaching resources, not live current teaching.",
+    "No confirmed publication list, patents, students, faculty-specific email, phone or office address is provided by the requested source. These fields remain empty. General platform support contacts are not the teacher’s contact details."
+  ]
+}
