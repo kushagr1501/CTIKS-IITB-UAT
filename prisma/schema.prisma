@@ -104,9 +104,9 @@ enum FacultyStudentStatus {
   GRADUATED
 }
 
-// Identity, category, account linkage and visibility remain on FacultyProfile.
-// Each revision owns a complete set of academic entries, isolating drafts from
-// the published profile. SQL adds partial unique indexes for working/published revisions.
+// Category, account linkage, URL and visibility remain administrator-controlled on
+// FacultyProfile. Editable public identity is copied into each revision so drafts
+// stay private until the revision and profile are published together.
 model FacultyProfileRevision {
   id                   String                @id @default(uuid())
   facultyId            String
@@ -114,6 +114,9 @@ model FacultyProfileRevision {
   sourceProfileVersion Int
   version              Int                   @default(1)
   status               FacultyRevisionStatus @default(DRAFT)
+  name                 String?
+  designation          String?
+  department           String?
   biography            String                @default("")
   imageUrl             String                @default("")
   websiteUrl           String                @default("")
@@ -237,6 +240,8 @@ model FacultyStudent {
   periodText      String                 @default("")
   status          FacultyStudentStatus
   graduationYear  Int?
+  imageUrl        String                 @default("")
+  socialLinks     Json                   @default("[]")
   displayOrder    Int                    @default(0)
   revision        FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
 

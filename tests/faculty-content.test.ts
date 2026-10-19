@@ -5,8 +5,16 @@ import {
   facultyContentRequestSchema,
   type AcademicContent,
 } from '../src/features/faculty/profile-schema';
+import {
+  studentPhotoSchema,
+  studentSocialLinksSchema,
+  readStudentSocialLinks,
+} from '../src/features/faculty/student-schema';
 
 const empty: AcademicContent = {
+  name: 'Faculty Member',
+  designation: '',
+  department: 'Centre for Traditional Indian Knowledge and Skills',
   biography: '',
   imageUrl: '',
   websiteUrl: '',
@@ -105,4 +113,27 @@ test('nullable publication years and student graduation rules preserve explicit 
     }).success,
     true,
   );
+});
+
+test('student photos and platform links reject unsafe URLs, duplicates and hidden ownership fields', () => {
+  for (const unsafe of [
+    'javascript:alert(1)',
+    'http://example.com/photo.jpg',
+    'https://user:secret@example.com/photo.jpg',
+  ])
+    assert.equal(studentPhotoSchema.safeParse(unsafe).success, false);
+  assert.equal(studentPhotoSchema.safeParse('/assets/student.jpg').success, true);
+  assert.equal(studentPhotoSchema.safeParse('').success, true);
+  const linkedin = { platform: 'LINKEDIN', url: 'https://www.linkedin.com/in/student/' };
+  assert.deepEqual(studentSocialLinksSchema.parse([linkedin]), [linkedin]);
+  for (const links of [
+    [{ ...linkedin, url: 'javascript:alert(1)' }],
+    [{ ...linkedin, url: '' }],
+    [{ ...linkedin, platform: 'ADMIN' }],
+    [linkedin, linkedin],
+    [{ ...linkedin, userId: 'injected' }],
+  ])
+    assert.equal(studentSocialLinksSchema.safeParse(links).success, false);
+  assert.deepEqual(studentSocialLinksSchema.parse([]), []);
+  assert.deepEqual(readStudentSocialLinks({ url: 'unsafe' }), []);
 });

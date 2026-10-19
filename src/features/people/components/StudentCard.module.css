@@ -1,0 +1,42 @@
+.withPhoto {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.content {
+  min-width: 0;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  list-style: none;
+}
+
+.links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d8bf93;
+  border-radius: 5px;
+  padding: 5px 9px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #8c1818;
+  background: #fffaf1;
+}
+
+.links a:hover {
+  border-color: #8c1818;
+  background: #f8ecd7;
+}
+
+@media (max-width: 420px) {
+  .withPhoto {
+    grid-template-columns: 1fr;
+  }
+}

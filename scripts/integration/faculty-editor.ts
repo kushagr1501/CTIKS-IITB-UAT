@@ -108,6 +108,11 @@ export async function checkFacultyEditor(
         periodText: '2026–present',
         status: 'CURRENT',
         graduationYear: null,
+        imageUrl: '/assets/iitb-logo.png',
+        socialLinks: [
+          { platform: 'LINKEDIN', url: 'https://www.linkedin.com/in/fixture-student/' },
+          { platform: 'GOOGLE_SCHOLAR', url: 'https://scholar.google.com/citations?user=fixture' },
+        ],
       },
     ],
   };
@@ -119,6 +124,8 @@ export async function checkFacultyEditor(
     original.biography,
   );
   assert.deepEqual((await result(faculty, 200)).faculty, state, 'draft survives reload');
+  assert.equal(state.content.students[0].imageUrl, '/assets/iitb-logo.png');
+  assert.equal(state.content.students[0].socialLinks.length, 2);
   await result(faculty, 409, { method: 'PUT', body: firstInput });
   assert.equal(
     await database.facultyProfileRevision.count({ where: { facultyId: id, status: 'PUBLISHED' } }),
@@ -169,16 +176,28 @@ export async function checkFacultyEditor(
   await database.facultyProfile.update({ where: { id }, data: { visible: true } });
   const publicProfile = await database.facultyProfile.findFirstOrThrow(publicCoreProfileQuery(original.slug));
   assert.equal(publicProfile.revisions[0].education[0].title, 'Second qualification');
+  assert.deepEqual(publicProfile.revisions[0].students[0].socialLinks, state.content.students[0].socialLinks);
   const publicHtml = await (await anonymous.request(`/people/${original.slug}`)).text();
   assert.ok(publicHtml.includes('Fixture publication'));
   assert.ok(publicHtml.includes('Room 12'));
+  assert.ok(publicHtml.includes('LinkedIn'));
+  assert.ok(publicHtml.includes('scholar.google.com/citations?user=fixture'));
+  assert.ok(publicHtml.includes('/assets/iitb-logo.png'));
   assert.equal(JSON.stringify(publicProfile).includes('sourceProfileVersion'), false);
 
   // Public reads continue using the accepted revision while another draft is edited.
   state.content.biography = 'DO NOT LEAK draft';
   state.content.education = [];
+  state.content.students[0].imageUrl = '';
+  state.content.students[0].socialLinks = [];
   state = (await result(faculty, 200, { method: 'PUT', body: input() })).faculty;
   assert.ok(!(await (await anonymous.request(`/people/${original.slug}`)).text()).includes('DO NOT LEAK'));
+  assert.equal(
+    (await database.facultyProfile.findFirstOrThrow(publicCoreProfileQuery(original.slug))).revisions[0]
+      .students[0].imageUrl,
+    '/assets/iitb-logo.png',
+    'private photo clear must not change published content',
+  );
   const staleDraft = input('publish');
   const concurrent = await Promise.all([
     faculty.request(endpoint, { method: 'PUT', body: input() }),
@@ -191,6 +210,12 @@ export async function checkFacultyEditor(
   const acceptedId = await database.facultyProfileRevision.findFirstOrThrow({
     where: { facultyId: id, status: 'PUBLISHED' },
   });
+  state = (await result(faculty, 200, { method: 'PUT', body: input('publish') })).faculty;
+  const clearedStudent = (
+    await database.facultyProfile.findFirstOrThrow(publicCoreProfileQuery(original.slug))
+  ).revisions[0].students[0];
+  assert.equal(clearedStudent.imageUrl, '');
+  assert.deepEqual(clearedStudent.socialLinks, []);
   state.content = {
     ...state.content,
     biography: '',

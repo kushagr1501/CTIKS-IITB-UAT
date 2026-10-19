@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { isValidImageUrl } from '@/server/faculty/schema';
+import { studentPhotoSchema, studentSocialLinksSchema } from './student-schema';
 
 const text = (max: number) =>
   z
@@ -26,6 +27,9 @@ const url = z
 const year = z.number().int().min(1000).max(9999).nullable();
 export const academicContentSchema = z
   .object({
+    name: text(160).min(2),
+    designation: text(160),
+    department: text(300).min(2),
     biography: text(8000),
     imageUrl: z
       .string()
@@ -130,6 +134,8 @@ export const academicContentSchema = z
             periodText: text(200),
             status: z.enum(['CURRENT', 'GRADUATED']),
             graduationYear: year,
+            imageUrl: studentPhotoSchema.default(''),
+            socialLinks: studentSocialLinksSchema.default([]),
           })
           .strict()
           .refine((entry) => entry.status === 'GRADUATED' || entry.graduationYear === null, {

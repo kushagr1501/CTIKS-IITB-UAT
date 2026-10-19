@@ -71,6 +71,8 @@ export function publicCoreProfileQuery(slug: string) {
               periodText: true,
               status: true,
               graduationYear: true,
+              imageUrl: true,
+              socialLinks: true,
             },
           },
         },

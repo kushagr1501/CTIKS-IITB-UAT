@@ -9,13 +9,12 @@ import { academicContentSchema, type AcademicContent, type FacultyEditorState } 
 export default function FacultyProfileEditor({ initialState }: { initialState: FacultyEditorState }) {
   const [state, setState] = useState(initialState);
   const [content, setContent] = useState(initialState.content);
-  const [tagText, setTagText] = useState(initialState.content.researchTags.join('\n'));
+  const [areaInput, setAreaInput] = useState('');
+  const [areaError, setAreaError] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const dirty =
-    JSON.stringify(content) !== JSON.stringify(state.content) ||
-    tagText !== state.content.researchTags.join('\n');
+  const dirty = JSON.stringify(content) !== JSON.stringify(state.content) || areaInput.trim().length > 0;
   useEffect(() => {
     if (!dirty) return;
     const warn = (event: BeforeUnloadEvent) => {
@@ -28,6 +27,18 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
   function setField<K extends keyof AcademicContent>(key: K, value: AcademicContent[K]) {
     setContent((current) => ({ ...current, [key]: value }));
     setMessage('');
+  }
+  function addResearchArea() {
+    const area = areaInput.trim();
+    if (!area) return;
+    const result = academicContentSchema.shape.researchTags.safeParse([...content.researchTags, area]);
+    if (!result.success) {
+      setAreaError(result.error.issues[0].message);
+      return;
+    }
+    setField('researchTags', result.data);
+    setAreaInput('');
+    setAreaError('');
   }
   async function save(action: 'save' | 'publish' | 'discard') {
     if (busy) return;
@@ -42,10 +53,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
     setMessage('');
     const parsed = academicContentSchema.safeParse({
       ...content,
-      researchTags: tagText
-        .split('\n')
-        .map((tag) => tag.trim())
-        .filter(Boolean),
+      researchTags: areaInput.trim() ? [...content.researchTags, areaInput.trim()] : content.researchTags,
     });
     if (action !== 'discard' && !parsed.success) {
       const issue = parsed.error.issues[0];
@@ -53,6 +61,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
         .map((part) => (typeof part === 'number' ? `entry ${part + 1}` : part))
         .join(' → ');
       setError(`${path}: ${issue.message}`);
+      if (issue.path[0] === 'researchTags') setAreaError(issue.message);
       document
         .getElementById(`editor-${String(issue.path[0])}`)
         ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
@@ -78,7 +87,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
       const next = result.faculty as FacultyEditorState;
       setState(next);
       setContent(next.content);
-      setTagText(next.content.researchTags.join('\n'));
+      setAreaInput('');
+      setAreaError('');
       setMessage(
         action === 'save'
           ? 'Draft saved. Your public profile has not changed.'
@@ -98,6 +108,9 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
   }
   function textField(
     key:
+      | 'name'
+      | 'designation'
+      | 'department'
       | 'biography'
       | 'imageUrl'
       | 'websiteUrl'
@@ -149,18 +162,6 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
           </Link>
         )}
       </div>
-      <section className="admin-panel mb-6">
-        <h2 className="text-xl font-semibold text-ctiks-maroon">{state.identity.name}</h2>
-        <p className="mt-1 text-base leading-7 text-stone-700">
-          {state.identity.designation}
-          <br />
-          {state.identity.department}
-        </p>
-        <p className="mt-3 text-sm text-stone-600">
-          {state.identity.visible ? 'Visible on website' : 'Hidden from website'} · Identity and directory
-          settings are managed by the administrator.
-        </p>
-      </section>
       <form
         noValidate
         onSubmit={(event) => {
@@ -225,6 +226,19 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
           </div>
         </div>
         <fieldset disabled={busy} className="min-w-0 space-y-6">
+          <section className="admin-panel" id="editor-identity">
+            <h2 className="mb-5 font-display text-2xl text-ctiks-maroon">Name and affiliation</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {textField('name', 'Name', 160)}
+              {textField('designation', 'Role / designation', 160)}
+              {textField('department', 'Department / affiliation', 300)}
+            </div>
+            <p className="mt-3 text-sm text-stone-600">
+              {state.identity.visible ? 'Visible on website' : 'Hidden from website'} · These details appear on
+              your faculty profile and directory card. The profile link and website visibility are managed by the
+              administrator.
+            </p>
+          </section>
           <section className="admin-panel" id="editor-biography">
             <h2 className="mb-5 font-display text-2xl text-ctiks-maroon">Profile details</h2>
             <div className="grid gap-5 sm:grid-cols-2">
@@ -232,30 +246,86 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
               {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048)}
               {textField('websiteUrl', 'Personal website (HTTPS)', 2048, undefined, 'url')}
               {textField('publicEmail', 'Public email', 254, undefined, 'email')}
-              {textField('interests', 'Directory research summary', 1500, 2)}
+              {textField('interests', 'Short description on faculty card', 1500, 2)}
             </div>
             <p className="mt-3 text-sm leading-6 text-stone-600">
-              Keep the directory summary brief. Leave optional fields empty to remove them.
+              This text appears under your role and department on your Core Faculty card. Keep it to a short
+              phrase or sentence; leave it empty to hide it. Your research areas are managed separately below.
             </p>
           </section>
           <section className="admin-panel" id="editor-researchTags">
             <h2 className="mb-5 font-display text-2xl text-ctiks-maroon">Research areas</h2>
             <div className="grid gap-5">
-              <label className="admin-label">
-                Research areas — one per line
-                <textarea
-                  className="admin-input !text-base"
-                  rows={4}
-                  value={tagText}
-                  onChange={(event) => {
-                    setTagText(event.target.value);
-                    setMessage('');
-                  }}
-                />
-                <span className="text-sm font-normal text-stone-600">
-                  Up to 30 areas, 100 characters each.
-                </span>
-              </label>
+              <div>
+                <label htmlFor="research-area-input" className="admin-label mb-2">
+                  Add a research area
+                </label>
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <input
+                    id="research-area-input"
+                    className="admin-input min-w-0 flex-1 !text-base"
+                    placeholder="e.g. Indian astronomy"
+                    value={areaInput}
+                    maxLength={100}
+                    disabled={content.researchTags.length >= 30}
+                    aria-invalid={Boolean(areaError)}
+                    aria-describedby={`research-area-help${areaError ? ' research-area-error' : ''}`}
+                    onChange={(event) => {
+                      setAreaInput(event.target.value);
+                      setAreaError('');
+                      setMessage('');
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+                        event.preventDefault();
+                        addResearchArea();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    className="admin-primary shrink-0 !py-2.5"
+                    disabled={!areaInput.trim() || content.researchTags.length >= 30}
+                    onClick={addResearchArea}
+                  >
+                    Add
+                  </button>
+                </div>
+                <p id="research-area-help" className="mt-2 text-sm text-stone-600">
+                  {content.researchTags.length}/30 areas · Up to 100 characters each. Press Enter or Add.
+                </p>
+                {areaError && (
+                  <p id="research-area-error" role="alert" className="mt-2 text-sm text-red-700">
+                    {areaError}
+                  </p>
+                )}
+                {content.researchTags.length > 0 && (
+                  <ul aria-label="Selected research areas" className="mt-4 flex flex-wrap gap-2">
+                    {content.researchTags.map((area, index) => (
+                      <li
+                        key={`${area}-${index}`}
+                        className="inline-flex max-w-full items-center gap-1 rounded-full border border-amber-200 bg-amber-50 py-1 pl-3 pr-1 text-sm text-ctiks-maroon sm:text-base"
+                      >
+                        <span className="min-w-0 break-words [overflow-wrap:anywhere]">{area}</span>
+                        <button
+                          type="button"
+                          aria-label={`Remove research area ${area}`}
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xl leading-none text-ctiks-maroon/70 hover:bg-amber-100 hover:text-ctiks-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ctiks-red"
+                          onClick={() => {
+                            setField(
+                              'researchTags',
+                              content.researchTags.filter((_, position) => position !== index),
+                            );
+                            setAreaError('');
+                          }}
+                        >
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               {textField('researchOverview', 'Research overview', 8000, 5)}
             </div>
           </section>

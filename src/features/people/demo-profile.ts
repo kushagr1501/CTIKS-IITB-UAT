@@ -114,6 +114,8 @@ export function buildFacultyDemoProfile(existing: Profile): Profile {
             periodText: item.periodText,
             status: 'GRADUATED' as const,
             graduationYear: item.graduationYear,
+            imageUrl: '',
+            socialLinks: [],
           })),
           {
             id: 'demo-student-1',
@@ -124,6 +126,8 @@ export function buildFacultyDemoProfile(existing: Profile): Profile {
             periodText: '',
             status: 'CURRENT',
             graduationYear: null,
+            imageUrl: '',
+            socialLinks: [],
           },
           {
             id: 'demo-student-2',
@@ -134,6 +138,8 @@ export function buildFacultyDemoProfile(existing: Profile): Profile {
             periodText: '',
             status: 'CURRENT',
             graduationYear: null,
+            imageUrl: '',
+            socialLinks: [],
           },
         ],
       },

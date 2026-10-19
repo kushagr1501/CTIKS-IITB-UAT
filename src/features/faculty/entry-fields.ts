@@ -76,7 +76,7 @@ export const collections: { [K in Collection]: Definition<K> } = {
         ],
       },
       { key: 'authors', label: 'Authors', max: 2000 },
-      { key: 'venue', label: 'Journal / proceedings / publisher', max: 2000 },
+      { key: 'venue', label: 'Where was it published?', max: 2000 },
       { key: 'year', label: 'Year', kind: 'year' },
       { key: 'doi', label: 'DOI', max: 300 },
       { key: 'url', label: 'Publication link (HTTPS)', kind: 'url', max: 2048 },
@@ -116,10 +116,13 @@ export const collections: { [K in Collection]: Definition<K> } = {
       periodText: '',
       status: 'CURRENT',
       graduationYear: null,
+      imageUrl: '',
+      socialLinks: [],
     }),
     fields: [
       { key: 'name', label: 'Name', required: true, max: 200 },
       { key: 'programme', label: 'Programme', max: 200 },
+      { key: 'imageUrl', label: 'Student photo URL', kind: 'image', max: 2048 },
       {
         key: 'status',
         label: 'Student status',
@@ -132,6 +135,7 @@ export const collections: { [K in Collection]: Definition<K> } = {
       { key: 'supervisionRole', label: 'Supervision role', max: 200 },
       { key: 'periodText', label: 'Period', max: 200 },
       { key: 'researchTopic', label: 'Research topic', kind: 'textarea', max: 2000 },
+      { key: 'socialLinks', label: 'Social & academic links', kind: 'socialLinks' },
     ],
   },
 };

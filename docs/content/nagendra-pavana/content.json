@@ -1,17 +1,24 @@
 {
   "slug": "nagendra-pavana",
   "collectedOn": "2026-10-19",
-  "primarySource": "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
+  "primarySource": "https://www.sanskritfromhome.org/api/homepagetutor.php",
   "sources": [
+    "https://ctiks.iitb.ac.in/people/",
+    "https://ctiks.iitb.ac.in/contact-us/",
     "https://www.sanskritfromhome.org/teacher-profile/Dr.-Nagendra-Pavana-18984714",
     "https://www.sanskritfromhome.org/api/homepagetutor.php",
+    "https://link.springer.com/article/10.1007/s43539-024-00136-1",
+    "https://brill.com/downloadpdf/view/journals/jiks/2/1/article-p29_3.pdf",
     "https://research.iimb.ac.in/books/12/",
+    "https://www.phindia.com/Books/BookDetail/9789391818203/INTRODUCTION-TO-INDIAN-KNOWLEDGE-SYSTEM-MAHADEVAN-BHAT-NAGENDRA",
     "https://www.cvv.ac.in/wp-content/uploads/2023/07/Prospectus-2023-24-Dt-26-06-2023.pdf",
     "https://lms.cvv.ac.in/learning/course/info.php?id=89",
     "https://lms.cvv.ac.in/learning/course/info.php?id=15",
-    "https://lms.cvv.ac.in/learning/course/info.php?id=459"
+    "https://lms.cvv.ac.in/learning/course/info.php?id=459",
+    "https://www.ompublications.in/product/books/OM43929",
+    "https://www.sssihl.edu.in/wp-content/uploads/2025/10/International-Conference-on-Bharatiya-Thought-for-Modern-Times-Brochure-Inclusive-of-Invited-Talks-and-Technical-Sessions-Details_compressed.pdf"
   ],
-  "biography": "Nagendra Pavana is a Sanskrit scholar whose work focuses on Vyākaraṇa, Sanskrit literature and Indian knowledge systems. His education combines gurukula training with a doctorate in Vyākaraṇa from Karnataka Samskrit University. He has taught Sanskrit grammar, contributed to digital Sanskrit learning resources and co-authored Introduction to Indian Knowledge System: Concepts and Applications.",
+  "biography": "Nagendra Pavana is a Sanskrit scholar working on Vyākaraṇa, Sanskrit literature and Indian knowledge systems. He trained in the traditional gurukula system, including Vedāṅgas and the Mahābhāṣya, before earning a Ph.D. in Vyākaraṇa from Karnataka Samskrit University, Bengaluru. He has taught major Vyākaraṇa works for more than sixteen years and has contributed to Sanskrit e-learning resources with Vyoma Linguistic Labs. His interests include Pāṇinian grammar, Sanskrit poetry and aesthetics, Indian philosophy, the Vedas and Vedāṅgas, and Indian classical music.",
   "researchTags": [
     "Sanskrit grammar (Vyākaraṇa)",
     "Sanskrit literature",
@@ -25,68 +32,145 @@
     {
       "title": "Ph.D. (Vyākaraṇa)",
       "institution": "Karnataka Samskrit University, Bengaluru",
-      "description": "Research on the Mahābhāṣya under Prof. B. V. Venkataramana.",
+      "periodText": "",
+      "description": "Thesis: पातञ्जलमहाभाष्यस्थेषु बहुसमाधानस्थलेषु समाधानयुक्तीनां प्राबल्यदौर्बल्यविवेचनम्. Supervisor: Prof. B. V. Venkataramana.",
       "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
     },
     {
       "title": "M.A. (Vidvat Uttama)",
       "institution": "Karnataka Samskrit University, Bengaluru",
-      "description": "First rank.",
+      "periodText": "",
+      "description": "Completed with first rank.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
+    },
+    {
+      "title": "Gurukula study of the Yajurveda and Pāṇinīya Vyākaraṇa",
+      "institution": "Om Shantidhama Gurukulam",
+      "periodText": "",
+      "description": "Primary gurukula education, including selected Yajurveda portions, Pāṇinīya Vyākaraṇa and modern subjects.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
+    },
+    {
+      "title": "Advanced study of the Vedāṅgas and Vyākaraṇa",
+      "institution": "Arsha Gurukula, Khanpur, Haryana",
+      "periodText": "",
+      "description": "Higher gurukula study under Acharya Pradyumna ji and other scholars.",
+      "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
+    },
+    {
+      "title": "Detailed study of the Mahābhāṣya",
+      "institution": "Dattashrama, Somapura",
+      "periodText": "",
+      "description": "Study of the Mahābhāṣya under Mahamahopadhyaya So. Ti. Nagaraja.",
       "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
     }
   ],
   "experience": [
     {
+      "title": "Core Faculty",
+      "organisation": "Centre for Traditional Indian Knowledge and Skills (CTIKS), IIT Bombay",
+      "periodText": "Current",
+      "description": "Listed under Core Faculty on the CTIKS people page; 2025 conference materials also use the designation Project Research Scientist/Project Scientist III at CISTS/CTIKS, IIT Bombay.",
+      "sourceUrl": "https://ctiks.iitb.ac.in/people/"
+    },
+    {
       "title": "Assistant Professor",
       "organisation": "School of Vedic Knowledge Systems, Chinmaya Vishwavidyapeeth",
-      "periodText": "Listed in 2023–24 prospectus",
+      "periodText": "Listed in 2023–24 prospectus; biography states six years in the role",
+      "description": "Taught Sanskrit grammar and Indian knowledge systems.",
       "sourceUrl": "https://www.cvv.ac.in/wp-content/uploads/2023/07/Prospectus-2023-24-Dt-26-06-2023.pdf"
     },
     {
       "title": "Sanskrit e-learning contributor",
       "organisation": "Vyoma Linguistic Labs",
+      "periodText": "",
+      "description": "Contributed to Sanskrit e-learning tools and courses.",
       "sourceUrl": "https://www.sanskritfromhome.org/api/homepagetutor.php"
     }
   ],
   "courses": [
     {
       "title": "Indian Knowledge Systems – 1",
+      "code": "",
       "periodText": "Chinmaya Vishwavidyapeeth",
+      "description": "",
       "status": "PREVIOUS",
       "sourceUrl": "https://lms.cvv.ac.in/learning/course/info.php?id=89"
     },
     {
       "title": "Kāvyaṁ alaṅkāraśca",
+      "code": "",
       "periodText": "Chinmaya Vishwavidyapeeth",
+      "description": "",
       "status": "PREVIOUS",
       "sourceUrl": "https://lms.cvv.ac.in/learning/course/info.php?id=15"
     },
     {
       "title": "Prauḍhamanoramā – 2",
+      "code": "",
       "periodText": "Chinmaya Vishwavidyapeeth",
+      "description": "",
       "status": "PREVIOUS",
       "sourceUrl": "https://lms.cvv.ac.in/learning/course/info.php?id=459"
     }
   ],
   "publications": [
     {
+      "type": "JOURNAL_ARTICLE",
+      "title": "The conception of negative numbers: A study of Kṛṣṇa Daivajña’s Bījapallava",
+      "authors": "Lalitha Sarma R.; Nagendra Pavana R.N.; K. Ramasubramanian",
+      "venue": "Indian Journal of History of Science 59, 245–258",
+      "year": 2024,
+      "citation": "Received 24 June 2024; accepted 8 August 2024; published 28 October 2024.",
+      "doi": "10.1007/s43539-024-00136-1",
+      "url": "https://link.springer.com/article/10.1007/s43539-024-00136-1",
+      "sourceUrl": "https://link.springer.com/article/10.1007/s43539-024-00136-1"
+    },
+    {
+      "type": "JOURNAL_ARTICLE",
+      "title": "The Legacy Left Behind by the ‘Last’ Traditional Indian Astronomer: Veracity, Verification, and Versification",
+      "authors": "Lalitha Sarma R.; Nagendra Pavana R.N.; K. Ramasubramanian",
+      "venue": "JIKS 2(1), article-p29",
+      "year": 2026,
+      "citation": "Received 15 March 2026; accepted 1 May 2026; published online 22 June 2026.",
+      "doi": "",
+      "url": "https://brill.com/downloadpdf/view/journals/jiks/2/1/article-p29_3.pdf",
+      "sourceUrl": "https://brill.com/downloadpdf/view/journals/jiks/2/1/article-p29_3.pdf"
+    },
+    {
       "type": "BOOK",
       "title": "Introduction to Indian Knowledge System: Concepts and Applications",
       "authors": "B. Mahadevan; Vinayak Rajat Bhat; Nagendra Pavana R.N.",
-      "venue": "PHI Learning · ISBN 9789391818203",
+      "venue": "PHI Learning, ISBN 9789391818203",
       "year": 2022,
+      "citation": "Published 13 April 2022.",
+      "doi": "",
       "url": "https://research.iimb.ac.in/books/12/",
-      "sourceUrl": "https://research.iimb.ac.in/books/12/"
+      "sourceUrl": "https://www.phindia.com/Books/BookDetail/9789391818203/INTRODUCTION-TO-INDIAN-KNOWLEDGE-SYSTEM-MAHADEVAN-BHAT-NAGENDRA"
+    },
+    {
+      "type": "BOOK",
+      "title": "New Frontiers in Sanskrit & Indic Knowledge: Proceedings of NFSI-2017 & NFSI-2018",
+      "authors": "Shrinivasa Varakhedi; Gauri Mahulikar; Nagendra Pavana R.N.; et al. (editors)",
+      "venue": "OM Publications",
+      "year": 2020,
+      "citation": "Edited conference proceedings.",
+      "doi": "",
+      "url": "https://www.ompublications.in/product/books/OM43929",
+      "sourceUrl": "https://www.ompublications.in/product/books/OM43929"
     }
   ],
   "patents": [],
   "students": [],
   "reviewNotes": [
-    "The supplied profile page contains Lorem ipsum placeholder text. Only the matching tutor_id 18984714 biography in the publisher’s public teacher endpoint was used.",
-    "The source biography is undated; relative durations and its current CVV appointment/project statements are not treated as current 2026 facts. CTIKS identity and appointment fields remain unchanged.",
-    "Degrees are verified but graduation dates were unavailable. Gurukula training is summarized in the source notes rather than represented as university degrees.",
-    "Public LMS listings establish teaching history, not a current semester assignment. Current teaching remains empty.",
-    "Students, patents, current office details and a current professional email were not confirmed. They remain empty.",
-    "The IIM Bangalore record and publisher differ in author ordering. Author order follows the publisher’s title-page order: Mahadevan, Bhat, Pavana."
+    "The public teacher profile page displays placeholder text; the matching tutor_id 18984714 record in the publisher's teacher API supplies the biography and education details used here.",
+    "The API biography is undated; its statements about a six-year CVV appointment and an IIT Bombay project are retained as source-reported history, not as a complete 2026 employment timeline.",
+    "The Ph.D. thesis title is reproduced in Devanagari from the source. Degree years are unavailable.",
+    "Traditional gurukula training is included as non-degree education entries; it is not described as a university qualification.",
+    "Public CVV LMS listings establish past teaching, not a current semester assignment. Current teaching remains empty.",
+    "Students, patents, current office address, phone and a verified IIT Bombay email were not found and remain empty.",
+    "The IIM Bangalore record and PHI Learning record differ in author order; the publisher's PHI order is used.",
+    "A DK Printworld listing for a Bṛhatsaṃhitā volume was found, but its authorship and year were not independently confirmed, so it is not included.",
+    "The 2025 conference designations Project Research Scientist/Project Scientist III conflict with the site's Professor identity; identity fields are preserved."
   ]
 }

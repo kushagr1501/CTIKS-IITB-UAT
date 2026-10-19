@@ -4,6 +4,7 @@ import { getDatabase } from '@/server/database/client';
 import { assertPermission, type Actor } from '@/server/auth/session';
 import { HttpError } from '@/server/http/errors';
 import { auditData } from '@/server/audit/write';
+import { readStudentSocialLinks } from '@/features/faculty/student-schema';
 import {
   facultyContentRequestSchema,
   type AcademicContent,
@@ -35,6 +36,9 @@ function contentOf(profile: Profile, revision?: Revision | null, draft = false):
   const basics = draft && revision ? revision : profile;
   // Explicitly project editable fields; never send account or review metadata.
   return {
+    name: draft && revision ? (revision.name ?? profile.name) : profile.name,
+    designation: draft && revision ? (revision.designation ?? profile.designation) : profile.designation,
+    department: draft && revision ? (revision.department ?? profile.department) : profile.department,
     biography: basics.biography,
     imageUrl: basics.imageUrl,
     websiteUrl: basics.websiteUrl,
@@ -89,7 +93,7 @@ function contentOf(profile: Profile, revision?: Revision | null, draft = false):
       })) ?? [],
     students:
       revision?.students.map(
-        ({ name, programme, researchTopic, supervisionRole, periodText, status, graduationYear }) => ({
+        ({
           name,
           programme,
           researchTopic,
@@ -97,6 +101,18 @@ function contentOf(profile: Profile, revision?: Revision | null, draft = false):
           periodText,
           status,
           graduationYear,
+          imageUrl,
+          socialLinks,
+        }) => ({
+          name,
+          programme,
+          researchTopic,
+          supervisionRole,
+          periodText,
+          status,
+          graduationYear,
+          imageUrl,
+          socialLinks: readStudentSocialLinks(socialLinks),
         }),
       ) ?? [],
   };
@@ -239,6 +255,9 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
     const changed = await tx.facultyProfile.updateMany({
       where: { id: profile.id, userId: actor.id, category: 'CORE', version: profile.version },
       data: {
+        name: request.content.name,
+        designation: request.content.designation,
+        department: request.content.department,
         biography: request.content.biography,
         imageUrl: request.content.imageUrl,
         websiteUrl: request.content.websiteUrl,
@@ -264,7 +283,7 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
       actor,
       action: request.action === 'publish' ? 'FACULTY_SELF_PUBLISHED' : 'FACULTY_DRAFT_SAVED',
       targetId: profile.id,
-      targetName: profile.name,
+      targetName: request.content.name,
       before: { profileVersion: profile.version, draftVersion: working?.version ?? null },
       after: {
         profileVersion: updated.version,

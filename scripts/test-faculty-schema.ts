@@ -141,6 +141,28 @@ try {
   );
   console.log('PASS structured sections accept entries without changing published content');
 
+  const studentsBeforeMedia = (await db.query('SELECT * FROM faculty_students')).rows;
+  for (const migration of migrations.filter((name) => name > target))
+    await db.query(await readFile(`prisma/migrations/${migration}/migration.sql`, 'utf8'));
+  const migratedStudent = (await db.query('SELECT * FROM faculty_students')).rows[0];
+  const { imageUrl, socialLinks, ...studentBefore } = migratedStudent;
+  assert.deepEqual(studentBefore, studentsBeforeMedia[0], 'adding media fields preserves student content');
+  assert.equal(imageUrl, '');
+  assert.deepEqual(socialLinks, []);
+  for (const invalid of [
+    '{}',
+    'null',
+    JSON.stringify(Array(9).fill({ platform: 'WEBSITE', url: 'https://example.org' })),
+  ])
+    await assert.rejects(
+      db.query('UPDATE faculty_students SET "socialLinks" = $1::jsonb WHERE id = $2', [
+        invalid,
+        migratedStudent.id,
+      ]),
+      { code: '23514' },
+    );
+  console.log('PASS student photo/link migration preserves rows and bounds link arrays');
+
   // Exercise the exact Prisma projection used by the public profile page.
   const prisma = new PrismaClient({
     adapter: new PrismaPg(

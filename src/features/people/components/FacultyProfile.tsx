@@ -4,8 +4,15 @@ import type { getPublicCoreFacultyProfile } from '@/server/faculty/public';
 import FacultyPortrait from './FacultyPortrait';
 import styles from './FacultyProfile.module.css';
 import ProfilePublicationTabs from './ProfilePublicationTabs';
+import {
+  STUDENT_LINK_LABELS,
+  readStudentSocialLinks,
+  studentPhotoSchema,
+} from '@/features/faculty/student-schema';
+import studentStyles from './StudentCard.module.css';
 
 type Profile = NonNullable<Awaited<ReturnType<typeof getPublicCoreFacultyProfile>>>;
+type Student = Profile['revisions'][number]['students'][number];
 const publicationTypes = {
   JOURNAL_ARTICLE: 'Journal articles',
   CONFERENCE_PAPER: 'Conference papers',
@@ -57,6 +64,42 @@ function AcademicEntry({
         </div>
       )}
       {children}
+    </li>
+  );
+}
+
+function StudentCard({ student }: { student: Student }) {
+  const photo = studentPhotoSchema.safeParse(student.imageUrl);
+  const image = photo.success ? photo.data : '';
+  const links = readStudentSocialLinks(student.socialLinks);
+  const detail = [student.programme, student.supervisionRole].filter(Boolean).join(' · ');
+  const period = student.periodText || student.graduationYear?.toString();
+  return (
+    <li className={styles.entry}>
+      <div className={image ? studentStyles.withPhoto : undefined}>
+        {image && <FacultyPortrait name={student.name} image={image} variant="round" loading="lazy" />}
+        <div className={studentStyles.content}>
+          <div className={styles.entryHeading}>
+            <h3>{student.name}</h3>
+          </div>
+          {(detail || period) && (
+            <div className={styles.entryMeta}>
+              {detail && <p className={styles.detail}>{detail}</p>}
+              {period && <span className={styles.period}>{period}</span>}
+            </div>
+          )}
+          {student.researchTopic && <p className={styles.prose}>{student.researchTopic}</p>}
+          {links.length > 0 && (
+            <ul className={studentStyles.links} aria-label={`Links for ${student.name}`}>
+              {links.map((link) => (
+                <li key={link.platform}>
+                  <ExternalLink url={link.url}>{STUDENT_LINK_LABELS[link.platform]}</ExternalLink>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
     </li>
   );
 }
@@ -232,14 +275,7 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
           content: (
             <ul className={styles.students}>
               {students.map((item) => (
-                <AcademicEntry
-                  key={item.id}
-                  title={item.name}
-                  detail={[item.programme, item.supervisionRole].filter(Boolean).join(' · ')}
-                  period={item.periodText || item.graduationYear?.toString()}
-                >
-                  {item.researchTopic && <p className={styles.prose}>{item.researchTopic}</p>}
-                </AcademicEntry>
+                <StudentCard key={item.id} student={item} />
               ))}
             </ul>
           ),
@@ -320,9 +356,6 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
     <div className={styles.page}>
       <div className={styles.banner}>
         <div className={styles.shell}>
-          <Link href="/people" className={styles.bannerBack}>
-            People <span aria-hidden="true">›</span> Core Faculty
-          </Link>
           <h1>{profile.name}</h1>
           <p>
             {profile.designation || 'Core Faculty Member'}, Centre for Traditional Indian Knowledge and Skills

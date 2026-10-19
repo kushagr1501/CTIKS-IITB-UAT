@@ -14,12 +14,21 @@ new account is required.
 - Current and previous teaching.
 - Journal articles, conference papers, books, book chapters and monographs.
 - Patents, current/graduated students, office address and public phone.
+- Optional student photo URLs and social/academic links, shown on public student cards.
 
 Repeatable entries can be added, edited, removed and reordered. Empty optional
 fields and empty collections explicitly clear content when submitted. Links use
-HTTPS; photographs also accept existing `/assets/` paths. Uploading new files,
-student portraits and downloadable attachments are not implemented. Login email
-is separate from public email.
+HTTPS; photographs also accept existing `/assets/` paths. Student photos use URL
+inputs and load lazily with an initials fallback if an image fails. Uploading
+new files and downloadable attachments are not implemented. Login email is
+separate from public email.
+
+Each student can have one link per supported platform: personal website,
+LinkedIn, Google Scholar, ORCID, ResearchGate, GitHub, X and Instagram. The
+editor offers platform choices, editable URL inputs and individual remove
+buttons. Empty optional photos and empty link arrays explicitly clear prior
+values. Photo/link data stays inside revision snapshots, so drafts remain
+private and accepted history retains its own values.
 
 Name, slug, category, designation, department, account access, directory order
 and visibility remain administrator-controlled. Publishing a hidden profile does
@@ -66,7 +75,9 @@ administrator handling; this editor does not create review submissions.
 
 The database retains the existing revision statuses and partial unique indexes:
 at most one working revision and one PUBLISHED revision per faculty profile.
-No new migration is required for this editor.
+Migration `202610190005_student_photo_social_links` adds optional `imageUrl` and
+bounded JSON `socialLinks` fields to student rows, defaulting to an empty URL and
+empty array. It preserves existing students and requires no new permissions.
 
 ## Public pages
 
@@ -90,6 +101,13 @@ belong to revisions in `faculty_education`, `faculty_experience`,
 `faculty_courses`, `faculty_publications`, `faculty_patents` and
 `faculty_students`.
 
+Core faculty can edit their name, designation and department in the same private
+draft as the rest of their profile. Publishing updates those public identity
+fields with the revision; the profile URL, account linkage and visibility remain
+administrator-managed. Migration `202610200001_faculty_editable_identity` adds
+nullable revision values so existing published profiles and drafts keep their
+current identity until edited.
+
 Migration `202610190004_faculty_academic_profiles` copied existing CORE profiles
 into accepted baseline revisions, including hidden profiles and those without
 accounts. It preserved passwords, identity, visibility and audit history. The
@@ -97,8 +115,9 @@ restricted runtime role already has access to the academic tables. New
 installations use `npm run db:migrate` and `npm run db:restrict`.
 
 Legacy directory interests are preserved verbatim; the editor does not infer
-research tags by splitting prose. The directory summary and detailed research
-tags are separate so cards can remain brief.
+research tags by splitting prose. The editor labels this field “Short description
+on faculty card” and explains where it appears. Detailed research tags remain
+separate so cards can remain brief.
 
 ## Verification
 
