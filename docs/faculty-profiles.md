@@ -1,128 +1,113 @@
 # Faculty academic profiles
 
-The database foundation and public profile pages are implemented. Core faculty
-cards open `/people/[slug]` in the same tab; personal websites remain separate
-external links within the profile. The current admin editor and read-only faculty
-dashboard continue to work as before. Self-editing and review endpoints are the
-next implementation phase.
+Core professors sign in at `/login` with their existing faculty account and edit
+all academic content at `/faculty`. **Submit & publish** makes changes live
+immediately, without administrator review. **Save draft** keeps unfinished edits
+private. Existing accounts and imported content are reused; no password reset or
+new account is required.
 
-## Public profile pages
+## Editable content
 
-Only visible CORE profiles have detail pages. Unknown, hidden and non-core slugs
-return the profile-unavailable page. Current basic details come from the existing
-profile columns so legacy admin edits appear immediately. Extended academic
-content comes exclusively from the PUBLISHED revision. Drafts and private
-account/review fields are excluded by an explicit Prisma projection, also tested
-against isolated database fixtures. Metadata and page rendering share one
-request-scoped lookup. All core professors use the same academic section layout.
-Missing sections display `Not added yet.`; missing current/past course groups
-also display that message. Sample entries are never substituted on actual pages.
+- Biography, photograph URL, personal website and public email.
+- Short directory research summary, research tags and research overview.
+- Education and work experience, with free-text dates or periods.
+- Current and previous teaching.
+- Journal articles, conference papers, books, book chapters and monographs.
+- Patents, current/graduated students, office address and public phone.
 
-Profiles support research, education, experience, current/past teaching,
-publications grouped by type, patents, current/graduated students and public
-contact information. New academic entries will appear after the editing and
-publication workflow is connected. The design combines a patterned red banner,
-bordered portrait/biography introduction, compact white academic panels and gold
-timeline accents. Section links appear on desktop and are hidden on mobile/tablet. Teaching uses two
-desktop columns; graduated/current students have separate sections. Publication
-types use keyboard-accessible tabs. Existing non-core directory links keep their
-prior behaviour. Student portraits and downloadable document attachments require
-additional stored fields/upload support; no placeholder photos or downloads are shown.
+Repeatable entries can be added, edited, removed and reordered. Empty optional
+fields and empty collections explicitly clear content when submitted. Links use
+HTTPS; photographs also accept existing `/assets/` paths. Uploading new files,
+student portraits and downloadable attachments are not implemented. Login email
+is separate from public email.
 
-## One identity, several content revisions
+Name, slug, category, designation, department, account access, directory order
+and visibility remain administrator-controlled. Publishing a hidden profile does
+not make it visible. Every faculty request resolves ownership from the live
+session user and linked CORE profile; clients cannot supply a target profile ID.
+Faculty cannot access another professor's editor or administrative APIs.
 
-`FacultyProfile` remains the single identity record. Its ID, slug, category,
-designation, department, account link, directory position and visibility remain
-admin-controlled. Existing professors use their existing record and login.
-Creating a login later continues to attach it to that same profile.
+## API and persistence
 
-`FacultyProfileRevision` holds the editable biography, photograph, website,
-public email, research tags/overview, office address and public phone. Every
-repeatable academic entry belongs to a revision, not directly to the identity.
-This lets a complete draft be edited without changing the published version.
-Login email and credential hashes stay in the existing account models.
+`GET /api/faculty/profile` returns an explicit editor DTO: public identity,
+profile/draft versions and editable content. It never returns account hashes,
+other faculty records or review metadata. An existing private draft takes
+precedence over published content. A new profile without revisions starts with
+its current basic fields and empty academic collections.
 
-| Table                       | Purpose                                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `faculty_profile_revisions` | Content snapshots, revision numbers, edit version, submission/review metadata                           |
-| `faculty_education`         | Qualification/title, institution, description, free-text period                                         |
-| `faculty_experience`        | Position/title, organisation, description, free-text period                                             |
-| `faculty_courses`           | Course title/code, description, period, CURRENT/PREVIOUS status                                         |
-| `faculty_publications`      | Type, title, authors, venue/publisher, year, citation, DOI and URL                                      |
-| `faculty_patents`           | Title, inventors, identifier, status, year, description and URL                                         |
-| `faculty_students`          | Name, programme, topic, supervision role, period, CURRENT/GRADUATED status and optional graduation year |
+`PUT /api/faculty/profile` accepts a strict full-content payload:
 
-Education and experience periods are text, accepting values such as `2018–Present`
-or `Autumn 2024`. Every academic collection has its own zero-based display order.
-Authors and students are public academic text, not login accounts. Publications
-support journal articles, conference papers, books, book chapters and monographs.
-Patents are separate. Current/past courses and current/graduated students each
-share one table with a status rather than duplicating the same kind of record.
+```json
+{
+  "action": "save | publish | discard",
+  "profileVersion": 1,
+  "draftVersion": null,
+  "content": { "...": "all editable content fields" }
+}
+```
 
-## Planned editing and publication contract
+The shared validation contract is `src/features/faculty/profile-schema.ts`.
+Requests require an authenticated linked core faculty account, the
+`faculty.self.update` permission, a trusted Origin and a signed CSRF token.
+Bodies are bounded to 1 MiB; field lengths and collection sizes are bounded.
+Unknown identity, account, review and child ownership fields are rejected.
 
-1. Admin creates a minimal identity and optionally provisions its core faculty login.
-2. On first edit, clone the accepted content and all children into one DRAFT revision.
-3. The professor saves their own draft, using its `version` for optimistic concurrency.
-4. Submit freezes that working draft as SUBMITTED for admin review.
-5. Admin either requests changes with a note, or approves and publishes.
-6. In one transaction, retire the prior PUBLISHED revision as SUPERSEDED, publish
-   the new one, update the legacy directory projection, increment the profile
-   version and append the audit event. Publishing must not change visibility.
+Saving creates or updates one DRAFT revision and its academic children in a
+serializable transaction. Publishing atomically supersedes the previous
+PUBLISHED revision, publishes the working revision, updates the root directory
+projection, increments its version and records an audit event. Accepted history
+and its child records are retained. Failed writes roll back together.
 
-Partial unique indexes allow at most one working revision (DRAFT, SUBMITTED or
-CHANGES_REQUESTED) and one PUBLISHED revision per profile. Older snapshots retain
-their own academic entries. Revision numbers are unique per profile. Allocate
-them inside a transaction with concurrency handling. All child edits also bump
-the owning revision version; changing a child must not bypass conflict detection.
-Published/superseded content must be read-only in services. These SQL constraints
-do not enforce the full transition graph, reviewer role or profile ownership.
+Both root and draft versions prevent stale tabs from overwriting newer edits.
+A draft whose source profile was changed by an administrator must be discarded
+and restarted from current content. Discard also checks both versions and is
+explicitly confirmed in the UI. Submitted legacy review records are blocked for
+administrator handling; this editor does not create review submissions.
 
-The future write service must look up the faculty ID from the signed-in user,
-restrict self-editing to linked core faculty, validate allowed fields and URLs,
-and use existing CSRF/session checks. Only admins may review, publish or alter
-identity/category/visibility/account access. Neither account credentials nor
-private revision/review metadata may be selected by public profile queries.
-An admin account must not be able to publish through a faculty self-edit endpoint.
+The database retains the existing revision statuses and partial unique indexes:
+at most one working revision and one PUBLISHED revision per faculty profile.
+No new migration is required for this editor.
 
-## Existing core professors and rollout
+## Public pages
 
-Migration `202610190004_faculty_academic_profiles` is additive and transactional.
-It copies each existing CORE profile into revision 1 as its accepted baseline,
-including hidden profiles and profiles without accounts. It does not change
-profile rows, visibility, account links, passwords or existing audit records.
-PUBLISHED describes accepted content; it does not make a hidden profile public.
-No historical reviewer is invented for these baseline snapshots.
+Visible CORE cards open `/people/[slug]`. The directory and profile introduction
+read current basic fields; academic sections select only the PUBLISHED revision.
+Public queries never select drafts, accounts or private revision metadata.
+These reads are dynamic; a new request sees committed submissions. Public links
+from the editor open a fresh tab. Missing sections display `Not added yet.`.
+There is no sample-data substitution on actual pages.
 
-Existing interests are copied verbatim as a transitional fallback. Research tags
-start empty; education, courses and other entries start empty. Do not infer
-qualifications or split prose into tags automatically. In the future editor,
-confirmed tags become the single tag source for both the directory and full
-profile; retain legacy interest text only as a fallback until that conversion.
+All core professors share the existing CTIKS layout. Section navigation appears
+on desktop and is hidden on mobile/tablet. Teaching and students are grouped by
+status, and publications by type. Non-core directory behavior is unchanged.
 
-Until the editing workflow is enabled, the existing profile columns remain the
-live source for basic public details.
-`sourceProfileVersion` records the version copied into each revision. Before
-activating the editor, reconcile any admin edits made since this migration. A
-stale baseline must be refreshed through a new snapshot before opening a draft;
-never overwrite a professor's working draft. The next phase must integrate both
-admin writes and faculty writes before switching basic public fields to revisions.
-New profiles created during the interim may have no revision; initialize them
-from their current data when the new workflow is enabled.
+## Tables and rollout
 
-First-login password changes and credential delivery are separate application
-work. This migration neither forces password resets nor sends credentials.
-For future temporary logins, implement first-login enforcement through the auth
-workflow before describing that behaviour as available.
+`FacultyProfile` is the existing identity and account link.
+`FacultyProfileRevision` owns the biography, photo, website, public email,
+directory interests, research tags/overview and contact details. Academic rows
+belong to revisions in `faculty_education`, `faculty_experience`,
+`faculty_courses`, `faculty_publications`, `faculty_patents` and
+`faculty_students`.
 
-## Verification and operation
+Migration `202610190004_faculty_academic_profiles` copied existing CORE profiles
+into accepted baseline revisions, including hidden profiles and those without
+accounts. It preserved passwords, identity, visibility and audit history. The
+restricted runtime role already has access to the academic tables. New
+installations use `npm run db:migrate` and `npm run db:restrict`.
 
-Run `npm run test:faculty-schema` to apply all migrations in a generated isolated
-PostgreSQL schema and exercise backfill, draft isolation, constraints and cascade
-cleanup. It requires the migration-owner connection and never edits public data.
-Run `npm run db:generate` and `npm run typecheck` after model changes.
+Legacy directory interests are preserved verbatim; the editor does not infer
+research tags by splitting prose. The directory summary and detailed research
+tags are separate so cards can remain brief.
 
-Apply with `npm run db:migrate`. The migration grants the existing restricted
-`ctiks_app` role access to the new content tables when that role exists.
-`npm run db:restrict` also includes those grants for new installations.
-Application permissions remain unchanged until the editing phase is implemented.
+## Verification
+
+`npm test` covers validation and permission boundaries. `npm run test:integration`
+uses an isolated temporary PostgreSQL schema, Redis namespace and local server
+to exercise the actual faculty API, drafts, publishing, ownership, CSRF,
+concurrent edits, explicit clears, accepted history, hidden profiles and audit.
+It does not edit real faculty accounts or profiles.
+
+`npm run test:faculty-schema` additionally verifies migrations and SQL constraints.
+Credential delivery and first-login password enforcement remain separate work;
+this editor neither emails credentials nor forces password changes.

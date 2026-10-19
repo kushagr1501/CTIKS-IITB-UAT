@@ -12,6 +12,7 @@ import { Redis } from 'ioredis';
 import { createAuthStorage, authKeys, touchSession } from '../src/server/auth/redis-storage';
 import { credentialAdapter } from '../src/server/auth/credential-adapter';
 import { checkActivities } from './integration/activities';
+import { checkFacultyEditor } from './integration/faculty-editor';
 
 config({ path: ['.env.migrations.local', '.env.local'], quiet: true });
 if (!process.env.DIRECT_URL)
@@ -650,7 +651,7 @@ try {
     'faculty profile is selected from session identity, ignoring a supplied other ID',
   );
   const ownProfile = (await ownResponse.json()).faculty;
-  assert.equal(ownProfile.name, 'Account Faculty');
+  assert.equal(ownProfile.identity.name, 'Account Faculty');
   assert.equal('userId' in ownProfile, false);
   assert.equal('loginEmail' in ownProfile, false);
   assert.equal('password' in ownProfile, false);
@@ -675,6 +676,15 @@ try {
   const portalHtml = await portal.text();
   assert.ok(portalHtml.includes('Account Faculty'));
   assert.ok(!portalHtml.includes('Integration Faculty'));
+  assert.ok(portalHtml.includes('Submit &amp; publish'));
+  await checkFacultyEditor(
+    database,
+    browser,
+    facultyBrowser,
+    new BrowserSession(),
+    accountBody.faculty.id,
+    profile.id,
+  );
   await expectStatus(await facultyBrowser.request('/faculty/security'), 200, 'faculty password page renders');
   const redirected = await facultyBrowser.request('/admin/people');
   if (redirected.status === 307) assert.equal(redirected.headers.get('location'), '/faculty');
@@ -693,7 +703,12 @@ try {
     await (
       await browser.request(`/api/admin/faculty/${accountBody.faculty.id}/visibility`, {
         method: 'PATCH',
-        body: { visible: false, version: accountBody.faculty.version },
+        body: {
+          visible: false,
+          version: (
+            await database.facultyProfile.findUniqueOrThrow({ where: { id: accountBody.faculty.id } })
+          ).version,
+        },
       })
     ).json()
   ).faculty;
@@ -746,7 +761,7 @@ try {
     'login attached to an existing profile works',
   );
   assert.equal(
-    (await (await attachedBrowser.request('/api/faculty/profile')).json()).faculty.name,
+    (await (await attachedBrowser.request('/api/faculty/profile')).json()).faculty.identity.name,
     hiddenEdit.name,
   );
   const loginAudits = await database.auditEvent.findMany({ where: { action: 'FACULTY_LOGIN_CREATED' } });

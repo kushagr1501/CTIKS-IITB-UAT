@@ -58,6 +58,9 @@ const activityMessages: Record<string, string> = {
   FACULTY_HIDDEN: 'Faculty profile hidden from the website.',
   FACULTY_LOGIN_CREATED: 'Login created for this core faculty member.',
   FACULTY_DELETED: 'Faculty profile permanently deleted.',
+  FACULTY_DRAFT_SAVED: 'Faculty member saved a private profile draft.',
+  FACULTY_DRAFT_DISCARDED: 'Faculty member discarded their profile draft.',
+  FACULTY_SELF_PUBLISHED: 'Faculty member published their profile changes.',
 };
 
 export function formatAuditTime(value: string) {

@@ -38,7 +38,7 @@ export default function FacultyLoginFields({
         Create a login for this faculty member
       </label>
       <p className="mt-2 text-sm leading-6 text-stone-600">
-        They can sign in to view their own profile and change their password.
+        They can sign in to edit and publish their own profile, and change their password.
       </p>
       {enabled && (
         <div className="mt-5 grid gap-5 sm:grid-cols-2">

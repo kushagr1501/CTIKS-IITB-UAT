@@ -78,8 +78,8 @@ Prisma adapter's core-column schema check. Revisit it before enabling other sign
 ## Permissions and faculty editing
 
 `ADMIN` has `faculty.read`, `faculty.create`, `faculty.update`, `faculty.delete`,
-`faculty.self.read`, `audit.read`, and `audit.export`. `CORE_FACULTY` has only
-`faculty.self.read`. Unknown roles are denied by default.
+`faculty.self.read`, `faculty.self.update`, `audit.read`, and `audit.export`. `CORE_FACULTY` has
+`faculty.self.read` and `faculty.self.update`. Unknown roles are denied by default.
 Account roles and faculty categories are independent.
 
 The admin faculty editor can optionally provision a login for a new or existing
@@ -98,10 +98,10 @@ passwords are never returned by the API, stored in browser storage, or included
 in audit snapshots. There is no automatic email delivery or forced password change.
 
 Both roles use `/login`. The client sends admin users to `/admin` and core
-faculty users to `/faculty`. Faculty can read their own linked profile through
-`GET /api/faculty/profile` and change their password at `/faculty/security`.
+faculty users to `/faculty`. Faculty can edit and publish their own linked profile through
+`GET`/`PUT /api/faculty/profile` and change their password at `/faculty/security`.
 Profile selection uses the session user ID, not a supplied faculty ID. Faculty
-cannot edit profiles, create accounts, read admin lists, or read/export audit logs.
+cannot edit other profiles, create accounts, read admin lists, or read/export audit logs. Own submissions publish immediately; optional drafts stay private. See [faculty profiles](faculty-profiles.md).
 Session creation and every protected request recheck the current role and linked
 profile category. Changing a linked profile away from Core Faculty removes login
 access; hiding the profile from the public website does not.
@@ -133,7 +133,7 @@ same admin list. Initial loads and saved updates share the same category, displa
 order, name, and ID sorting rule. Visibility changes preserve the profile's position.
 `PATCH /api/admin/faculty/:id/visibility` accepts `{ visible, version }`
 and saves the change and audit event together using `faculty.update` permission.
-There are no draft/archive states. Existing published,
+Directory visibility is independent of academic revision drafts. Existing published,
 unarchived records become Visible during migration; all others become Hidden.
 Historical audit snapshots remain unchanged. Image URLs allow local `/assets/`
 paths or HTTPS URLs from any host. No image-domain allowlist is applied. The backend never
@@ -225,5 +225,5 @@ IITB process manager.
 
 IITB VPN restrictions, trusted reverse-proxy configuration, backups and restore
 checks, retention, and deployment-specific monitoring still need implementation
-or operational configuration before public production use. No public signup,
-email reset delivery, or faculty profile editing is enabled in this release.
+or operational configuration before public production use. Public signup and
+email reset delivery are not enabled in this release.

@@ -4,6 +4,7 @@ export const PERMISSIONS = [
   'faculty.update',
   'faculty.delete',
   'faculty.self.read',
+  'faculty.self.update',
   'activity.read',
   'activity.create',
   'activity.update',
@@ -17,7 +18,7 @@ export type AccountRole = 'ADMIN' | 'CORE_FACULTY';
 
 const ROLE_PERMISSIONS: Record<AccountRole, readonly Permission[]> = {
   ADMIN: PERMISSIONS,
-  CORE_FACULTY: ['faculty.self.read'],
+  CORE_FACULTY: ['faculty.self.read', 'faculty.self.update'],
 };
 
 export function hasPermission(role: string, permission: Permission) {

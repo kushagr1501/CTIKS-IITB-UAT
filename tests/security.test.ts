@@ -58,7 +58,10 @@ test('auth surface prevents signup, privilege fields, removed MFA routes, and un
 test('RBAC denies unknown, inherited, and ungranted roles', () => {
   for (const permission of PERMISSIONS) {
     assert.equal(hasPermission('ADMIN', permission), true);
-    assert.equal(hasPermission('CORE_FACULTY', permission), permission === 'faculty.self.read');
+    assert.equal(
+      hasPermission('CORE_FACULTY', permission),
+      ['faculty.self.read', 'faculty.self.update'].includes(permission),
+    );
     for (const role of ['PUBLIC', '__proto__', 'constructor', 'toString', ''])
       assert.equal(hasPermission(role, permission), false);
   }
