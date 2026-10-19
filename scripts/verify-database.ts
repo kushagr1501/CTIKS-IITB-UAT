@@ -80,6 +80,26 @@ try {
   assert.equal(transient.sessions, null, 'sessions must live in Redis');
   assert.equal(transient.rate_limits, null, 'rate counters must live in Redis');
   assert.equal(transient.verifications, null, 'authentication challenges must live in Redis');
+  for (const table of [
+    'faculty_profile_revisions',
+    'faculty_education',
+    'faculty_experience',
+    'faculty_courses',
+    'faculty_publications',
+    'faculty_patents',
+    'faculty_students',
+  ]) {
+    const {
+      rows: [access],
+    } = await pool.query(
+      `SELECT has_table_privilege(current_user, $1, 'SELECT') AS read,
+        has_table_privilege(current_user, $1, 'INSERT') AS create,
+        has_table_privilege(current_user, $1, 'UPDATE') AS edit,
+        has_table_privilege(current_user, $1, 'DELETE') AS remove`,
+      [table],
+    );
+    assert.deepEqual(access, { read: true, create: true, edit: true, remove: true }, table);
+  }
   const {
     rows: [counts],
   } = await pool.query(
@@ -92,6 +112,7 @@ try {
       roleUpdatesBlocked: true,
       simplifiedAccounts: true,
       simpleFacultyVisibility: true,
+      academicProfileTablesReady: true,
       ...counts,
     }),
   );

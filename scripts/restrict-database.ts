@@ -56,6 +56,9 @@ try {
   await pool.query('GRANT DELETE ON faculty_profiles, accounts TO ctiks_app');
   await pool.query('GRANT UPDATE (email) ON users TO ctiks_app');
   await pool.query('GRANT SELECT, INSERT, UPDATE, DELETE ON activities TO ctiks_app');
+  await pool.query(`GRANT SELECT, INSERT, UPDATE, DELETE ON
+    faculty_profile_revisions, faculty_education, faculty_experience,
+    faculty_courses, faculty_publications, faculty_patents, faculty_students TO ctiks_app`);
   console.log('Faculty account provisioning and deletion privileges are configured.');
 } finally {
   await pool.end();

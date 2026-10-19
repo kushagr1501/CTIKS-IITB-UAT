@@ -20,16 +20,18 @@ enum FacultyCategory {
 }
 
 model User {
-  id             String          @id
-  name           String
-  email          String          @unique
-  image          String?
-  role           Role            @default(CORE_FACULTY)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  accounts       Account[]
-  facultyProfile FacultyProfile?
-  auditEvents    AuditEvent[]
+  id                        String                   @id
+  name                      String
+  email                     String                   @unique
+  image                     String?
+  role                      Role                     @default(CORE_FACULTY)
+  createdAt                 DateTime                 @default(now())
+  updatedAt                 DateTime                 @updatedAt
+  accounts                  Account[]
+  facultyProfile            FacultyProfile?
+  auditEvents               AuditEvent[]
+  submittedFacultyRevisions FacultyProfileRevision[] @relation("FacultyRevisionSubmitter")
+  reviewedFacultyRevisions  FacultyProfileRevision[] @relation("FacultyRevisionReviewer")
 
   @@map("users")
 }
@@ -52,27 +54,194 @@ model Account {
 }
 
 model FacultyProfile {
-  id           String          @id @default(uuid())
-  slug         String          @unique
+  id           String                   @id @default(uuid())
+  slug         String                   @unique
   name         String
   category     FacultyCategory
-  designation  String          @default("")
+  designation  String                   @default("")
   department   String
   interests    String
-  biography    String          @default("")
-  imageUrl     String          @default("")
-  websiteUrl   String          @default("")
-  publicEmail  String          @default("")
-  displayOrder Int             @default(0)
-  visible      Boolean         @default(false)
-  version      Int             @default(1)
-  userId       String?         @unique
-  user         User?           @relation(fields: [userId], references: [id], onDelete: Restrict)
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  biography    String                   @default("")
+  imageUrl     String                   @default("")
+  websiteUrl   String                   @default("")
+  publicEmail  String                   @default("")
+  displayOrder Int                      @default(0)
+  visible      Boolean                  @default(false)
+  version      Int                      @default(1)
+  userId       String?                  @unique
+  user         User?                    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+  revisions    FacultyProfileRevision[]
 
   @@index([visible, category, displayOrder])
   @@map("faculty_profiles")
+}
+
+enum FacultyRevisionStatus {
+  DRAFT
+  SUBMITTED
+  CHANGES_REQUESTED
+  PUBLISHED
+  SUPERSEDED
+}
+
+enum FacultyCourseStatus {
+  CURRENT
+  PREVIOUS
+}
+
+enum FacultyPublicationType {
+  JOURNAL_ARTICLE
+  CONFERENCE_PAPER
+  BOOK
+  BOOK_CHAPTER
+  RESEARCH_MONOGRAPH
+}
+
+enum FacultyStudentStatus {
+  CURRENT
+  GRADUATED
+}
+
+// Identity, category, account linkage and visibility remain on FacultyProfile.
+// Each revision owns a complete set of academic entries, isolating drafts from
+// the published profile. SQL adds partial unique indexes for working/published revisions.
+model FacultyProfileRevision {
+  id                   String                @id @default(uuid())
+  facultyId            String
+  revisionNumber       Int
+  sourceProfileVersion Int
+  version              Int                   @default(1)
+  status               FacultyRevisionStatus @default(DRAFT)
+  biography            String                @default("")
+  imageUrl             String                @default("")
+  websiteUrl           String                @default("")
+  publicEmail          String                @default("")
+  // Transitional fallback: preserve existing text until tags are explicitly confirmed.
+  interests            String                @default("")
+  researchTags         String[]              @default([])
+  researchOverview     String                @default("")
+  officeAddress        String                @default("")
+  publicPhone          String                @default("")
+  submittedById        String?
+  submittedAt          DateTime?             @db.Timestamptz(3)
+  reviewedById         String?
+  reviewedAt           DateTime?             @db.Timestamptz(3)
+  reviewNote           String                @default("")
+  publishedAt          DateTime?             @db.Timestamptz(3)
+  createdAt            DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime              @updatedAt @db.Timestamptz(3)
+  faculty              FacultyProfile        @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  submittedBy          User?                 @relation("FacultyRevisionSubmitter", fields: [submittedById], references: [id], onDelete: Restrict)
+  reviewedBy           User?                 @relation("FacultyRevisionReviewer", fields: [reviewedById], references: [id], onDelete: Restrict)
+  education            FacultyEducation[]
+  experience           FacultyExperience[]
+  courses              FacultyCourse[]
+  publications         FacultyPublication[]
+  patents              FacultyPatent[]
+  students             FacultyStudent[]
+
+  @@unique([facultyId, revisionNumber])
+  @@index([status, submittedAt])
+  @@index([submittedById])
+  @@index([reviewedById])
+  @@map("faculty_profile_revisions")
+}
+
+model FacultyEducation {
+  id           String                 @id @default(uuid())
+  revisionId   String
+  title        String
+  institution  String                 @default("")
+  description  String                 @default("")
+  periodText   String                 @default("")
+  displayOrder Int                    @default(0)
+  revision     FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, displayOrder, id])
+  @@map("faculty_education")
+}
+
+model FacultyExperience {
+  id           String                 @id @default(uuid())
+  revisionId   String
+  title        String
+  organisation String                 @default("")
+  description  String                 @default("")
+  periodText   String                 @default("")
+  displayOrder Int                    @default(0)
+  revision     FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, displayOrder, id])
+  @@map("faculty_experience")
+}
+
+model FacultyCourse {
+  id           String                 @id @default(uuid())
+  revisionId   String
+  title        String
+  code         String                 @default("")
+  periodText   String                 @default("")
+  description  String                 @default("")
+  status       FacultyCourseStatus
+  displayOrder Int                    @default(0)
+  revision     FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, displayOrder, id])
+  @@map("faculty_courses")
+}
+
+model FacultyPublication {
+  id           String                 @id @default(uuid())
+  revisionId   String
+  type         FacultyPublicationType
+  title        String
+  authors      String                 @default("")
+  venue        String                 @default("")
+  year         Int?
+  citation     String                 @default("")
+  doi          String                 @default("")
+  url          String                 @default("")
+  displayOrder Int                    @default(0)
+  revision     FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, displayOrder, id])
+  @@map("faculty_publications")
+}
+
+model FacultyPatent {
+  id           String                 @id @default(uuid())
+  revisionId   String
+  title        String
+  inventors    String                 @default("")
+  identifier   String                 @default("")
+  status       String                 @default("")
+  year         Int?
+  description  String                 @default("")
+  url          String                 @default("")
+  displayOrder Int                    @default(0)
+  revision     FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, displayOrder, id])
+  @@map("faculty_patents")
+}
+
+model FacultyStudent {
+  id              String                 @id @default(uuid())
+  revisionId      String
+  name            String
+  programme       String                 @default("")
+  researchTopic   String                 @default("")
+  supervisionRole String                 @default("")
+  periodText      String                 @default("")
+  status          FacultyStudentStatus
+  graduationYear  Int?
+  displayOrder    Int                    @default(0)
+  revision        FacultyProfileRevision @relation(fields: [revisionId], references: [id], onDelete: Cascade)
+
+  @@index([revisionId, displayOrder, id])
+  @@map("faculty_students")
 }
 
 model AuditEvent {
@@ -110,8 +279,8 @@ model Activity {
   description     String
   sections        ActivitySection[]
   imageUrl        String            @default("")
-  eventStartAt    DateTime?          @db.Timestamptz(3)
-  eventEndAt      DateTime?          @db.Timestamptz(3)
+  eventStartAt    DateTime?         @db.Timestamptz(3)
+  eventEndAt      DateTime?         @db.Timestamptz(3)
   venue           String            @default("")
   registrationUrl String            @default("")
   linkLabel       String            @default("")

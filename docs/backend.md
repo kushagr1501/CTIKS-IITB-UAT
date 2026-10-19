@@ -59,8 +59,9 @@ exposed. Role changes are maintenance operations in this phase.
 The browser receives session cookies, never a session token in JSON.
 
 `users.emailVerified`, `sessions`, `rate_limits`, and `verifications` do not exist in PostgreSQL.
-Temporary authentication challenges use Redis exclusively. The remaining application
-tables are `users`, `accounts`, `faculty_profiles`, and `audit_events`.
+Temporary authentication challenges use Redis exclusively. Application tables
+include `users`, `accounts`, `faculty_profiles`, `audit_events`, `activities`, and
+the academic profile tables described in [faculty academic profiles](faculty-profiles.md).
 The credential adapter projects a constant `emailVerified: false` only into Better
 Auth's internal User shape. It is not stored in Neon or returned by our API. The
 `accounts` table also omits `providerId` and `accountId`: the adapter derives

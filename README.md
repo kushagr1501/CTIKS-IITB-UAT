@@ -90,4 +90,5 @@ with `npm run db:migrate`, then run `npm run build` and `npm start`. Hosting,
 backups, HTTPS, and institute SMTP/storage provisioning are deployment concerns.
 Pushing this repository does not deploy the site or copy database contents.
 
-See [architecture](docs/architecture.md) and [Activities CMS](docs/activities.md).
+See [architecture](docs/architecture.md), [Activities CMS](docs/activities.md),
+and the [faculty academic profile schema](docs/faculty-profiles.md).
