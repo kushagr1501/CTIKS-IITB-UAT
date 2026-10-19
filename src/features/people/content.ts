@@ -108,3 +108,45 @@ export const ASSOCIATE_FACULTY: Faculty[] = [
     website: 'https://www.ese.iitb.ac.in/faculty/pavan-hari',
   },
 ];
+
+export const ADJUNCT_FACULTY: Faculty[] = [
+  {
+    name: 'Prof. Sundeep Kapila',
+    department: 'Swasth Foundation',
+    tags: 'Healthcare Systems, Yogic Psychology, Health & Wellness',
+    image: ASSETS.facultyKapila,
+    website: 'https://www.swasth.org/our-journey/',
+  },
+];
+
+export const VISITING_FACULTY: Faculty[] = [
+  {
+    name: 'Prof. Vinod Vidwans',
+    department: 'FLAME University',
+    tags: 'Indian Aesthetic Theories, Natyashastra, Computational Musicology',
+    image: ASSETS.facultyVidwans,
+    website: 'https://www.flame.edu.in/faculty/vinod-vidwans',
+  },
+  {
+    name: 'Prof. Himanshu Asnani',
+    department: 'School of Technology and Computer Science, TIFR Mumbai',
+    tags: 'Information Theory, AI & Machine Learning, Sanskrit & Vedic Studies',
+    image: ASSETS.facultyAsnani,
+    website: 'https://www.himanshuasnani.com/',
+  },
+  {
+    name: 'Pandit Nayan Ghosh',
+    department: 'Classical Indian Music (Sitar & Tabla)',
+    tags: 'Sitar & Tabla Organology, Classical Hindustani Music, Traditional Pedagogy',
+    image: ASSETS.facultyGhosh,
+    website: 'https://www.nayanghosh.in/index.html',
+  },
+  {
+    name: 'Prof. Sushruti Santanam',
+    department: 'Centre for Arts, Society and Policy (CASP)',
+    tags: 'Classical Carnatic Vocal, Musicology, Research in Indian Art & Culture',
+    image: ASSETS.facultySanthanam,
+    website: 'https://casp.org.in/dr-sushruti-santhanam/',
+  },
+];
+
