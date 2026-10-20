@@ -1,0 +1,227 @@
+@font-face {
+  font-family: 'CTIKS Source Sans 3';
+  src: url('/fonts/source-sans-3-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CTIKS Source Serif 4';
+  src: url('/fonts/source-serif-4-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CTIKS Libre Baskerville';
+  src: url('/fonts/libre-baskerville-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CTIKS Newsreader';
+  src: url('/fonts/newsreader-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CTIKS DM Sans';
+  src: url('/fonts/dm-sans-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CTIKS Manrope';
+  src: url('/fonts/manrope-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'CTIKS Fraunces';
+  src: url('/fonts/fraunces-latin.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+.site {
+  min-height: 100%;
+}
+
+:global(body):has(.site[data-font-preview='source']) {
+  --preview-heading: 'CTIKS Source Serif 4', Georgia, serif;
+  --preview-body: 'CTIKS Source Sans 3', sans-serif;
+}
+
+:global(body):has(.site[data-font-preview='baskerville']) {
+  --preview-heading: 'CTIKS Libre Baskerville', Georgia, serif;
+  --preview-body: 'CTIKS Source Sans 3', sans-serif;
+}
+
+:global(body):has(.site[data-font-preview='newsreader']) {
+  --preview-heading: 'CTIKS Newsreader', Georgia, serif;
+  --preview-body: 'CTIKS DM Sans', sans-serif;
+}
+
+:global(body):has(.site[data-font-preview='manrope']) {
+  --preview-heading: 'CTIKS Manrope', sans-serif;
+  --preview-body: 'CTIKS Manrope', sans-serif;
+}
+
+:global(body):has(.site[data-font-preview='fraunces']) {
+  --preview-heading: 'CTIKS Fraunces', Georgia, serif;
+  --preview-body: 'CTIKS DM Sans', sans-serif;
+}
+
+.site:not([data-font-preview='current']) :global(*),
+:global(body):has(.site:not([data-font-preview='current'])) :global(footer *) {
+  font-family: var(--preview-body) !important;
+}
+
+.site:not([data-font-preview='current']) :global(:is(h1, h2, h3, h4, h5, h6, .font-display)),
+.site:not([data-font-preview='current']) :global(:is(h1, h2, h3, h4, h5, h6, .font-display) *),
+:global(body):has(.site:not([data-font-preview='current'])) :global(footer :is(h1, h2, h3, h4, h5, h6)),
+:global(body):has(.site:not([data-font-preview='current'])) :global(footer :is(h1, h2, h3, h4, h5, h6) *) {
+  font-family: var(--preview-heading) !important;
+}
+
+.site:not([data-font-preview='current']) :global(nav .font-display),
+.site:not([data-font-preview='current']) :global(nav .font-display *) {
+  font-family: var(--preview-body) !important;
+}
+
+.site:not([data-font-preview='current']) :global(.font-deva),
+.site:not([data-font-preview='current']) :global(.font-deva *) {
+  font-family: Laila, serif !important;
+}
+
+.site:not([data-font-preview='current']) :global(.font-motto),
+.site:not([data-font-preview='current']) :global(.font-motto *) {
+  font-family: Cormorant, Georgia, serif !important;
+}
+
+.site:not([data-font-preview='current']) .switcher :global(*) {
+  font-family: 'CTIKS Source Sans 3', sans-serif !important;
+}
+
+.switcher {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  font-family: 'CTIKS Source Sans 3', sans-serif;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  margin-left: auto;
+  padding: 5px 12px 5px 6px;
+  border: 1px solid #820d0d33;
+  border-radius: 999px;
+  background: #fffaf2;
+  box-shadow: 0 4px 18px #382b2526;
+  color: #820d0d;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.triggerIcon {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border-radius: 50%;
+  background: #820d0d;
+  color: white;
+  font-size: 12px;
+}
+
+.chevron {
+  margin-top: 3px;
+  font-size: 16px;
+  line-height: 1;
+  transform: rotate(180deg);
+}
+
+.trigger[aria-expanded='true'] .chevron {
+  transform: rotate(0);
+}
+
+.panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 9px);
+  width: min(270px, calc(100vw - 20px));
+  max-height: min(430px, 70vh);
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #820d0d33;
+  border-radius: 14px;
+  background: #fffaf2;
+  box-shadow: 0 10px 30px #382b2533;
+}
+
+.panelTitle {
+  margin: 2px 8px 8px;
+  color: #7b6054;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.option {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 62px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #6d5549;
+  cursor: pointer;
+  text-align: left;
+}
+
+.option + .option {
+  border-top: 1px solid #eadbd0;
+}
+
+.option:hover,
+.option[aria-pressed='true'] {
+  background: #f6e5d4;
+  color: #820d0d;
+}
+
+.optionName {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.optionDetail {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+@media (max-width: 480px) {
+  .switcher {
+    right: 10px;
+    bottom: 10px;
+  }
+}
