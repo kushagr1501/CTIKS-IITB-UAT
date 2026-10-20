@@ -93,7 +93,7 @@ export default function FacultyCard({
 
       <div className="flex flex-1 flex-col gap-3 min-w-0">
         <h3
-          className={`font-body text-[20px] sm:text-[22px] lg:text-[24px] font-semibold leading-[1.3] text-ctiks-maroon pr-6 sm:pr-0 ${linked ? 'group-hover:text-ctiks-red transition-colors' : ''}`}
+          className={`font-body text-[20px] sm:text-[22px] lg:text-[24px] font-semibold leading-[1.3] text-ctiks-maroon pr-6 xl:min-h-[2.6em] ${linked ? 'group-hover:text-ctiks-red transition-colors' : ''}`}
         >
           {name}
         </h3>
@@ -105,13 +105,13 @@ export default function FacultyCard({
             aria-hidden="true"
             className="absolute inset-0 h-full w-full"
           />
-          <span className="relative font-body text-[12px] sm:text-[14px] font-semibold uppercase tracking-[0.5px] sm:tracking-[0.65px] text-white px-3 truncate">
+          <span className="relative max-w-full truncate px-3 font-body text-[11px] font-semibold uppercase tracking-[0.4px] text-white xl:text-[12px]">
             {role}
           </span>
         </div>
 
         <div className="flex flex-col gap-3 sm:gap-5">
-          <p className="font-body text-[14px] sm:text-[16px] leading-[1.4] text-[#4a4235]">{department}</p>
+          <p className="font-body text-[14px] sm:text-[16px] leading-[1.4] text-[#4a4235] xl:min-h-[2.8em]">{department}</p>
           <span aria-hidden="true" className="h-1 w-11 bg-[#fbb841]" />
         </div>
 
