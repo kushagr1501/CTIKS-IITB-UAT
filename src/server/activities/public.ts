@@ -83,8 +83,8 @@ export const getPublicActivityCounts = cache(async (query = '') => {
 
 export async function getHomepageActivities(now = new Date()) {
   const db = getDatabase();
-  const [event, announcements] = await Promise.all([
-    db.activity.findFirst({
+  const [events, announcements] = await Promise.all([
+    db.activity.findMany({
       where: {
         visible: true,
         sections: { has: 'EVENT' },
@@ -92,7 +92,8 @@ export async function getHomepageActivities(now = new Date()) {
         OR: [{ eventEndAt: { gt: now } }, { eventEndAt: null, eventStartAt: { gte: now } }],
       },
       select,
-      orderBy,
+      orderBy: [{ eventStartAt: 'asc' }, { id: 'asc' }],
+      take: 12,
     }),
     db.activity.findMany({
       where: { visible: true, sections: { has: 'ANNOUNCEMENT' } },
@@ -101,5 +102,5 @@ export async function getHomepageActivities(now = new Date()) {
       take: 2,
     }),
   ]);
-  return { event: event ? serialize(event) : null, announcements: announcements.map(serialize) };
+  return { events: events.map(serialize), announcements: announcements.map(serialize) };
 }

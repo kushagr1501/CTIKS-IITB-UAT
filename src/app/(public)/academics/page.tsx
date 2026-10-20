@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import InteriorHero from '@/components/ui/InteriorHero';
+import Reveal from '@/components/ui/Reveal';
 import ProgrammeAction from '@/features/academics/components/ProgrammeAction';
 import { ASSETS } from '@/config/assets';
 
@@ -44,11 +45,13 @@ export default function AcademicsPage() {
         />
         <div className="mx-auto flex max-w-[1120px] flex-col gap-8 sm:gap-10">
           {programmes.map((programme, index) => (
-            <article
+            <Reveal
               key={programme.title}
-              className="grid min-w-0 grid-cols-1 border border-ctiks-red md:grid-cols-2"
+              variant="arch"
+              className="grid min-w-0 grid-cols-1 rounded-xl border border-ctiks-red bg-[#fffaf2] md:grid-cols-2"
             >
               <div
+                data-reveal-content
                 className={`flex min-w-0 flex-col items-start justify-center gap-6 px-5 py-7 sm:px-8 lg:py-8 ${index === 1 ? 'md:order-2' : ''}`}
               >
                 <div className="flex flex-col gap-4">
@@ -69,15 +72,17 @@ export default function AcademicsPage() {
               <div
                 className={`flex items-center justify-center border-t border-ctiks-red p-4 sm:p-6 md:min-h-[340px] md:border-t-0 ${index === 1 ? 'md:order-1 md:border-r' : 'md:border-l'}`}
               >
-                <img
-                  src={programme.image}
-                  alt={programme.alt}
-                  width={636}
-                  height={419}
-                  className="aspect-[636/419] w-full object-cover"
-                />
+                <div data-reveal-media className="w-full">
+                  <img
+                    src={programme.image}
+                    alt={programme.alt}
+                    width={636}
+                    height={419}
+                    className="aspect-[636/419] w-full object-cover"
+                  />
+                </div>
               </div>
-            </article>
+            </Reveal>
           ))}
         </div>
       </section>

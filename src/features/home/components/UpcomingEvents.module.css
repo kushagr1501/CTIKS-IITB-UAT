@@ -1,0 +1,7 @@
+.track {
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}

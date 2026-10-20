@@ -1,50 +1,57 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
+import styles from './Reveal.module.css';
 
 type RevealProps = {
   children: ReactNode;
   className?: string;
+  delay?: number;
+  variant?: 'programme' | 'arch';
 };
 
-export default function Reveal({ children, className = '' }: RevealProps) {
+export default function Reveal({ children, className = '', delay = 0, variant = 'programme' }: RevealProps) {
   const target = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const element = target.current;
     if (!element || !('IntersectionObserver' in window)) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    // Keep server-rendered content visible when JavaScript is unavailable.
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const animation = element.animate(
-      [{ opacity: 0, transform: 'translateY(4rem)' }, { opacity: 1, transform: 'translateY(0)' }],
-      { duration: 1200, easing: 'ease-out', fill: 'backwards' },
-    );
-    animation.pause();
+    if (motionPreference.matches) return;
 
-    function handleMotionChange() {
-      if (motionPreference.matches) {
-        animation.cancel();
-        observer.disconnect();
-      }
-    }
+    element.dataset.revealState = 'pending';
 
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        animation.play();
+        element.dataset.revealState = 'visible';
         observer.disconnect();
       }
-    }, { threshold: 0.15 });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+    const finish = () => {
+      if (motionPreference.matches) {
+        element.dataset.revealState = 'visible';
+        observer.disconnect();
+      }
+    };
 
     observer.observe(element);
-    motionPreference.addEventListener('change', handleMotionChange);
+    motionPreference.addEventListener('change', finish);
     return () => {
-      motionPreference.removeEventListener('change', handleMotionChange);
+      motionPreference.removeEventListener('change', finish);
       observer.disconnect();
-      animation.cancel();
+      delete element.dataset.revealState;
     };
   }, []);
 
-  return <article ref={target} className={className}>{children}</article>;
+  return (
+    <article
+      ref={target}
+      className={`${styles.card} ${variant === 'arch' ? styles.archCard : ''} ${className}`}
+      style={{ '--reveal-delay': `${delay}ms` } as CSSProperties}
+    >
+      {children}
+    </article>
+  );
 }

@@ -8,12 +8,12 @@ import { getHomepageActivities } from '@/server/activities/public';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const { event, announcements } = await getHomepageActivities();
+  const { events, announcements } = await getHomepageActivities();
   return (
     <>
       <Hero />
       <Programmes />
-      <UpcomingEvents event={event} />
+      <UpcomingEvents events={events} />
       <Announcements announcements={announcements} />
       <ConnectWithUs />
     </>

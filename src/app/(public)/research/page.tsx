@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import PageHero from '@/components/ui/PageHero';
 import Button from '@/components/ui/Button';
+import Reveal from '@/components/ui/Reveal';
 import { ASSETS } from '@/config/assets';
 import { RESEARCH_AREAS } from '@/features/research/content';
 import styles from '@/features/research/research.module.css';
@@ -24,9 +25,9 @@ export default function ResearchPage() {
             <h2 id="research-areas">Areas of research</h2>
           </div>
           <div className={styles.gallery}>
-            {RESEARCH_AREAS.map((area) => (
-              <article className={styles.card} key={area.title}>
-                <div className={styles.imageWrap}>
+            {RESEARCH_AREAS.map((area, index) => (
+              <Reveal className={styles.card} variant="arch" delay={(index % 2) * 80} key={area.title}>
+                <div data-reveal-media className={styles.imageWrap}>
                   <Image
                     src={`/assets/research/${area.image}`}
                     alt={area.title}
@@ -34,7 +35,7 @@ export default function ResearchPage() {
                     sizes="(max-width: 767px) calc(100vw - 56px), 530px"
                   />
                 </div>
-                <div className={styles.cardBody}>
+                <div data-reveal-content className={styles.cardBody}>
                   <div className={styles.cardHeading}>
                     <h3>{area.href ? <a href={area.href}>{area.title}</a> : area.title}</h3>
                   </div>
@@ -53,7 +54,7 @@ export default function ResearchPage() {
                     <span className={styles.actionRule} aria-hidden="true" />
                   </div>
                 </div>
-              </article>
+              </Reveal>
             ))}
           </div>
         </div>
