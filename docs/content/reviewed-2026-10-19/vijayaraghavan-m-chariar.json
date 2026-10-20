@@ -16,7 +16,11 @@
     "https://vm-chariariitb.joyisyou.com/",
     "https://vm-chariariitb.joyisyou.com/research",
     "https://vm-chariariitb.joyisyou.com/research/publications",
-    "https://vm-chariariitb.joyisyou.com/joylab/overview"
+    "https://vm-chariariitb.joyisyou.com/joylab/overview",
+    "https://vm-chariariitb.joyisyou.com/scholar-images/shardagautam.jpeg",
+    "https://vm-chariariitb.joyisyou.com/scholar-images/biren.jpg",
+    "https://vm-chariariitb.joyisyou.com/scholar-images/nalini.jpg",
+    "https://vm-chariariitb.joyisyou.com/scholar-images/anagha.jpg"
   ],
   "education": [
     {
@@ -981,25 +985,42 @@
     {
       "name": "Sharda Gautam",
       "programme": "Ph.D.",
+      "biography": "Sharda Gautam is a development practitioner and has been working in the field of rural livelihoods for over 15 years. After his graduation in mechanical engineering from NIT Surat, he worked briefly for General Motors. To pursue his journey in rural development, he did masters from IRMA and graduated as a gold medalist. He is an 'Unusual Pioneer Fellow' and Acumen Regional Fellow'. He is currently working with Tata Trusts as Zonal Head for North India.",
       "status": "CURRENT",
+      "imageUrl": "https://vm-chariariitb.joyisyou.com/scholar-images/shardagautam.jpeg",
+      "socialLinks": [
+        { "platform": "LINKEDIN", "url": "https://www.linkedin.com/in/shardagautam" }
+      ],
       "sourceUrl": "https://vm-chariariitb.joyisyou.com/joylab/overview"
     },
     {
       "name": "Biren Vora",
       "programme": "Ph.D.",
+      "biography": "Biren Vora completed his M.Tech in Chemical Engineering from IIT Madras & thereafter went on to work for several organizations for over 3 decades. More recently, he worked on-the-ground in several villages in Kachchh District on the subject of ensuring water security. He founded Ekaagra Social & Microfinance Foundation, which has implemented projects in rural areas covering water security & education. He is currently Professor-of-Practice at Navrachana University, Vadodara.",
       "status": "CURRENT",
+      "imageUrl": "https://vm-chariariitb.joyisyou.com/scholar-images/biren.jpg",
+      "socialLinks": [
+        { "platform": "LINKEDIN", "url": "https://www.linkedin.com/in/birenvora/" }
+      ],
       "sourceUrl": "https://vm-chariariitb.joyisyou.com/joylab/overview"
     },
     {
       "name": "Nalini Murugesan",
       "programme": "Ph.D.",
+      "biography": "Nalini Murugesan is an Architect, Industrial Designer, Design Educator, and Entrepreneur with over 12 years of experience across design, enterprise, education, and culture. Her multidisciplinary journey spans 100+ retail projects, including large-scale GAP shop-in-shop rollouts, alongside the evolution of a five-decade-old family printing and manufacturing enterprise through design, branding, lean production, and customised solutions. Her work has also extended into publishing and knowledge sharing, bringing together creativity, craftsmanship, people, and ideas. At the heart of her practice is a belief in preserving what is valuable, nurturing people and ideas, and finding meaningful connections between the things we create and the lives they touch.",
       "status": "CURRENT",
+      "imageUrl": "https://vm-chariariitb.joyisyou.com/scholar-images/nalini.jpg",
+      "socialLinks": [
+        { "platform": "LINKEDIN", "url": "https://www.linkedin.com/in/nalini-murugesan-464abb10" }
+      ],
       "sourceUrl": "https://vm-chariariitb.joyisyou.com/joylab/overview"
     },
     {
       "name": "Anagha Shirdade",
       "programme": "Ph.D.",
+      "biography": "Anagha Shirdade is an architect by training and a certified Design Thinking and Innovation professional from IIT Delhi. She is a results-driven professional with a proven track record of transforming brands and spaces through innovative design, strategic execution, and seamless project management. As a founding member of Taco Bell India, played a key role in its expansion from 1 to 140 restaurants across the country. Additionally, with Yum India, led the design and execution for the expansion of KFC and Pizza Hut stores pan-India. She also contributed to flagship real estate developments with DLF, including Cyber City and Cyber Hub, ensuring seamless execution of large-scale commercial projects. Her expertise spans end-to-end project execution with a focus on quality, efficiency, and innovation and key strengths include brand strategy, customer-centric design, scalable rollout templates, and cost optimization. Proven ability to drive expansion, streamline processes, and maximize value through strategic planning and efficient execution.",
       "status": "CURRENT",
+      "imageUrl": "https://vm-chariariitb.joyisyou.com/scholar-images/anagha.jpg",
       "sourceUrl": "https://vm-chariariitb.joyisyou.com/joylab/overview"
     }
   ],
@@ -1010,7 +1031,7 @@
     "Publication entries are transcribed from visible category cards, not from the previous CV. Items marked under review/expected, repeated-title metadata conflicts, and two publisher-confirmed retractions are withheld in the companion evidence file.",
     "Bibliographic metadata follows the faculty website; it has not been independently certified by every publisher.",
     "The site links five course plans. Two have detailed content but no dated teaching assignment; three say their syllabus is being compiled. No current or previous delivery is inferred; course plans remain in the source evidence only.",
-    "Only four names explicitly listed as doctoral scholars on JoyLab are imported. No student topics, graduation years or alumni are inferred from the previous source.",
+    "Only four names explicitly listed as doctoral scholars on JoyLab are imported. Their photos and the three LinkedIn links explicitly listed on the page are included; no social link is listed for Anagha Shirdade. No student topics, graduation years or alumni are inferred from the previous source.",
     "Five granted patents use the certificate titles, numbers and dates. Older application entries duplicating these grants are not duplicated. In-process applications without a number remain withheld.",
     "The original accounts, portraits, visibility and faculty directory order are preserved."
   ]

@@ -1,20 +1,29 @@
 # Backend setup and operation
 
-## First setup on a fresh development database
+## First setup on a fresh local development database
 
 1. Use Node.js 22.12+ and run `npm ci`.
-2. Copy `.env.example` to `.env.local` and supply Neon pooled `DATABASE_URL`,
-   direct owner `DIRECT_URL`, a random 32+ character `BETTER_AUTH_SECRET`,
-   `BETTER_AUTH_URL`, and the admin email. Keep credentials out of Git and chat.
-3. Start Docker Desktop, run `npm run redis:setup`, then `npm run redis:up`.
+2. Copy `.env.example` to `.env.local`. It points only to the loopback PostgreSQL
+   container and contains no Neon connection. Set a random 32+ character
+   `BETTER_AUTH_SECRET`; keep credentials out of Git and chat.
+3. Start Docker Desktop, run `npm run db:local:up`, `npm run redis:setup`, then
+   `npm run redis:up`.
    This generates a private Redis password and configures `.env.local`. Alternatively,
    supply your own `REDIS_URL` and a unique `REDIS_NAMESPACE`.
-4. Run `npm run db:generate`, `npm run db:migrate`, and `npm run db:seed`.
-5. Run `npm run db:restrict`. This creates `ctiks_app`, replaces the runtime
-   connection, and moves the owner connection into ignored `.env.migrations.local`.
-6. Run `npm run db:verify` and restart the app with `npm run dev`.
-7. Open `/login` using the generated credentials in `.private/admin-credentials.txt`.
+4. Run `npm run db:generate`, `npm run db:local:migrate`, and
+   `npm run db:local:seed`.
+5. Run `npm run dev`.
+6. Open `/login` using the generated credentials in
+   `.private/local-admin-credentials.txt`.
    Store the generated password safely. You can change it on `/admin/security`.
+
+## UAT and production on Neon
+
+Use `.env.uat.example` only as a variable-name template. Store real values in the
+deployment environment or an ignored `.env.uat.local`; never copy them into a
+tracked file. The application must use Neon's pooled `DATABASE_URL`. Run migrations
+and initial provisioning with the direct owner `DIRECT_URL`, then run
+`npm run db:restrict` and `npm run db:verify` as described below.
 
 Seed imports the existing 13 faculty records once. Existing profiles and admin
 credentials are not overwritten on reruns. Start new deployments on a deliberately
@@ -203,6 +212,8 @@ npm test
 npm run typecheck
 npm run lint
 npm run test:integration
+npx playwright install chromium  # one-time browser setup for this machine
+npm run test:browser
 npm run db:verify
 npm run build
 ```
@@ -214,6 +225,9 @@ modify the real admin or faculty records. The namespace is dropped in cleanup.
 They need owner access and should only run against development infrastructure.
 Only their generated schema and key prefix are removed during cleanup; Redis is
 never flushed. Logs/results are in ignored `.private/`; generated test build files are ignored.
+The browser command runs those same isolated integration checks plus headless Chromium
+UI flows for admin faculty create/edit/show/hide/delete and professor draft/reload,
+research-area add/remove, and publish behavior.
 
 ## Production preparation
 

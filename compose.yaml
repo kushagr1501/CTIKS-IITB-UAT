@@ -1,5 +1,21 @@
 name: ctiks-web
 services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ctiks_dev
+      POSTGRES_USER: ctiks_dev
+      POSTGRES_PASSWORD: ctiks_dev_local_only
+    ports:
+      - '127.0.0.1:15432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U ctiks_dev -d ctiks_dev']
+      interval: 5s
+      timeout: 3s
+      retries: 10
   redis:
     image: redis:8.2-alpine
     command: [redis-server, /usr/local/etc/redis/redis.conf]
@@ -21,4 +37,5 @@ secrets:
   redis_credentials:
     file: ./.private/redis-credentials.conf
 volumes:
+  postgres-data:
   redis-data:

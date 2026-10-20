@@ -25,7 +25,9 @@ try {
   const existing = await database.user.findFirst({ where: { role: 'ADMIN' } });
   let adminId = existing?.id;
   if (!existing) {
-    const credentialsFile = resolve('.private/admin-credentials.txt');
+    const credentialsFile = resolve(
+      process.env.ADMIN_CREDENTIALS_FILE ?? '.private/admin-credentials.txt',
+    );
     try {
       await access(credentialsFile);
       throw new Error('A credential file already exists; inspect setup before creating another admin.');
@@ -65,9 +67,7 @@ try {
       `Login: http://127.0.0.1:3000/login\nEmail: ${email}\nPassword: ${password}\n\nStore this password safely. You can change it on /admin/security. This file is ignored by Git.\n`,
       { mode: 0o600 },
     );
-    console.log(
-      'Admin created. Credentials saved to .private/admin-credentials.txt; password omitted from logs.',
-    );
+    console.log(`Admin created. Credentials saved to ${credentialsFile}; password omitted from logs.`);
   } else console.log('An admin already exists; its credentials were not changed.');
 
   const faculty = [

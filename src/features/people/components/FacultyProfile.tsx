@@ -88,7 +88,17 @@ function StudentCard({ student }: { student: Student }) {
               {period && <span className={styles.period}>{period}</span>}
             </div>
           )}
-          {student.researchTopic && <p className={styles.prose}>{student.researchTopic}</p>}
+          {(student.biography || student.researchTopic) && (
+            <details className={studentStyles.more}>
+              <summary>Read bio and research</summary>
+              {student.biography && <p>{student.biography}</p>}
+              {student.researchTopic && (
+                <p>
+                  <strong>Research:</strong> {student.researchTopic}
+                </p>
+              )}
+            </details>
+          )}
           {links.length > 0 && (
             <ul className={studentStyles.links} aria-label={`Links for ${student.name}`}>
               {links.map((link) => (
@@ -375,7 +385,9 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
               {(profile.publicEmail || website) && (
                 <div className={styles.headerLinks}>
                   {website && <ExternalLink url={website}>Personal website</ExternalLink>}
-                  {profile.publicEmail && <a href={`mailto:${profile.publicEmail}`}>Email</a>}
+                  {profile.publicEmail && (
+                    <a href={`mailto:${profile.publicEmail}`}>{profile.publicEmail}</a>
+                  )}
                 </div>
               )}
             </div>

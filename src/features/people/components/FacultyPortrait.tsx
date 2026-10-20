@@ -19,11 +19,11 @@ const STYLES = {
     height: 203,
   },
   round: {
-    image: 'h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-full object-cover shadow-sm',
+    image: 'h-20 w-20 sm:h-[104px] sm:w-[104px] shrink-0 rounded-full object-cover shadow-sm',
     fallback:
-      'h-20 w-20 sm:h-24 sm:w-24 shrink-0 rounded-full bg-[#f2ede4] border border-[#e2d8c6] flex items-center justify-center text-ctiks-maroon font-display text-xl font-bold shadow-sm',
-    width: 96,
-    height: 96,
+      'h-20 w-20 sm:h-[104px] sm:w-[104px] shrink-0 rounded-full bg-[#f2ede4] border border-[#e2d8c6] flex items-center justify-center text-ctiks-maroon font-display text-xl font-bold shadow-sm',
+    width: 104,
+    height: 104,
   },
 };
 

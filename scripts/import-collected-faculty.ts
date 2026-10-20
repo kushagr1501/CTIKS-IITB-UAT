@@ -78,6 +78,7 @@ const collectionSchema = z
         ...provenance,
         name: z.string().min(1),
         programme: text,
+        biography: text,
         researchTopic: text,
         supervisionRole: text,
         periodText: text,

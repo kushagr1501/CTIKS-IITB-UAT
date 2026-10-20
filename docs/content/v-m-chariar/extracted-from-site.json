@@ -1,0 +1,810 @@
+{
+  "awards": [
+    "Titan Design Impact Award for Zerodor Waterless Urinals, 2020",
+    "Grand Jury Member, FICCI India Sanitation Coalition Awards, 2017",
+    "Adjunct Faculty, GIOS, Arizona State University, 2017",
+    "Top 25 Innovative Startups by IIT Delhi Alumni Association, 2015",
+    "NextBig100 Company Award for Ekam Eco Solutions from The Hay Group, 2015",
+    "Senior Sustainability Fellow, GIOS, Arizona State University, 2015 - 2020",
+    "Member, National Task Force Rural Housing, Ministry of Rural Dev, GoI, 2014 - 2019",
+    "Millennium Alliance Award 2014 instituted by FICCI, USAID, Govt of India",
+    "DST Lockheed Martin India Innovates Growth Programme Award 2014",
+    "PEER Science Awardee, National Academy of Sciences & USAID, 2013",
+    "Member, Global Phosphorous Research Network, 2012 - 2017 at Arizona State University",
+    "Fulbright Senior Scholar, Arizona State University, USA, 2012",
+    "Teaching Excellence Award, Indian Institute of Technology Delhi, 2011",
+    "Member, Committee on Rural Housing, Ministry of Rural Dev, GoI, 2011 - 2015",
+    "Member, Innovation Council, Min of Drinking Water & Sanitation, GoI, 2010 - 2015",
+    "Jury Member, Manthan Digital Empowerment Awards, 2008",
+    "KVIC Golden Jubilee Award for Rural Industrialization Innovations, 2007",
+    "Research Associate, Council of Scientific and Industrial Research, Govt of India, 1998",
+    "Young Scientist Award, Forum of Scientists for Peace & Development, 1997"
+  ],
+  "education": [
+    "PhD, 1998, Experimental Solid State Physics, Indian Institute of Technology Delhi",
+    "M.Tech., 1993, Solid State Materials, Indian Institute of Technology Delhi",
+    "M.Sc., 1991, Physics, Indian Institute of Technology Bombay",
+    "B.Sc., 1989, Physics, University of Bombay"
+  ],
+  "profExp": [
+    "Co-Founder, JoyIsYou, 2019 - Present",
+    "Independent Director, Maganese Ore India Ltd, 2017 - 2020",
+    "Member, National Task Force Rural Housing, Ministry of Rural Development, 2014",
+    "Chairman, Ekam Eco Solutions, 2013 - Present",
+    "Member, Global Phosphorous Research Network, Arizona State University, 2012 - 2017",
+    "Member, Empowered Committee on Rural Housing, 2011",
+    "Member, Sectoral Innovation Council, Ministry of Drinking Water & Sanitation, 2010"
+  ],
+  "acadPositions": [
+    "Professor (HAG), Centre for Traditional Indian Knowledge and Skills, IIT Bombay, 2026 - Present (On Lien)",
+    "Professor (HAG), Centre for Rural Development & Technology, IIT Delhi, 2024 - 2026",
+    "Professor, Centre for Rural Development and Technology (CRDT), IIT Delhi, 2017 - 2024",
+    "Guest Faculty, Department of Design, Anant National University, 2018 - 2019",
+    "Guest Faculty, Department of Design, School of Planning & Architecture, 2018 - 2019",
+    "Associate Professor, CRDT, IIT Delhi, 2010 - 2017",
+    "Fulbright Visiting Faculty, Arizona State University, USA, 2012 - 2013",
+    "Assistant Professor, CRDT, IIT Delhi, 2005 - 2010",
+    "Assistant Professor, Department for Humanities and Social Sciences, IIT Kharagpur, 2003 - 2005",
+    "Lecturer, Physics Group, BITS Pilani, 2002 - 2003",
+    "Research Associate, NISTADS, New Delhi, 1998 - 2000"
+  ],
+  "patentsGranted": [
+    {
+      "number": "605115",
+      "granted": "06 Oct 2026",
+      "url": "/assets/Patent%20with%20Amruta%20Khairnar-B8EQJSRj.pdf",
+      "cover": "/patents/patent-amruta-khairnar.png"
+    },
+    {
+      "number": "342247",
+      "granted": "22 Jul 2020",
+      "url": "/assets/VMC%20Patent%20Certificate%20342247-BaLwAtSX.pdf",
+      "cover": "/patents/patent-342247.png"
+    },
+    {
+      "number": "352065",
+      "granted": "24 Nov 2020",
+      "url": "/assets/VMC%20Patent%20Certificate%20352065-B7G9gmSq.pdf",
+      "cover": "/patents/patent-352065.png"
+    },
+    {
+      "number": "584853",
+      "granted": "25 Mar 2026",
+      "url": "/assets/VMC%20_%20Amruta%20Patent-khSXTcs7.pdf",
+      "cover": "/patents/patent-amruta.png"
+    },
+    {
+      "number": "508965",
+      "granted": "09 Feb 2024",
+      "url": "/assets/VMC%20_%20KAPIL%20Patent%202024-C22BRtx5.pdf",
+      "cover": "/patents/patent-kapil.png"
+    }
+  ],
+  "patentsInProcess": [
+    {
+      "title": "Portable Self Digesting Sanitation System with RFID Forestation Device",
+      "authors": "V M Chariar & Partha Pratim Das",
+      "detail": ", In Process"
+    },
+    {
+      "title": "Integrated Arrangement of Bathing station cum Urine Separation Toilet for Space Saving and Resource Conservation",
+      "authors": "V M Chariar & Amruta Khairnar",
+      "detail": ", In Process"
+    },
+    {
+      "title": "Sensor based non-invasive system and method for cortisol level measurement",
+      "authors": "V M Chariar & Chandramani Sharma",
+      "detail": "-, In Process"
+    },
+    {
+      "title": "A system facilitating Health Monitoring & a Method Thereof",
+      "authors": "V M Chariar, Chandra Mani Sharma & Kapil Tomar",
+      "detail": "Indian Patent Application No 202111049455, 28 October 2021"
+    },
+    {
+      "title": "Mobile System for Processing Organic Waste Matter",
+      "authors": "V M Chariar & Amruta Khairnar",
+      "detail": "Application No 202111042002 Temp/E-1/47369/2021-DEL, 16 September 2021"
+    },
+    {
+      "title": "A device for the removal and recovery of ammonium and phosphate ions from aqueous solutions, and method of preparation thereof",
+      "authors": "V M Chariar & Md Azizur Rahman",
+      "detail": "Application No 201811039657A, Filed on 19-10-2018 & Published on 24-04-2020"
+    },
+    {
+      "title": "An apparatus for the treatment of Bamboo",
+      "authors": "V M Chariar & Naresh Kr Sharma",
+      "detail": "Application No 201811039658A, Filed on 19-10-2018 & Published on 24-04-2020"
+    },
+    {
+      "title": "Novel Toilet Design for separation of urine from faeces",
+      "authors": "V M Chariar and S Ramesh Sakthivel (2012)",
+      "detail": "Indian Patent No.: 342247, 22 July 2020"
+    },
+    {
+      "title": "An odour prevention device",
+      "authors": "V M Chariar and S Ramesh Sakthivel (2010)",
+      "detail": "Indian Patent No 352065, 24 November 2020"
+    }
+  ],
+  "journals": [
+    {
+      "title": "Potential of areca sheath waste as a sustainable ruminant feed—a review",
+      "authors": "Prasannakumaran KM, Sahu J K, V M Chariar",
+      "journal": "Frontiers in Sustainable Food Systems",
+      "year": "2026"
+    },
+    {
+      "title": "Assessing livelihood vulnerability to climate change in rural India",
+      "authors": "Kyawt Yin Min Thein, V M Chariar, Vivek Kumar, Takuji W Tsusaka",
+      "journal": "World Development Sustainability",
+      "year": "2025"
+    },
+    {
+      "title": "Areca sheath industrial waste valorization: resource mapping, physiochemical parameters, and heavy metal analysis",
+      "authors": "K M Prasannakumaran, M A Bareen, J K Sahu, V M Chariar",
+      "journal": "Biomass Conversion and Biorefinery",
+      "year": "2025"
+    },
+    {
+      "title": "Reducing the Farmers' Vulnerability through Conservation Agriculture Farming Practices for Livelihood Improvement in Myanmar",
+      "authors": "Kyawt Yin Min Thein, V M Chariar, Vivek Kumar",
+      "journal": "International Journal of Science and Research",
+      "year": "2024"
+    },
+    {
+      "title": "Impact of Conservation Agriculture Techniques on Community Livelihoods in the Central Dryzone of Myanmar",
+      "authors": "Kyawt Yin Min Thein, Chandramani Sharma, V M Chariar, Vivek Kumar",
+      "journal": "Qeios",
+      "year": "2024"
+    },
+    {
+      "title": "Evolving sustainable built environment: A paradigm shift to Regenerative Design",
+      "authors": "Parvesh Kumar, V M Chariar, C Kabre",
+      "journal": "SPACE Journal of School of Planning and Architecture",
+      "year": "2024"
+    },
+    {
+      "title": "Diagnosis of mental disorders using machine learning: Literature review and bibliometric mapping from 2012 to 2023",
+      "authors": "C M Sharma, V M Chariar",
+      "journal": "Heliyon",
+      "year": "2024"
+    },
+    {
+      "title": "EEG-based emotion classification using deep learning: Approaches, trends and bibliometrics",
+      "authors": "A Tathgir, C M Sharma, V M Chariar",
+      "journal": "Qeios",
+      "year": "2024"
+    },
+    {
+      "title": "A machine learning-based risk prediction model during pregnancy in low-resource settings",
+      "authors": "K Tomar, C M Sharma, T Prasad, V M Chariar",
+      "journal": "Medical Sciences Forum",
+      "year": "2024"
+    },
+    {
+      "title": "Impacts of environmental factors on maternal health in low resource settings",
+      "authors": "K Tomar, C M Sharma, P Sharma, D Gupta, V M Chariar",
+      "journal": "E3S Web of Conferences",
+      "year": "2024"
+    },
+    {
+      "title": "Optimized support vector machines for detection of mental disorders",
+      "authors": "C M Sharma, V M Chariar, K Y M Thein",
+      "journal": "Artificial Intelligence in Healthcare",
+      "year": "2024"
+    },
+    {
+      "title": "Review and content analysis of textual expressions as a marker for depressive and anxiety disorders detection using machine learning",
+      "authors": "C M Sharma, D Damani, V M Chariar",
+      "journal": "Discover Artificial Intelligence",
+      "year": "2023"
+    },
+    {
+      "title": "A machine learning-based prediction model for high-risk pregnancy in rural India",
+      "authors": "K Tomar, C M Sharma, V M Chariar",
+      "journal": "Medical Sciences Forum",
+      "year": "2023"
+    },
+    {
+      "title": "The Evolving Sanitation Entrepreneurial Ecosystem: A Bibliometric and Content Analysis of Global Trends and Future Research",
+      "authors": "Shivani, V M Chariar, Rishi Kant Kumar, Sameer Shukla, Kumod Kumar",
+      "journal": "International Journal of e-Government Research",
+      "year": "2023"
+    },
+    {
+      "title": "Addressing the dual burden of malnutrition: A review of double duty actions and multifaceted approaches",
+      "authors": "Namrata Tyagi, V M Chariar",
+      "journal": "Nutrition Reviews",
+      "year": "2023",
+      "underReview": true
+    },
+    {
+      "title": "Potential utilization of Areca Sheath waste as livestock fodder resources: A Review",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar",
+      "journal": "Natural Resources Forum",
+      "year": "2023",
+      "underReview": true
+    },
+    {
+      "title": "Global Trends and Future Research in the Sanitation Entrepreneurial Ecosystem: A Bibliometric and Content Analysis",
+      "authors": "Shivani, V M Chariar",
+      "journal": "International Journal of Consumer Studies",
+      "year": "2022",
+      "underReview": true
+    },
+    {
+      "title": "EEG-based Multimodal Affective State Classification using Bio-inspired Feature Selection and Deep Learning",
+      "authors": "C M Sharma, V M Chariar",
+      "journal": "Journal of Neuroscience Informatics",
+      "year": "2023",
+      "underReview": true
+    },
+    {
+      "title": "Evaluation of Machine Learning Approaches for the Accurate Detection of Depression, Anxiety, and Stress (DAS) Disorders",
+      "authors": "C M Sharma, Anjolie Jain & V M Chariar",
+      "journal": "Journal of Affective Disorders",
+      "year": "2023",
+      "underReview": true
+    },
+    {
+      "title": "BIOCENOSIS: a novel framework for sustainability assessment of built environment in the Indian context",
+      "authors": "P Kumar, V M Chariar, C Kabre",
+      "journal": "Sādhanā",
+      "year": "2023"
+    },
+    {
+      "title": "Sustainable Technical Debt-Aware Computing Model for Virtual Machine Migration (TD4VM) in IaaS Cloud",
+      "authors": "A Vashistha, Chandra Mani Sharma, RP Mahapatra, V M Chariar, N Sharma",
+      "journal": "J. Wireless Communications and Mobile Computing",
+      "year": "2022"
+    },
+    {
+      "title": "Learning from Habitat Reconstruction Initiatives—New Approach for Reducing Vulnerability of Rural Housing in India",
+      "authors": "M C Anand, T Sinsupan, S Madurapperuma, V M Chariar",
+      "journal": "Sustainability",
+      "year": "2022"
+    },
+    {
+      "title": "Lung Disease Classification in CXR Images using Hybrid Inception-ResNet-v2 Model and Edge Computing",
+      "authors": "C M Sharma, L Goyal, V M Chariar, N Sharma",
+      "journal": "Journal of Healthcare Engineering",
+      "year": "2022"
+    },
+    {
+      "title": "Recovery of phosphorus from stored urine using continuous flow reactor in decentralised level operations",
+      "authors": "S. Ramesh Sakthivel, Md Azizur Rahman, V. Ganesh Prabhu, V M Chariar",
+      "journal": "Blue-Green Systems",
+      "year": "2020"
+    },
+    {
+      "title": "Performance evaluation of a low-cost odour trap installed in waterless urinals",
+      "authors": "S. Ramesh Sakthivel, Md Azizur Rahman, V. Ganesh Prabhu, V M Chariar",
+      "journal": "Journal of Water Sanitation and Hygiene for Development",
+      "year": "2016"
+    },
+    {
+      "title": "Values constructs and Relevance for Product Design",
+      "authors": "Sutapa Pati, V M Chariar, Lalit Kumar Das",
+      "journal": "Journal of Technology and Society",
+      "year": "2016",
+      "underReview": true
+    },
+    {
+      "title": "Process Optimization for Sequential Recovery of N, P, K from Human Urine",
+      "authors": "Md Azizur Rahman, Ramesh Sakthivel, V M Chariar",
+      "journal": "South Asian Journal of Experimental Biology",
+      "year": "2015"
+    },
+    {
+      "title": "Optimization of Urea Hydrolysis from Human Urine and Efficacy Comparison of Different Experimental Designs",
+      "authors": "Md Azizur Rahman and V M Chariar",
+      "journal": "International Journal of Environmental Sciences",
+      "year": "2015"
+    },
+    {
+      "title": "Study of Acceptance of Human Urine by Indian Farmers as a Soil Conditioner and Water Source",
+      "authors": "Md Azizur Rahman, Vijayaraghavan M. Chariar",
+      "journal": "International Journal of Tropical Agriculture",
+      "year": "2015"
+    },
+    {
+      "title": "Eco-friendly Flame Retardant Treatments for Cellulosic Green Building Materials",
+      "authors": "Naresh Kr Sharma, C S Verma, Vijayaraghavan M Chariar, Rajendra Prasad",
+      "journal": "Journal of Indoor and Built Environment",
+      "year": "2015"
+    },
+    {
+      "title": "Impact of fire on Dendrocalamus strictus - a natural green composite building material",
+      "authors": "Naresh Kr Sharma, Vijayaraghavan M Chariar, Rajendra Prasad",
+      "journal": "Journal of Indoor and Built Environment",
+      "year": "2014"
+    },
+    {
+      "title": "Comparative Study of Mechanical Properties of Bamboo Laminae and Their Laminates With Woods and Wood Based Composites",
+      "authors": "Chandra S Verma, V M Chariar",
+      "journal": "Transactions of the VŠB - Technical University of Ostrava, Civil Engineering Series",
+      "year": "2014"
+    },
+    {
+      "title": "Techno-Economic Assessment of Ecosan Inspired Technologies for Recovery of Nutrients from Human Urine for Ecological Sanitation",
+      "authors": "Md Azizur Rahman, S Ramesh Sakthivel, V M Chariar",
+      "journal": "International Journal of Environmental Sciences",
+      "year": "2014"
+    },
+    {
+      "title": "Techno-Economic Assessment of Nutrient Recovery Processes from Human Urine",
+      "authors": "Md Azizur Rahman, Ramesh Sakthivel, V M Chariar",
+      "journal": "International Journal of Environmental Sciences",
+      "year": "2014"
+    },
+    {
+      "title": "Comparative Study of Mechanical Properties of Bamboo Laminae and their Laminates with Woods and Wood based Composites",
+      "authors": "C S Verma, Naresh Kr Sharma, Vijayaraghavan M Chariar, S Maheshwari, M K Hada",
+      "journal": "Journal of Composite Part: B, Composites: Part B",
+      "year": "2014"
+    },
+    {
+      "title": "A Validated Citizen-Centric Approach using Delphi Technique For Converging Indigenous Knowledge Systems using ICT",
+      "authors": "Charru Malhotra, V M Chariar, L K Das",
+      "journal": "International Journal of e-Government Research (IJEGR)",
+      "year": "2014"
+    },
+    {
+      "title": "Stiffness and strength analysis of four layered laminate bamboo composite at macroscopic scale",
+      "authors": "C S Verma, V M Chariar",
+      "journal": "Composites: Part B",
+      "year": "2013"
+    },
+    {
+      "title": "Study of some mechanical properties of bamboo laminae",
+      "authors": "C S Verma, V M Chariar",
+      "journal": "International journal of metallurgical & material science and engineering",
+      "year": "2012"
+    },
+    {
+      "title": "Macro mechanical analysis of bamboo lamina",
+      "authors": "C S Verma, V M Chariar, R Purohit",
+      "journal": "International journal of chemical and petrochemical technology",
+      "year": "2012"
+    },
+    {
+      "title": "Development of layered laminate bamboo composite and their mechanical properties",
+      "authors": "C S Verma, V M Chariar",
+      "journal": "Composites Part B",
+      "year": "2012"
+    },
+    {
+      "title": "Tensile Strength Analysis of bamboo and Layered Laminate Bamboo composites",
+      "authors": "C S Verma, V M Chariar, R Purohit",
+      "journal": "International Journal of Engineering Research and Applications",
+      "year": "2012"
+    },
+    {
+      "title": "Cleavage analysis of Bamboo : a natural composite",
+      "authors": "C S Verma, V M Chariar, R Purohit",
+      "journal": "International Journal of Engineering Research and Applications",
+      "year": "2012"
+    },
+    {
+      "title": "User Centered Design Model (G2C2G) for Rural e-Governance Projects",
+      "authors": "Charru Malhotra, Vijayaraghavan M. Chariar, Lalit K. Das",
+      "journal": "International Journal of Electronic Governance",
+      "year": "2009"
+    },
+    {
+      "title": "Tikamgarh ke Talaab",
+      "authors": "Krishna Gandhi, Sunanda Kirtane, V M Chariar",
+      "journal": "Jigyase, IIT Delhi",
+      "year": "2005"
+    },
+    {
+      "title": "Structural and electrical characterization of sol-gel processed PLZT thin films",
+      "authors": "Vijayaraghavan Chariar, A.K. Tripathi, T.C. Goel, R.G. Mendiratta",
+      "journal": "IEEE Trans. on Dielectrics and Electrical Insulation",
+      "year": "1999"
+    },
+    {
+      "title": "Characterization of transparent polyimide: PLZT composites prepared by a modified sol-gel method",
+      "authors": "Vijayaraghavan Chariar, A.K. Tripathi, T.C. Goel, R.G. Mendiratta, P.K.C. Pillai & K. Dutta",
+      "journal": "Ferroelectrics",
+      "year": "1996"
+    },
+    {
+      "title": "Effect of addition of Zn on the electronic conduction properties of semiconducting Se80-x Te20 Znx glasses",
+      "authors": "R.S. Kundu, K.L. Bhatia, N. Kishore, P. Singh & Vijayaraghavan Chariar",
+      "journal": "Phil. Mag. B",
+      "year": "1995"
+    },
+    {
+      "title": "Preparation and characterization of spray pyrolysed BaTiO3 thin films",
+      "authors": "A.K. Tripathi, Vijayaraghavan Chariar, T.C. Goel & P.K.C. Pillai",
+      "journal": "Materials Science and Engineering B",
+      "year": "1994"
+    },
+    {
+      "title": "Dielectric and pyroelectric properties of Gadolinium doped PZT",
+      "authors": "H.D. Sharma, A. K. Tripathi, Vijayaraghavan Chariar, T.C. Goel & P.K.C. Pillai",
+      "journal": "Materials Science and Engineering B",
+      "year": "1994"
+    }
+  ],
+  "conferences": [
+    {
+      "title": "Integrating regenerative design with adaptive thermal comfort: insights for sustainable rural housing in India's composite climate",
+      "authors": "P Kumar, V M Chariar, C Kabre",
+      "journal": "Building Technology Educators Society (BTES) 10th Conference, Chicago Illinois, USA",
+      "year": "2025"
+    },
+    {
+      "title": "Engineering, Functional, and Gas Kinetic Properties of Areca Sheath Waste Pellets for Digestibility and Methane Evaluation in Ruminants",
+      "authors": "J K Sahu, V M Chariar",
+      "journal": "31st ICFoST, NIFTEM-T, Thanjavur, Tamil Nadu, India",
+      "year": "2025"
+    },
+    {
+      "title": "Advancing sustainable circular economy: Valorisation of areca sheath waste for sustainable livestock business models",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar",
+      "journal": "International Conference on Sustainable Management Strategies for India's Future, IIM Kashipur & Brunel University of London",
+      "year": "2025"
+    },
+    {
+      "title": "Environmental and Economic Impacts of Feed Additives in areca sheath-based pellets: Optimizing gas production, Digestability and methane reduction",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar, C Kabre",
+      "journal": "4th Food Chemistry Conference, Glasgow, Scotland",
+      "year": "2025"
+    },
+    {
+      "title": "Sustainable valorisation of areca sheath waste for enhanced pelleting efficiency and feed quality",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar",
+      "journal": "ICSTEEH, VIT Vellore",
+      "year": "2025"
+    },
+    {
+      "title": "Areca Sheath waste (ASW) positively impacts the pelletization process and Physical quality of livestock feed pellets",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar",
+      "journal": "IUFOST 2024, Rimini, Italy",
+      "year": "2024"
+    },
+    {
+      "title": "Understanding the Socio-Economic Dynamics of Rural Households: Challenges Faced in the Adoption of Climate-Smart Practices in India and Myanmar",
+      "authors": "Kyawt Yin Min Thein, V M Chariar, Vivek Kumar",
+      "journal": "IAFOR Conference",
+      "year": "2024"
+    },
+    {
+      "title": "Impacts of Environmental Factors on Maternal Health in Low Resource Settings",
+      "authors": "K Tomar, C M Sharma, V M Chariar",
+      "journal": "6th ICRES, Bangkok, Thailand",
+      "year": "2024"
+    },
+    {
+      "title": "Cultivating Sustainability: Repurposing Residues from Areca sheath-based Industries for the Progressive Production of Nutrient-Rich Pellets for Livestock Feed",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar",
+      "journal": "5th International Conference on Advances in Mechanical Engineering (ICAME), SRM Institute of Science and Technology, Kattankulathur",
+      "year": "2024"
+    },
+    {
+      "title": "Areca Sheath Waste Underutilized Entrepreneurial Resource - Investigating Its Generation, Concept, and 3R Based Utilization Strategies",
+      "authors": "K M Prasannakumaran, J K Sahu, V M Chariar",
+      "journal": "International Conference on Waste Management - Recycle 2023, IIT Guwahati, Assam",
+      "year": "2023"
+    },
+    {
+      "title": "An Integrative Framework for Better Mental Healthcare in Low-Resource Settings (MHLRS)",
+      "authors": "C M Sharma, Kyawt Yin Min Thein, K Tomar, V M Chariar",
+      "journal": "International One Health Conference, Barcelona, Spain",
+      "year": "2023"
+    },
+    {
+      "title": "DepHindiNet: Multiple Attention Bi-LSTM Deep Network for Depression Detection from Hindi Text Scripts",
+      "authors": "C M Sharma, Kyawt Yin Min Thein, M Sharma, K Tomar, V M Chariar",
+      "journal": "4th ICoSHIP 2023, Surabaya, Indonesia",
+      "year": "2023"
+    },
+    {
+      "title": "Farmers Vulnerability Reduction Model and Wellbeing Framework",
+      "authors": "Kyawt Yin Min Thein, C M Sharma, V M Chariar, Vivek Kumar",
+      "journal": "International One Health Conference, Barcelona, Spain",
+      "year": "2023"
+    },
+    {
+      "title": "A Machine Learning Based Prediction Model for High-Risk Pregnancy in Rural India",
+      "authors": "K Tomar, C M Sharma, V M Chariar",
+      "journal": "4th ICoSHOP 2023, Surabaya, Indonesia",
+      "year": "2023"
+    },
+    {
+      "title": "Leveraging circular business models to promote sustainable sanitation: A review of Indian policy and entrepreneurship",
+      "authors": "Shivani, Prasannakumaran K M, V M Chariar",
+      "journal": "4th International Conference on Waste Management 2023, IIT Guwahati",
+      "year": "2023"
+    },
+    {
+      "title": "Areca sheath waste: Underutilised entrepreneurial resources",
+      "authors": "Prasannakumaran K M, J K Sahu & V M Chariar",
+      "journal": "4th International Conference on Waste Management 2023, IIT Guwahati",
+      "year": "2023"
+    },
+    {
+      "title": "Emotion Analysis of News and Social Media Text for Stock Price Prediction using SVM-LSTM-GRU Composite Model",
+      "authors": "R. Kumar, C M Sharma, V M Chariar et al.",
+      "journal": "IEEE Int Conference on Computational Intelligence and Sustainable Engineering Solutions, pp. 329-333",
+      "year": "2022"
+    },
+    {
+      "title": "Indian Sign Language Recognition Using Fine-tuned Deep Transfer Learning Model",
+      "authors": "Chandra Mani Sharma, Kapil Tomar, R K Mishra, V M Chariar",
+      "journal": "First International Conference on CICICS, pp. 62-67, Jiangxi China",
+      "year": "2021"
+    },
+    {
+      "title": "Classification of Forecasting Methods on the basis of Structure",
+      "authors": "Sugandh Malhotra, L K Das and V M Chariar",
+      "journal": "The Third International Conference on Design Creativity, Bangalore, India",
+      "year": "2015"
+    },
+    {
+      "title": "Design Research Methods for Future Mapping",
+      "authors": "Sugandh Malhotra, L K Das and V M Chariar",
+      "journal": "Sustainability, Technology and Education Conference (STE 2014)",
+      "year": "2014"
+    },
+    {
+      "title": "बांस (Dendrocalamus strictus) के धरातल एवं अतिरेणी गुणों की जाँच",
+      "authors": "नरेश कुमार शर्मा, वी एम चारियर, राजेन्द्र प्रसाद",
+      "journal": "DRDO and IIT Delhi, New Delhi",
+      "year": "2013"
+    },
+    {
+      "title": "Plotting against vulnerability - Reflections on the state provision of homestead sites for rural poor in India",
+      "authors": "Mora Chhabra Anand and V M Chariar",
+      "journal": "The Human Security: Humanitarian Perspectives and Responses Conference, Istanbul, Turkey",
+      "year": "2013"
+    },
+    {
+      "title": "Standardisation of Design and Maintenance of DEWATS Plants in India",
+      "authors": "S R Sakthivel, A Seshadri, Md Azizurrahaman, V M Chariar",
+      "journal": "WA Conference on Decentralised Waste Water Management (DEWATS) in Asia, Nagpur, India",
+      "year": "2012"
+    },
+    {
+      "title": "Eliciting Citizens' Participation for Incorporating Contextual Factors in Rural e-Governance Initiative",
+      "authors": "Malhotra Charru, Chariar V M, Das L K and Krishnaswamy Girija",
+      "journal": "ACIS 2011 Proceedings, Paper 23",
+      "year": "2011"
+    },
+    {
+      "title": "Cost effective urinals for schools, institutions and public places",
+      "authors": "S Ramesh Sakthivel, Md Azizur Rahman and V M Chariar",
+      "journal": "Summit on Sustainable Habitat – 3rd International Conference on Modern Bamboo Structures, New Delhi",
+      "year": "2011"
+    },
+    {
+      "title": "Decision support in available urine harvesting technologies: technical and economical analysis",
+      "authors": "Md Azizur Rahman, S Ramesh Sakthivel and V M Chariar",
+      "journal": "Summit on Sustainable Habitat – 3rd International Conference on Modern Bamboo Structures, New Delhi",
+      "year": "2011"
+    },
+    {
+      "title": "Halogen Free treatment procedure for imparting fire retardant to Bamboo",
+      "authors": "Naresh Kr Sharma, Sanjay Kumar and V M Chariar",
+      "journal": "Summit on Sustainable Habitat – 3rd International Conference on Modern Bamboo Structures, New Delhi",
+      "year": "2011"
+    },
+    {
+      "title": "Engineered Bamboo Structural Elements for Housing",
+      "authors": "Sanjay Kumar, Naresh Kr Sharma and V M Chariar",
+      "journal": "Summit on Sustainable Habitat – 3rd International Conference on Modern Bamboo Structures, New Delhi",
+      "year": "2011"
+    },
+    {
+      "title": "Fabrication and testing of various configurations of Engineered Bamboo Structural Elements for deployment as columns and beams",
+      "authors": "Sanjay Kumar, S Ramesh Sakthivel, V M Chariar and P Sudhakar",
+      "journal": "6th International Engineering and Construction Conference (IEC'8), ASCE, Cairo, Egypt",
+      "year": "2010"
+    },
+    {
+      "title": "Waterless urinals for sustainable resource and environmental management",
+      "authors": "M Chariar and S Ramesh Sakthivel",
+      "journal": "International Conference on Water Harvesting, Storage and Conservation, IIT Kanpur",
+      "year": "2009"
+    },
+    {
+      "title": "Performance Comparison of Odour Traps used in Waterless Urinals",
+      "authors": "V M Chariar and S Ramesh Sakthivel",
+      "journal": "National Workshop on Solid and Liquid Waste Management, Thiruvananthapuram, Kerala",
+      "year": "2009"
+    },
+    {
+      "title": "In vitro studies on efficacy of ethnoveterinary anthelmintics on Haemonchus contortus larvae",
+      "authors": "R Gopinath, V M Chariar, S Satya",
+      "journal": "International Summit on Advancing Veterinary Medical care: TANUVAS, Chennai",
+      "year": "2009"
+    },
+    {
+      "title": "In vitro effects of aqueous extract of neem leaves (Azadirachta indica) on the larval mobility of Haemonchus contortus",
+      "authors": "R Gopinath, V M Chariar, S Satya, L N Mathuram, S Ramesh, S Gomathikayam",
+      "journal": "International Summit on Advancing Veterinary Medical care: TANUVAS, Chennai",
+      "year": "2009"
+    },
+    {
+      "title": "Leveraging Technologies for Rural Development: A Case Study of Nanmadi Centres in the villages of Karnataka",
+      "authors": "Charru Malhotra, V M Chariar, L K Das",
+      "journal": "12th National Conference on e-Governance, Goa",
+      "year": "2009"
+    },
+    {
+      "title": "A need for validating ethnoveterinary medicines",
+      "authors": "R Gopinath, V M Chariar, S Satya",
+      "journal": "National Seminar on Rural India Developmental Alternatives, CIRG, Mathura",
+      "year": "2009"
+    },
+    {
+      "title": "ICT as a Tool for Social & Economic Empowerment of Rural Communities",
+      "authors": "Charru Malhotra, V M Chariar, L K Das",
+      "journal": "ICONECS-2007, Digital Empowerment Foundation, New Delhi",
+      "year": "2007"
+    },
+    {
+      "title": "Participatory Approach in design of e-Governance for Rural Development in India",
+      "authors": "Charru Malhotra, V M Chariar, L K Das",
+      "journal": "Asian Regional Training Seminar on e-Government, ENA Paris & IIPA New Delhi",
+      "year": "2007"
+    },
+    {
+      "title": "An Evaluatory Framework For ICT Interventions In the Rural Areas: Review of Literature on E-Governance For Rural Development In The Indian Context",
+      "authors": "Charru Malhotra, V M Chariar, L K Das, and P V Ilavarasan",
+      "journal": "International Conference on Electronic Governance (ICEG2007)",
+      "year": "2007"
+    },
+    {
+      "title": "Ferroelectric thin films: Ceramics and Composites",
+      "authors": "Vijayaraghavan Chariar, A.K. Tripathi, T.C. Goel and R.G. Mendiratta",
+      "journal": "International Conference on Smart Materials, Structures and Systems, IISc Bangalore, pp. 69-72",
+      "year": "1999"
+    },
+    {
+      "title": "Traditional Technologies and their potential for wealth generation",
+      "authors": "D. Narasimha Reddy and Vijayaraghavan Chariar",
+      "journal": "1st Regional Conference on Traditional Sciences and Technologies of AP, Chirala, AP",
+      "year": "1999"
+    },
+    {
+      "title": "Electrical and structural characterization of thin films of La-modified PZT prepared by a sol-gel technique",
+      "authors": "Vijayaraghavan Chariar, P.K.C. Pillai, T.C. Goel and R.G. Mendiratta",
+      "journal": "SPIE Symposium on Smart Materials, Structures and MEMS, IISc Bangalore",
+      "year": "1998"
+    },
+    {
+      "title": "Structural and electrical characterization of films of La-modified Pb (ZrxTr1-x) O3 Prepared by a sol-gel method",
+      "authors": "Vijayaraghavan Chariar, T.C. Goel, P.K.C. Pillai and R.G. Mendiratta",
+      "journal": "9th International Symposium on Electrets (ISE-9), Shanghai",
+      "year": "1996"
+    },
+    {
+      "title": "Characterization of transparent polyimide: PLZT composites prepared by a modified sol-gel method",
+      "authors": "Vijayaraghavan Chariar, A.K. Tripathi, T.C. Goel, R.G. Mendiratta, P.K.C. Pillai and K. Dutta",
+      "journal": "8th European Meeting on Ferroelectricity (EMF-8), University of Nijmegen, Netherlands",
+      "year": "1995"
+    },
+    {
+      "title": "Thermally stimulated discharge current studies in a polymethyl methacrylate-polystyrene blend",
+      "authors": "A. Verma, A.K. Tripathi, Vijayaraghavan Chariar, T.C. Goel and P.K.C. Pillai",
+      "journal": "8th International Symposium on Electrets (ISE-8), Paris",
+      "year": "1994"
+    },
+    {
+      "title": "Preparation of BaTiO3 electroceramics by wet chemical methods",
+      "authors": "Vijayaraghavan Chariar, A.K. Tripathi, A. Verma, T.C. Goel, R.G. Mendiratta and P.K.C. Pillai",
+      "journal": "National Seminar on Materials for Marine applications, Naval Chemical and Metallurgical Laboratory, Bombay",
+      "year": "1994"
+    },
+    {
+      "title": "Pyroelectric studies on spray-pyrolysed PVC-BaTiO3 composites",
+      "authors": "Vijayaraghavan Chariar, A.K. Tripathi, T.C. Goel and P.K.C. Pillai",
+      "journal": "Seventh National Symposium on Ferroelectrics and Dielectrics, NNB Garhwal University, Srinagar",
+      "year": "1992"
+    }
+  ],
+  "techTransfer": [
+    {
+      "title": "Technology of Waterless Urinal Odour Prevention trap",
+      "authors": "V M Chariar",
+      "journal": "Licensed to M/s Ekam Eco Solutions Pvt Ltd, New Delhi, India through FITT, IIT Delhi",
+      "year": "2013"
+    },
+    {
+      "title": "Technology of Waterless Urinal Odour Prevention trap",
+      "authors": "V M Chariar",
+      "journal": "Licensed to M/s Moneyplant Real Estate s Pvt Ltd, Bangalore, India through FITT, IIT Delhi",
+      "year": "2010"
+    },
+    {
+      "title": "Technology of Waterless Urinal Odour Prevention trap",
+      "authors": "V M Chariar",
+      "journal": "Licensed to M/s Environmental Goodyield Technologies Pvt Ltd, Kolkata, India through FITT, IIT Delhi",
+      "year": "2010"
+    }
+  ],
+  "books": [
+    {
+      "title": "Design Thinking and Innovation",
+      "authors": "Vijayaraghavan M Chariar & T Vineet",
+      "journal": "Oxford University Press",
+      "year": "Expected July 2026"
+    },
+    {
+      "title": "Health CoDesign for Community Wellbeing",
+      "authors": "Vijayaraghavan M Chariar & James Oliver",
+      "journal": "Zorba Books, New Delhi",
+      "year": "March 2026"
+    },
+    {
+      "title": "Proceedings of International Conference on Creativity, Innovation and Design",
+      "authors": "Aashima Banker, Shalini and Vijayaraghavan M Chariar",
+      "journal": "Atlantis Publishers",
+      "year": "Expected 2026"
+    },
+    {
+      "title": "Traditional Knowledge Systems",
+      "authors": "Ed. Vijayaraghavan M Chariar",
+      "journal": "Vasudhaiva Kutumbakam, New Delhi",
+      "year": "2015"
+    },
+    {
+      "title": "Ecological Sanitation: Practitioner's Handbook",
+      "authors": "S Ramesh Sakthivel and Vijayaraghavan M Chariar",
+      "journal": "Ministry of Rural Development, Government of India",
+      "year": "2011"
+    },
+    {
+      "title": "Waterless Urinals: A Resource Book",
+      "authors": "Vijayaraghavan M Chariar and S Ramesh Sakthivel",
+      "journal": "IIT Delhi",
+      "year": "2010"
+    },
+    {
+      "title": "Discourses on Aging and Dying",
+      "authors": "Eds. S C Chatterjee, P Patnaik and Vijayaraghavan M Chariar",
+      "journal": "Sage Publishers, New Delhi",
+      "year": "2008"
+    },
+    {
+      "title": "Book of Abstracts and e-Proceedings of the National Conference on Traditional Knowledge Systems of India",
+      "authors": "Eds. Vijayaraghavan M Chariar, V N Giri, P Patnaik",
+      "journal": "IIT Kharagpur",
+      "year": "2004"
+    },
+    {
+      "title": "Recommendations for Rural Technologies",
+      "authors": "Eds. Navjyoti Singh and Vijayaraghavan Chariar",
+      "journal": "CAPART, PPST Foundation",
+      "year": "2000"
+    },
+    {
+      "title": "Book of Abstracts of the 2nd Regional Congress on Traditional Sciences and Technologies of Bundelkhand",
+      "authors": "Eds. Navjyoti Singh, Arun Kumar and Vijayaraghavan M Chariar",
+      "journal": "PPST Foundation, Orchha",
+      "year": "1999"
+    },
+    {
+      "title": "Book of Abstracts of the 1st Regional Congress on Traditional Sciences and Technologies of AP",
+      "authors": "Eds. Vijayaraghavan M Chariar and D. Narasimha Reddy",
+      "journal": "PPST Foundation, Chirala",
+      "year": "1999"
+    },
+    {
+      "title": "Summing Up Report of the 3rd Congress of Traditional Sciences and Technologies of India",
+      "authors": "Eds. Vijayaraghavan M Chariar and Parmita",
+      "journal": "PPST Foundation, Varanasi",
+      "year": "1998"
+    },
+    {
+      "title": "Book of Abstracts of the 3rd Congress of Traditional Sciences and Technologies of India",
+      "authors": "Eds. Vijayaraghavan M Chariar, Tenzin Rigzin and Navjyoti Singh",
+      "journal": "PPST Foundation, Varanasi",
+      "year": "1998"
+    }
+  ]
+}

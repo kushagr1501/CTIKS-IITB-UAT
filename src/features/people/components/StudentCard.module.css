@@ -9,6 +9,41 @@
   min-width: 0;
 }
 
+.more {
+  margin-top: 10px;
+  color: #6d6251;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.more summary {
+  width: fit-content;
+  color: #8c1818;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: #d8bf93;
+  text-underline-offset: 3px;
+}
+
+.more summary:focus-visible {
+  outline: 2px solid #c6a572;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.more[open] summary {
+  margin-bottom: 7px;
+}
+
+.more p + p {
+  margin-top: 7px;
+}
+
+.more strong {
+  color: #49453f;
+}
+
 .links {
   display: flex;
   flex-wrap: wrap;

@@ -116,12 +116,19 @@ export async function updateFaculty(actor: Actor, recordId: string, input: unkno
     if (!before) throw new HttpError(404, 'Faculty profile not found.');
     if (login && before.userId) throw new HttpError(409, 'This faculty member already has a login.');
     if (login) await createLogin(transaction, data.name, login);
-    const result = await transaction.facultyProfile.updateMany({
-      where: { id, version },
-      data: { ...data, ...(login ? { userId: login.id } : {}), version: { increment: 1 } },
-    });
-    if (result.count !== 1)
-      throw new HttpError(409, 'This profile changed while you were editing. Reload it and try again.');
+    let updatedProfile: Prisma.FacultyProfileGetPayload<{ include: typeof loginInclude }>;
+    try {
+      // Return the updated row from the write instead of issuing a follow-up read.
+      updatedProfile = await transaction.facultyProfile.update({
+        where: { id, version },
+        data: { ...data, ...(login ? { userId: login.id } : {}), version: { increment: 1 } },
+        include: loginInclude,
+      });
+    } catch (error) {
+      if (isRecordNotFound(error))
+        throw new HttpError(409, 'This profile changed while you were editing. Reload it and try again.');
+      throw error;
+    }
     // Preserve history even if an older value no longer meets current URL policy.
     const publicBefore = Object.fromEntries(editableFields.map((key) => [key, before[key]]));
     await transaction.auditEvent.create({
@@ -135,9 +142,7 @@ export async function updateFaculty(actor: Actor, recordId: string, input: unkno
       }),
     });
     if (login) await auditLogin(transaction, actor, { id, name: data.name }, login.email);
-    return adminProfile(
-      await transaction.facultyProfile.findUniqueOrThrow({ where: { id }, include: loginInclude }),
-    );
+    return adminProfile(updatedProfile);
   });
 }
 
@@ -148,11 +153,18 @@ export async function setVisibility(actor: Actor, recordId: string, input: unkno
   return getDatabase().$transaction(async (transaction) => {
     const before = await transaction.facultyProfile.findUnique({ where: { id } });
     if (!before) throw new HttpError(404, 'Faculty profile not found.');
-    const changed = await transaction.facultyProfile.updateMany({
-      where: { id, version },
-      data: { visible, version: { increment: 1 } },
-    });
-    if (changed.count !== 1) throw new HttpError(409, 'This profile changed. Reload it before continuing.');
+    let updatedProfile: Prisma.FacultyProfileGetPayload<{ include: typeof loginInclude }>;
+    try {
+      updatedProfile = await transaction.facultyProfile.update({
+        where: { id, version },
+        data: { visible, version: { increment: 1 } },
+        include: loginInclude,
+      });
+    } catch (error) {
+      if (isRecordNotFound(error))
+        throw new HttpError(409, 'This profile changed. Reload it before continuing.');
+      throw error;
+    }
     await transaction.auditEvent.create({
       data: auditData({
         actor,
@@ -163,10 +175,12 @@ export async function setVisibility(actor: Actor, recordId: string, input: unkno
         after: { visible },
       }),
     });
-    return adminProfile(
-      await transaction.facultyProfile.findUniqueOrThrow({ where: { id }, include: loginInclude }),
-    );
+    return adminProfile(updatedProfile);
   });
+}
+
+function isRecordNotFound(error: unknown): boolean {
+  return Boolean(error && typeof error === 'object' && 'code' in error && error.code === 'P2025');
 }
 
 export async function getOwnFacultyProfile(actor: Actor) {

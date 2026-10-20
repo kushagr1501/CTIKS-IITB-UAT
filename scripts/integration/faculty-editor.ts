@@ -5,7 +5,14 @@ import { publicCoreProfileQuery } from '../../src/server/faculty/public-profile-
 type Session = {
   request: (
     path: string,
-    options?: { method?: string; body?: unknown; csrf?: boolean; origin?: string },
+    options?: {
+      method?: string;
+      body?: unknown;
+      rawBody?: string;
+      contentType?: string;
+      csrf?: boolean;
+      origin?: string;
+    },
   ) => Promise<Response>;
 };
 
@@ -26,6 +33,8 @@ export async function checkFacultyEditor(
   }
   const original = await database.facultyProfile.findUniqueOrThrow({ where: { id } });
   const other = await database.facultyProfile.findUniqueOrThrow({ where: { id: otherId } });
+  await result(anonymous, 401);
+  await result(admin, 403);
   let state: FacultyEditorState = (await result(faculty, 200)).faculty;
   const input = (action = 'save') => ({
     action,
@@ -37,6 +46,9 @@ export async function checkFacultyEditor(
   await result(admin, 403, { method: 'PUT', body: input() });
   await result(faculty, 403, { method: 'PUT', csrf: false, body: input() });
   await result(faculty, 403, { method: 'PUT', origin: 'https://untrusted.test', body: input() });
+  await result(faculty, 415, { method: 'PUT' });
+  await result(faculty, 415, { method: 'PUT', rawBody: '{}', contentType: 'text/plain' });
+  await result(faculty, 400, { method: 'PUT', rawBody: '{' });
   await result(faculty, 400, { method: 'PUT', body: { ...input(), facultyId: otherId } });
   await result(faculty, 400, {
     method: 'PUT',
@@ -103,6 +115,7 @@ export async function checkFacultyEditor(
       {
         name: 'Fixture student',
         programme: 'PhD',
+        biography: 'Fixture student biography',
         researchTopic: 'Fixture topic',
         supervisionRole: 'Supervisor',
         periodText: '2026–present',
@@ -180,6 +193,7 @@ export async function checkFacultyEditor(
   const publicHtml = await (await anonymous.request(`/people/${original.slug}`)).text();
   assert.ok(publicHtml.includes('Fixture publication'));
   assert.ok(publicHtml.includes('Room 12'));
+  assert.ok(publicHtml.includes('Fixture student biography'));
   assert.ok(publicHtml.includes('LinkedIn'));
   assert.ok(publicHtml.includes('scholar.google.com/citations?user=fixture'));
   assert.ok(publicHtml.includes('/assets/iitb-logo.png'));
@@ -188,6 +202,7 @@ export async function checkFacultyEditor(
   // Public reads continue using the accepted revision while another draft is edited.
   state.content.biography = 'DO NOT LEAK draft';
   state.content.education = [];
+  state.content.students[0].biography = '';
   state.content.students[0].imageUrl = '';
   state.content.students[0].socialLinks = [];
   state = (await result(faculty, 200, { method: 'PUT', body: input() })).faculty;
@@ -214,6 +229,7 @@ export async function checkFacultyEditor(
   const clearedStudent = (
     await database.facultyProfile.findFirstOrThrow(publicCoreProfileQuery(original.slug))
   ).revisions[0].students[0];
+  assert.equal(clearedStudent.biography, '');
   assert.equal(clearedStudent.imageUrl, '');
   assert.deepEqual(clearedStudent.socialLinks, []);
   state.content = {

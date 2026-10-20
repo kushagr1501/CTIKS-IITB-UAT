@@ -109,6 +109,7 @@ const academic = {
   students: source.students.map((item, displayOrder) => ({
     name: item.name,
     programme: item.programme,
+    biography: '',
     researchTopic: item.researchTopic,
     periodText: item.periodText,
     status: 'GRADUATED' as const,

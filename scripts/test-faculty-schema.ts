@@ -145,10 +145,11 @@ try {
   for (const migration of migrations.filter((name) => name > target))
     await db.query(await readFile(`prisma/migrations/${migration}/migration.sql`, 'utf8'));
   const migratedStudent = (await db.query('SELECT * FROM faculty_students')).rows[0];
-  const { imageUrl, socialLinks, ...studentBefore } = migratedStudent;
+  const { imageUrl, socialLinks, biography, ...studentBefore } = migratedStudent;
   assert.deepEqual(studentBefore, studentsBeforeMedia[0], 'adding media fields preserves student content');
   assert.equal(imageUrl, '');
   assert.deepEqual(socialLinks, []);
+  assert.equal(biography, '', 'the biography migration supplies an empty default');
   for (const invalid of [
     '{}',
     'null',

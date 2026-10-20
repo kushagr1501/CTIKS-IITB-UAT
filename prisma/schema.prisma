@@ -235,6 +235,7 @@ model FacultyStudent {
   revisionId      String
   name            String
   programme       String                 @default("")
+  biography       String                 @default("")
   researchTopic   String                 @default("")
   supervisionRole String                 @default("")
   periodText      String                 @default("")

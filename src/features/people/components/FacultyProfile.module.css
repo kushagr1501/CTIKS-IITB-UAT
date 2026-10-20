@@ -374,12 +374,15 @@
 .students {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 20px;
 }
 
 .students .entry {
+  box-sizing: border-box;
+  min-height: 188px;
   background: linear-gradient(135deg, #f4e7d0aa, #fff8ee55);
-  padding: 18px;
+  padding: 22px;
   margin: 0;
   border: 0;
   border-top: 2px solid #c6a572;
@@ -387,6 +390,10 @@
 
 .students .entry::before {
   display: none;
+}
+
+.students .entry:has(.more[open]) {
+  grid-column: 1 / -1;
 }
 
 .contact {
@@ -555,6 +562,10 @@
 
   .students {
     grid-template-columns: 1fr;
+  }
+
+  .students .entry {
+    min-height: 0;
   }
 
   .entryHeading {

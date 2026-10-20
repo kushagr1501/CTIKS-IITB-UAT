@@ -23,7 +23,22 @@ export function getDatabase() {
     },
     { schema },
   );
-  const database = new PrismaClient({ adapter, log: [] });
+  const queryTiming = process.env.CTIKS_DB_QUERY_TIMING === '1';
+  const database = new PrismaClient({
+    adapter,
+    log: queryTiming ? [{ emit: 'event', level: 'query' }] : [],
+  });
+  if (queryTiming) {
+    database.$on('query', (event) => {
+      // Keep diagnostics useful without logging SQL parameters or profile data.
+      const tables = [
+        ...event.query.matchAll(/\b(?:from|into|update|join)\s+(?:"?[\w]+"?\.)?"?([\w]+)"?/gi),
+      ]
+        .map((match) => match[1])
+        .filter((table, index, all) => all.indexOf(table) === index);
+      console.info(`[db-query] tables=${tables.join(',') || 'other'} duration=${event.duration}ms`);
+    });
+  }
   databaseGlobal.ctiksDatabase = database;
   return database;
 }

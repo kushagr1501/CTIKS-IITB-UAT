@@ -111,6 +111,7 @@ export const collections: { [K in Collection]: Definition<K> } = {
     create: () => ({
       name: '',
       programme: '',
+      biography: '',
       researchTopic: '',
       supervisionRole: '',
       periodText: '',
@@ -123,6 +124,7 @@ export const collections: { [K in Collection]: Definition<K> } = {
       { key: 'name', label: 'Name', required: true, max: 200 },
       { key: 'programme', label: 'Programme', max: 200 },
       { key: 'imageUrl', label: 'Student photo URL', kind: 'image', max: 2048 },
+      { key: 'biography', label: 'Student biography', kind: 'textarea', max: 5000 },
       {
         key: 'status',
         label: 'Student status',

@@ -1,5 +1,6 @@
 import 'server-only';
-import type { Prisma } from '@/generated/prisma/client';
+import { randomUUID } from 'node:crypto';
+import { Prisma } from '@/generated/prisma/client';
 import { getDatabase } from '@/server/database/client';
 import { assertPermission, type Actor } from '@/server/auth/session';
 import { HttpError } from '@/server/http/errors';
@@ -96,6 +97,7 @@ function contentOf(profile: Profile, revision?: Revision | null, draft = false):
         ({
           name,
           programme,
+          biography,
           researchTopic,
           supervisionRole,
           periodText,
@@ -106,6 +108,7 @@ function contentOf(profile: Profile, revision?: Revision | null, draft = false):
         }) => ({
           name,
           programme,
+          biography,
           researchTopic,
           supervisionRole,
           periodText,
@@ -132,6 +135,27 @@ function editorState(profile: Profile, revision?: Revision | null, draft = false
     content: contentOf(profile, revision, draft),
   };
 }
+
+function editorStateFromContent(
+  profile: Profile,
+  revision: Pick<Revision, 'version'>,
+  content: AcademicContent,
+  draft: boolean,
+): FacultyEditorState {
+  return {
+    identity: {
+      name: profile.name,
+      slug: profile.slug,
+      designation: profile.designation,
+      department: profile.department,
+      visible: profile.visible,
+    },
+    profileVersion: profile.version,
+    draftVersion: draft ? revision.version : null,
+    hasDraft: draft,
+    content,
+  };
+}
 export async function getOwnFacultyEditor(actor: Actor) {
   ownActor(actor);
   return getDatabase().$transaction(async (tx) => {
@@ -151,20 +175,131 @@ export async function getOwnFacultyEditor(actor: Actor) {
     return editorState(profile, revision, Boolean(draft));
   });
 }
-function ordered<T>(items: T[]) {
-  return items.map((item, displayOrder) => ({ ...item, displayOrder }));
-}
 function revisionData(content: AcademicContent) {
-  const { education, experience, courses, publications, patents, students, ...scalars } = content;
   return {
-    ...scalars,
-    education: { create: ordered(education) },
-    experience: { create: ordered(experience) },
-    courses: { create: ordered(courses) },
-    publications: { create: ordered(publications) },
-    patents: { create: ordered(patents) },
-    students: { create: ordered(students) },
+    name: content.name,
+    designation: content.designation,
+    department: content.department,
+    biography: content.biography,
+    imageUrl: content.imageUrl,
+    websiteUrl: content.websiteUrl,
+    publicEmail: content.publicEmail,
+    interests: content.interests,
+    researchTags: content.researchTags,
+    researchOverview: content.researchOverview,
+    officeAddress: content.officeAddress,
+    publicPhone: content.publicPhone,
   };
+}
+
+function childRows<T extends object>(revisionId: string, items: T[]) {
+  return items.map((item, displayOrder) => ({ id: randomUUID(), revisionId, ...item, displayOrder }));
+}
+
+/**
+ * Replace all ordered revision children in one PostgreSQL round trip.
+ *
+ * The profile editor validates every value before this function runs. JSON is
+ * still passed as query parameters (never interpolated into SQL), while the
+ * explicit record shapes keep the database constraints and enum types active.
+ */
+async function replaceRevisionChildren(
+  tx: Prisma.TransactionClient,
+  revisionId: string,
+  content: AcademicContent,
+) {
+  const education = childRows(revisionId, content.education);
+  const experience = childRows(revisionId, content.experience);
+  const courses = childRows(revisionId, content.courses);
+  const publications = childRows(revisionId, content.publications);
+  const patents = childRows(revisionId, content.patents);
+  const students = childRows(revisionId, content.students);
+
+  await tx.$queryRaw(Prisma.sql`
+    WITH
+    deleted_education AS (
+      DELETE FROM "faculty_education" WHERE "revisionId" = ${revisionId}
+    ),
+    deleted_experience AS (
+      DELETE FROM "faculty_experience" WHERE "revisionId" = ${revisionId}
+    ),
+    deleted_courses AS (
+      DELETE FROM "faculty_courses" WHERE "revisionId" = ${revisionId}
+    ),
+    deleted_publications AS (
+      DELETE FROM "faculty_publications" WHERE "revisionId" = ${revisionId}
+    ),
+    deleted_patents AS (
+      DELETE FROM "faculty_patents" WHERE "revisionId" = ${revisionId}
+    ),
+    deleted_students AS (
+      DELETE FROM "faculty_students" WHERE "revisionId" = ${revisionId}
+    ),
+    inserted_education AS (
+      INSERT INTO "faculty_education"
+        ("id", "revisionId", "title", "institution", "description", "periodText", "displayOrder")
+      SELECT row."id", row."revisionId", row."title", row."institution", row."description",
+        row."periodText", row."displayOrder"
+      FROM jsonb_to_recordset(${JSON.stringify(education)}::jsonb) AS row(
+        "id" text, "revisionId" text, "title" text, "institution" text,
+        "description" text, "periodText" text, "displayOrder" integer
+      )
+    ),
+    inserted_experience AS (
+      INSERT INTO "faculty_experience"
+        ("id", "revisionId", "title", "organisation", "description", "periodText", "displayOrder")
+      SELECT row."id", row."revisionId", row."title", row."organisation", row."description",
+        row."periodText", row."displayOrder"
+      FROM jsonb_to_recordset(${JSON.stringify(experience)}::jsonb) AS row(
+        "id" text, "revisionId" text, "title" text, "organisation" text,
+        "description" text, "periodText" text, "displayOrder" integer
+      )
+    ),
+    inserted_courses AS (
+      INSERT INTO "faculty_courses"
+        ("id", "revisionId", "title", "code", "periodText", "description", "status", "displayOrder")
+      SELECT row."id", row."revisionId", row."title", row."code", row."periodText", row."description",
+        row."status"::"FacultyCourseStatus", row."displayOrder"
+      FROM jsonb_to_recordset(${JSON.stringify(courses)}::jsonb) AS row(
+        "id" text, "revisionId" text, "title" text, "code" text, "periodText" text,
+        "description" text, "status" text, "displayOrder" integer
+      )
+    ),
+    inserted_publications AS (
+      INSERT INTO "faculty_publications"
+        ("id", "revisionId", "type", "title", "authors", "venue", "year", "citation", "doi", "url", "displayOrder")
+      SELECT row."id", row."revisionId", row."type"::"FacultyPublicationType", row."title",
+        row."authors", row."venue", row."year", row."citation", row."doi", row."url", row."displayOrder"
+      FROM jsonb_to_recordset(${JSON.stringify(publications)}::jsonb) AS row(
+        "id" text, "revisionId" text, "type" text, "title" text, "authors" text, "venue" text,
+        "year" integer, "citation" text, "doi" text, "url" text, "displayOrder" integer
+      )
+    ),
+    inserted_patents AS (
+      INSERT INTO "faculty_patents"
+        ("id", "revisionId", "title", "inventors", "identifier", "status", "year", "description", "url", "displayOrder")
+      SELECT row."id", row."revisionId", row."title", row."inventors", row."identifier", row."status",
+        row."year", row."description", row."url", row."displayOrder"
+      FROM jsonb_to_recordset(${JSON.stringify(patents)}::jsonb) AS row(
+        "id" text, "revisionId" text, "title" text, "inventors" text, "identifier" text,
+        "status" text, "year" integer, "description" text, "url" text, "displayOrder" integer
+      )
+    ),
+    inserted_students AS (
+      INSERT INTO "faculty_students"
+        ("id", "revisionId", "name", "programme", "biography", "researchTopic", "supervisionRole",
+          "periodText", "status", "graduationYear", "imageUrl", "socialLinks", "displayOrder")
+      SELECT row."id", row."revisionId", row."name", row."programme", row."biography", row."researchTopic",
+        row."supervisionRole", row."periodText", row."status"::"FacultyStudentStatus", row."graduationYear",
+        row."imageUrl", row."socialLinks", row."displayOrder"
+      FROM jsonb_to_recordset(${JSON.stringify(students)}::jsonb) AS row(
+        "id" text, "revisionId" text, "name" text, "programme" text, "biography" text,
+        "researchTopic" text, "supervisionRole" text, "periodText" text, "status" text,
+        "graduationYear" integer, "imageUrl" text, "socialLinks" jsonb, "displayOrder" integer
+      )
+    )
+    SELECT 1
+  `);
 }
 
 // Export the transaction worker so isolated database tests exercise the real write path.
@@ -210,29 +345,22 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
       409,
       'The administrator changed the profile after this draft was saved. Reload, then discard the draft to start from the current profile.',
     );
-  let revision: Revision;
+  let revision: Prisma.FacultyProfileRevisionGetPayload<object>;
   if (working) {
-    const locked = await tx.facultyProfileRevision.updateMany({
-      where: { id: working.id, version: working.version, status: { in: ['DRAFT', 'CHANGES_REQUESTED'] } },
-      data: { version: { increment: 1 } },
-    });
-    if (locked.count !== 1) throw new HttpError(409, 'The draft changed. Reload before saving.');
-    await tx.facultyEducation.deleteMany({ where: { revisionId: working.id } });
-    await tx.facultyExperience.deleteMany({ where: { revisionId: working.id } });
-    await tx.facultyCourse.deleteMany({ where: { revisionId: working.id } });
-    await tx.facultyPublication.deleteMany({ where: { revisionId: working.id } });
-    await tx.facultyPatent.deleteMany({ where: { revisionId: working.id } });
-    await tx.facultyStudent.deleteMany({ where: { revisionId: working.id } });
     revision = await tx.facultyProfileRevision.update({
-      where: { id: working.id },
+      where: {
+        id: working.id,
+        version: working.version,
+        status: { in: ['DRAFT', 'CHANGES_REQUESTED'] },
+      },
       data: {
         ...revisionData(request.content),
+        version: { increment: 1 },
         status: 'DRAFT',
         reviewNote: '',
         reviewedAt: null,
         reviewedById: null,
       },
-      include: academicInclude,
     });
   } else {
     const highest = await tx.facultyProfileRevision.aggregate({
@@ -247,9 +375,9 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
         status: 'DRAFT',
         ...revisionData(request.content),
       },
-      include: academicInclude,
     });
   }
+  await replaceRevisionChildren(tx, revision.id, request.content);
   let updated = profile;
   if (request.action === 'publish') {
     const changed = await tx.facultyProfile.updateMany({
@@ -274,9 +402,19 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
     revision = await tx.facultyProfileRevision.update({
       where: { id: revision.id },
       data: { status: 'PUBLISHED', publishedAt: new Date(), sourceProfileVersion: profile.version + 1 },
-      include: academicInclude,
     });
-    updated = await tx.facultyProfile.findUniqueOrThrow({ where: { id: profile.id } });
+    updated = {
+      ...profile,
+      name: request.content.name,
+      designation: request.content.designation,
+      department: request.content.department,
+      biography: request.content.biography,
+      imageUrl: request.content.imageUrl,
+      websiteUrl: request.content.websiteUrl,
+      publicEmail: request.content.publicEmail,
+      interests: request.content.interests,
+      version: profile.version + 1,
+    };
   }
   await tx.auditEvent.create({
     data: auditData({
@@ -294,7 +432,7 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
       details: { ownProfileOnly: true, immediatelyPublished: request.action === 'publish' },
     }),
   });
-  return editorState(updated, revision, request.action === 'save');
+  return editorStateFromContent(updated, revision, request.content, request.action === 'save');
 }
 export async function saveOwnFacultyContent(actor: Actor, input: unknown) {
   try {
@@ -307,7 +445,7 @@ export async function saveOwnFacultyContent(actor: Actor, input: unknown) {
       error &&
       typeof error === 'object' &&
       'code' in error &&
-      ['P2034', 'P2002'].includes(String(error.code))
+      ['P2034', 'P2002', 'P2025'].includes(String(error.code))
     )
       throw new HttpError(409, 'Another session changed this profile. Reload before saving.');
     throw error;

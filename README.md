@@ -38,22 +38,35 @@ and a custom link label.
 
 ## Local setup
 
-Use Node.js 22.12+ and Docker Desktop (or an existing Redis service).
+Use Node.js 22.12+ and Docker Desktop (or an existing Redis service). Development
+uses local PostgreSQL and Redis; UAT and production remain on Neon.
 
-1. Run `npm ci`.
-2. Copy `.env.example` to `.env.local`. Configure PostgreSQL runtime and migration
-   connections, a random authentication secret, the site URL, and the admin email.
-3. Run `npm run redis:setup` and `npm run redis:up`, or configure your own Redis URL.
-4. Run `npm run db:generate` and `npm run db:migrate` against the intended database.
-5. For a fresh deployment, follow [backend setup](docs/backend.md) to seed the
+1. Run `npm ci` and copy `.env.example` to `.env.local`.
+2. Run `npm run db:local:up` and `npm run redis:up`.
+3. Run `npm run db:generate` and `npm run db:local:migrate`.
+4. For a fresh local database, run `npm run db:local:seed`. This creates local
+   administrator and sample faculty records; it never connects to Neon. Local
+   admin credentials are written to `.private/local-admin-credentials.txt`.
+5. Run `npm run redis:setup` if Redis credentials have not been created yet, or
+   configure your own Redis URL.
+6. For UAT or production, configure values from `.env.uat.example` in that
+   deployment's environment. Keep `.env.migrations.local` local too; deployment
+   migrations should use `DIRECT_URL` explicitly while the application uses the
+   pooled `DATABASE_URL`.
+7. For a fresh deployment, follow [backend setup](docs/backend.md) to seed the
    initial administrator/faculty records and provision the restricted database role.
-6. Run `npm run dev` and open http://127.0.0.1:3000.
+8. Run `npm run dev` and open http://127.0.0.1:3000.
+
+`npm run db:local:down` stops the local PostgreSQL container and preserves its
+Docker volume. Do not use `docker compose down -v` unless you intend to delete
+local database data.
 
 Development generates the Prisma client when missing, after schema changes, or
 after a Prisma version change. Production builds always regenerate it. Generated
 administrator credentials are stored locally in `.private/admin-credentials.txt`.
 Environment files, generated credential files, generated clients, build output, and temporary
-previews are excluded from Git. Only `.env.example` belongs in the repository.
+previews are excluded from Git. Only the placeholder `.env.example` and
+`.env.uat.example` templates belong in the repository.
 
 ### Development speed
 
@@ -97,6 +110,11 @@ npm run build
 and Redis. It creates and removes a random test schema and Redis namespace; see
 [backend setup](docs/backend.md). It does not seed activities into the application's
 live schema.
+
+For headless browser coverage, install the Chromium binary once with
+`npx playwright install chromium`, then run `npm run test:browser`. It uses the same
+isolated integration environment and exercises faculty CRUD in the admin UI and
+draft/reload/research-area/publish flows in the professor portal.
 
 ## Production
 

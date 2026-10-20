@@ -129,6 +129,7 @@ export const academicContentSchema = z
           .object({
             name: text(200).min(1),
             programme: text(200),
+            biography: text(5000).default(''),
             researchTopic: text(2000),
             supervisionRole: text(200),
             periodText: text(200),

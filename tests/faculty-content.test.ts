@@ -41,16 +41,23 @@ test('self editing rejects identity, account, review and child ownership fields'
       field,
     );
   for (const field of [
-    'name',
     'slug',
-    'designation',
-    'department',
     'category',
     'visible',
     'displayOrder',
     'publishedAt',
   ])
     assert.equal(academicContentSchema.safeParse({ ...empty, [field]: 'injected' }).success, false, field);
+  assert.equal(
+    academicContentSchema.safeParse({
+      ...empty,
+      name: 'Professor Name',
+      designation: 'Professor',
+      department: 'CTIKS, IIT Bombay',
+    }).success,
+    true,
+    'faculty identity fields are editable through the profile editor',
+  );
   for (const field of ['id', 'revisionId', 'facultyId', 'displayOrder'])
     assert.equal(
       academicContentSchema.safeParse({
@@ -95,6 +102,7 @@ test('nullable publication years and student graduation rules preserve explicit 
   const student = {
     name: 'Student',
     programme: 'PhD',
+    biography: '',
     researchTopic: '',
     supervisionRole: '',
     periodText: '',

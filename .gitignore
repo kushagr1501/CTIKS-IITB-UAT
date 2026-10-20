@@ -3,6 +3,7 @@ out/
 dist/
 .env*
 !.env.example
+!.env.uat.example
 .private/
 .next/
 .next-integration/

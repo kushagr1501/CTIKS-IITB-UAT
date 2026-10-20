@@ -1,11 +1,19 @@
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import type { PrismaClient } from '../../src/generated/prisma/client';
 import type { ActivityRecord } from '../../src/features/activities/types';
 
 type Session = {
   request: (
     path: string,
-    options?: { method?: string; body?: unknown; csrf?: boolean; origin?: string },
+    options?: {
+      method?: string;
+      body?: unknown;
+      rawBody?: string;
+      contentType?: string;
+      csrf?: boolean;
+      origin?: string;
+    },
   ) => Promise<Response>;
 };
 
@@ -51,6 +59,14 @@ export async function checkActivities(
     await response(session, endpoint, denied);
     await response(session, endpoint, denied, { method: 'POST', body: base });
   }
+  await response(admin, endpoint, 415, { method: 'POST' });
+  await response(admin, endpoint, 415, {
+    method: 'POST',
+    rawBody: JSON.stringify(base),
+    contentType: 'text/plain',
+  });
+  await response(admin, endpoint, 400, { method: 'POST', rawBody: '{' });
+  await response(admin, endpoint, 405, { method: 'DELETE' });
   await response(admin, endpoint, 403, { method: 'POST', body: base, csrf: false });
   await response(admin, endpoint, 403, { method: 'POST', body: base, origin: 'https://untrusted.test' });
   await response(admin, endpoint, 400, { method: 'POST', body: { ...base, eventEndAt: base.eventStartAt } });
@@ -58,12 +74,25 @@ export async function checkActivities(
     await (await response(admin, endpoint, 201, { method: 'POST', body: base })).json()
   ).activity;
   const path = `${endpoint}/${activity.id}`;
+  const listed = await response(admin, endpoint, 200);
+  assert.ok((await listed.json()).activities.some((item: ActivityRecord) => item.id === activity.id));
   assert.equal(activity.linkLabel, base.linkLabel);
   assert.equal(
     (await database.activity.findUniqueOrThrow({ where: { id: activity.id } })).linkLabel,
     base.linkLabel,
   );
   const createdAt = activity.createdAt;
+  const missingPath = `${endpoint}/${randomUUID()}`;
+  await response(admin, missingPath, 404, { method: 'PATCH', body: { ...base, version: 1 } });
+  await response(admin, `${missingPath}/visibility`, 404, {
+    method: 'PATCH',
+    body: { version: 1, visible: false },
+  });
+  await response(admin, missingPath, 404, { method: 'DELETE', body: { version: 1 } });
+  await response(admin, `${endpoint}/not-a-uuid`, 400, {
+    method: 'PATCH',
+    body: { ...base, version: 1 },
+  });
   for (const publicPath of ['/news', '/announcements', '/activities', '/']) {
     const html = await (await response(anonymous, publicPath, 200)).text();
     assert.ok(html.includes(base.title), publicPath);

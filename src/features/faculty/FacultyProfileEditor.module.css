@@ -1,0 +1,309 @@
+.canvas {
+  position: relative;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-top: -3rem;
+}
+
+.page {
+  font-family: Montserrat, sans-serif;
+}
+
+.actionRail {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+  border-bottom: 1px solid rgb(255 255 255 / 30%);
+  background: #aa1313 url('/assets/figma/footer-pattern.png') center / cover;
+  padding: 10px 0 12px;
+  box-shadow: 0 5px 16px rgb(70 0 0 / 18%);
+}
+
+.actionInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  padding-inline: 28px;
+}
+
+.actionMeta {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 8px;
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.status {
+  min-width: 0;
+  color: rgb(255 255 255 / 88%);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.publishButton,
+.saveButton,
+.viewButton {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  padding: 8px 20px;
+  font: 600 14px/1.4 Montserrat, sans-serif;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.publishButton {
+  border: 1px solid #f0c15b;
+  background: #f0c15b;
+  color: #6d1111;
+}
+
+.publishButton:hover { background: #ffda82; }
+
+.saveButton,
+.viewButton {
+  border: 1px solid rgb(255 255 255 / 72%);
+  background: transparent;
+  color: white;
+}
+
+.saveButton:hover,
+.viewButton:hover { background: rgb(255 255 255 / 12%); }
+
+.minorAction {
+  border: 0;
+  background: transparent;
+  padding: 8px 4px;
+  color: rgb(255 255 255 / 88%);
+  font: 500 13px/1.4 Montserrat, sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.field {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+  color: #634a2d;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.control {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #dfcba9;
+  border-radius: 2px;
+  background: rgb(255 253 248 / 84%);
+  padding: 10px 12px;
+  color: #49453f;
+  font: 500 16px/1.55 Montserrat, sans-serif;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.control:focus {
+  border-color: #aa1313;
+  outline: 0;
+  background: #fffdfa;
+  box-shadow: 0 0 0 2px rgb(170 19 19 / 12%);
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.heroField {
+  color: rgb(255 255 255 / 82%);
+}
+
+.heroField > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.heroControl {
+  border-color: rgb(255 241 218 / 48%);
+  border-radius: 0;
+  background: rgb(97 0 0 / 14%);
+  color: white;
+  padding: 8px 12px;
+}
+
+.heroControl:focus {
+  border-color: #f3c56c;
+  background: rgb(97 0 0 / 36%);
+  box-shadow: 0 0 0 2px rgb(243 197 108 / 25%);
+}
+
+.heroName {
+  font-family: 'Red Rose', serif;
+  font-size: clamp(23px, 2.4vw, 34px);
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.heroDesignation {
+  max-width: 850px;
+  font-size: 16px;
+}
+
+.profileHeader {
+  align-items: start;
+}
+
+.portraitColumn {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.identityFields {
+  display: grid;
+  gap: 14px;
+}
+
+.contactFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.biographyFields {
+  display: grid;
+  gap: 14px;
+  grid-column: 1 / -1;
+  padding-top: 6px;
+}
+
+.sectionNav {
+  display: block !important;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  margin: 24px 0 32px;
+  padding: 4px 12px;
+  scrollbar-width: thin;
+}
+
+.sectionNav ul {
+  width: max-content;
+  min-width: 100%;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 8px 22px;
+}
+
+.sectionNav a {
+  white-space: nowrap;
+}
+
+.sectionList {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.collectionWrap :global(.admin-panel) {
+  min-width: 0;
+  border-color: #dfcba9;
+  border-radius: 0;
+  background: rgb(255 253 248 / 90%);
+  box-shadow: none;
+}
+
+.collectionWrap :global(.admin-panel > div:first-child h2) {
+  color: #8c1818;
+  font-family: 'Red Rose', serif;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.collectionWrap :global(details) {
+  border-color: #e5d5b9;
+  border-radius: 2px;
+  background: #fffdfa;
+}
+
+.collectionWrap :global(summary) {
+  color: #4a4235;
+}
+
+.identityInput {
+  border-color: #d8aa85;
+  background: rgb(255 253 248 / 66%);
+  padding: 8px 10px;
+  color: #625f5a;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.proseInput {
+  border-color: #d8aa85;
+  background: rgb(255 253 248 / 66%);
+  padding: 10px 12px;
+  color: #625f5a;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.identityInput:focus,
+.proseInput:focus {
+  border-color: #aa1313;
+  background: #fffdfa;
+  box-shadow: 0 0 0 2px rgb(170 19 19 / 12%);
+}
+
+.summaryField {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 767px) {
+  .canvas {
+    margin-top: -2rem;
+  }
+
+  .actionInner {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    padding-inline: 16px;
+  }
+
+  .viewButton { align-self: flex-start; }
+
+  .contactFields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}

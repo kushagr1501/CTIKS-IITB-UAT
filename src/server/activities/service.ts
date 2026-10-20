@@ -69,13 +69,18 @@ export async function updateActivity(actor: Actor, recordId: string, input: unkn
   return getDatabase().$transaction(async (tx) => {
     const before = await tx.activity.findUnique({ where: { id } });
     if (!before) throw new HttpError(404, 'Activity not found.');
-    const result = await tx.activity.updateMany({
-      where: { id, version },
-      data: { ...data, version: { increment: 1 } },
-    });
-    if (result.count !== 1)
-      throw new HttpError(409, 'This activity changed. Reload the list before editing again.');
-    const after = await tx.activity.findUniqueOrThrow({ where: { id } });
+    let after: Activity;
+    try {
+      // A version-qualified update returns the saved row and removes a second DB round trip.
+      after = await tx.activity.update({
+        where: { id, version },
+        data: { ...data, version: { increment: 1 } },
+      });
+    } catch (error) {
+      if (isRecordNotFound(error))
+        throw new HttpError(409, 'This activity changed. Reload the list before editing again.');
+      throw error;
+    }
     await tx.auditEvent.create({
       data: auditData({
         actor,
@@ -88,6 +93,10 @@ export async function updateActivity(actor: Actor, recordId: string, input: unkn
     });
     return serializeActivity(after);
   });
+}
+
+function isRecordNotFound(error: unknown): boolean {
+  return Boolean(error && typeof error === 'object' && 'code' in error && error.code === 'P2025');
 }
 
 export async function deleteActivity(actor: Actor, recordId: string, input: unknown) {

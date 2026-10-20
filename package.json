@@ -11,6 +11,10 @@
     "lint": "eslint .",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
+    "db:local:up": "docker compose up -d postgres",
+    "db:local:down": "docker compose stop postgres",
+    "db:local:migrate": "node scripts/local-database.mjs migrate",
+    "db:local:seed": "node scripts/local-database.mjs seed",
     "db:seed": "tsx scripts/seed.ts",
     "db:restrict": "tsx scripts/restrict-database.ts",
     "db:verify": "tsx scripts/verify-database.ts",
@@ -19,7 +23,9 @@
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.ts",
     "test:integration": "tsx scripts/test-integration.ts",
-    "test:faculty-schema": "tsx scripts/test-faculty-schema.ts"
+    "test:uat": "node scripts/test-uat-integration.mjs",
+    "test:faculty-schema": "tsx scripts/test-faculty-schema.ts",
+    "test:browser": "tsx scripts/test-integration.ts"
   },
   "dependencies": {
     "@better-auth/redis-storage": "^1.3.0",
@@ -38,6 +44,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@types/node": "^22.10.0",
     "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",

@@ -12,6 +12,7 @@ import { Redis } from 'ioredis';
 import { createAuthStorage, authKeys, touchSession } from '../src/server/auth/redis-storage';
 import { credentialAdapter } from '../src/server/auth/credential-adapter';
 import { checkActivities } from './integration/activities';
+import { checkAdminFacultyUi, checkProfessorEditorUi } from './integration/browser-ui';
 import { checkFacultyEditor } from './integration/faculty-editor';
 
 config({ path: ['.env.migrations.local', '.env.local'], quiet: true });
@@ -25,7 +26,8 @@ redis.on('error', () => {});
 const storage = createAuthStorage(redis, schema);
 const keys = authKeys(schema);
 const connection = new URL(process.env.DIRECT_URL);
-connection.searchParams.set('sslmode', 'verify-full');
+if (!['localhost', '127.0.0.1'].includes(connection.hostname))
+  connection.searchParams.set('sslmode', 'verify-full');
 const owner = new pg.Pool({ connectionString: connection.toString(), max: 1 });
 const port = 3002;
 const origin = `http://127.0.0.1:${port}`;
@@ -52,7 +54,14 @@ class BrowserSession {
   }
   async request(
     path: string,
-    options: { method?: string; body?: unknown; csrf?: boolean; origin?: string } = {},
+    options: {
+      method?: string;
+      body?: unknown;
+      rawBody?: string;
+      contentType?: string;
+      csrf?: boolean;
+      origin?: string;
+    } = {},
   ): Promise<Response> {
     const method = options.method ?? 'GET';
     const headers: Record<string, string> = {};
@@ -63,11 +72,12 @@ class BrowserSession {
     }
     headers.cookie = [...this.cookies].map(([name, value]) => `${name}=${value}`).join('; ');
     if (method !== 'GET') headers.origin = options.origin ?? origin;
-    if (options.body !== undefined) headers['content-type'] = 'application/json';
+    if (options.body !== undefined || options.rawBody !== undefined || options.contentType)
+      headers['content-type'] = options.contentType ?? 'application/json';
     const response = await fetch(origin + path, {
       method,
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body: options.rawBody ?? (options.body === undefined ? undefined : JSON.stringify(options.body)),
       redirect: 'manual',
     });
     this.acceptCookies(response);
@@ -283,6 +293,12 @@ try {
   const loginData = await login.json();
   assert.equal('token' in loginData, false, 'session token must not be exposed to JavaScript');
   assert.equal('emailVerified' in loginData.user, false, 'email verification is absent from the API');
+  const authSession = await expectStatus(
+    await browser.request('/api/auth/get-session'),
+    404,
+    'unneeded session-read endpoint remains unavailable',
+  );
+  assert.equal((await authSession.json()).error, 'Not found.');
   const transientTables = await database.$queryRawUnsafe<
     { sessions: string | null; rate_limits: string | null; verifications: string | null }[]
   >(
@@ -685,6 +701,7 @@ try {
     accountBody.faculty.id,
     profile.id,
   );
+  await checkProfessorEditorUi(facultyBrowser, origin);
   await expectStatus(await facultyBrowser.request('/faculty/security'), 200, 'faculty password page renders');
   const redirected = await facultyBrowser.request('/admin/people');
   if (redirected.status === 307) assert.equal(redirected.headers.get('location'), '/faculty');
@@ -950,6 +967,21 @@ try {
     'invalid audit date rejected',
   );
   await expectStatus(
+    await browser.request('/api/admin/audit-logs?from=2026-02-20&to=2026-02-19'),
+    400,
+    'reversed audit date range rejected',
+  );
+  await expectStatus(
+    await browser.request('/api/admin/audit-logs?page=100001'),
+    400,
+    'audit pagination upper bound enforced',
+  );
+  await expectStatus(
+    await browser.request('/api/admin/audit-logs?actor=%27%20OR%201%3D1%20--'),
+    200,
+    'audit filter treats SQL-like input as data',
+  );
+  await expectStatus(
     await browser.request('/api/admin/audit-logs/export', { method: 'POST', csrf: false }),
     403,
     'CSV export requires CSRF',
@@ -1000,6 +1032,14 @@ try {
   absoluteSession.value.session.expiresAt = new Date(Date.now() - 1000).toISOString();
   await storage.set(absoluteSession.token, JSON.stringify(absoluteSession.value));
   await expectStatus(await browser.request('/api/admin/faculty'), 401, 'absolute session expiry');
+
+  // Run UI CRUD after audit-history assertions so its expected test events remain isolated.
+  await expectStatus(
+    await browser.request('/api/auth/sign-in/email', { method: 'POST', body: { email, password } }),
+    200,
+    'admin login for browser UI checks',
+  );
+  await checkAdminFacultyUi(browser, origin);
 
   for (let attempt = 0; attempt < 12; attempt++) {
     const response = await browser.request('/api/auth/sign-in/email', {

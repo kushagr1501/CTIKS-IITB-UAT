@@ -1,0 +1,238 @@
+{
+  "collection": {
+    "person": "Prof. Ashish Karn",
+    "collectedOn": "2026-10-20",
+    "status": "IMPORTED",
+    "databaseUpdated": true,
+    "publishedRevision": 2,
+    "source": "CV_Ashish_Karn (1).pdf supplied by the profile owner",
+    "note": "Curated faculty-page content from the supplied 16-page CV. Imported into the existing visible profile as published revision 2. The profile photo, slug, account linkage, and visibility settings were preserved. Forthcoming works and overlapping present appointments were excluded from the public content pending clarification."
+  },
+  "profile": {
+    "name": "Prof. Ashish Karn",
+    "slug": "ashish-karn",
+    "designation": "Associate Professor, CTIKS",
+    "department": "Indian Institute of Technology Bombay",
+    "biography": "Ashish Karn is an Associate Professor at the Centre for Traditional Indian Knowledge and Skills, IIT Bombay. His work spans engineering and Indian knowledge systems, including fluid mechanics, hydropower, biomimicry, engineering education, and the study of traditional engineering ideas. He earned his Ph.D. and M.S. in Mechanical Engineering from the University of Minnesota Twin Cities and his B.Tech. from IIT Delhi.",
+    "websiteUrl": "https://drashishkarn.wixsite.com/mysite",
+    "publicEmail": "ashishkarn@iitb.ac.in",
+    "researchTags": [
+      "Development of Engineering Ideas in Indian Tradition",
+      "Architectural Engineering: Vāstu and Śilpaśāstra Texts",
+      "Traditional Engineering Principles",
+      "Materials and Construction Techniques",
+      "Mechanical Devices",
+      "Nature-Inspired Engineering and Sustainability Principles",
+      "Indian Mathematics and Astronomy"
+    ],
+    "researchOverview": "His CV also describes work in supercavitation and naval defence, active learning and engineering pedagogy, and biomimetics in engineering education.",
+    "officeAddress": "414B, RBTIC, IIT Bombay, Mumbai 400076"
+  },
+  "education": [
+    {
+      "title": "Ph.D., Mechanical Engineering",
+      "institution": "University of Minnesota Twin Cities, USA",
+      "periodText": "2011–2016",
+      "description": "Minor in Aerospace Engineering and Mechanics. Thesis: Bubbly flow physics for applications in next-generation aerated hydro turbines and underwater transport."
+    },
+    {
+      "title": "M.S., Mechanical Engineering",
+      "institution": "University of Minnesota Twin Cities, USA",
+      "periodText": "2011–2013",
+      "description": "Minor in Aerospace Engineering and Mechanics; specialization in aerosol sciences, particle technology and aerosol instrumentation."
+    },
+    {
+      "title": "B.Tech., Mechanical Engineering",
+      "institution": "Indian Institute of Technology Delhi, India",
+      "periodText": "2007–2011",
+      "description": ""
+    }
+  ],
+  "experience": [
+    {
+      "title": "Associate Professor",
+      "organisation": "Centre for Traditional Indian Knowledge and Skills, IIT Bombay",
+      "periodText": "June 2026–present",
+      "description": ""
+    },
+    {
+      "title": "Senior Associate Professor",
+      "organisation": "Mechanical and Aerospace Engineering, University of Petroleum and Energy Studies",
+      "periodText": "March 2023–February 2025",
+      "description": ""
+    },
+    {
+      "title": "Associate Professor",
+      "organisation": "Mechanical and Aerospace Engineering, University of Petroleum and Energy Studies",
+      "periodText": "July 2021–February 2023",
+      "description": ""
+    },
+    {
+      "title": "Assistant Professor (Selection Grade)",
+      "organisation": "Mechanical Engineering, University of Petroleum and Energy Studies",
+      "periodText": "July 2017–June 2021",
+      "description": ""
+    },
+    {
+      "title": "Assistant Professor",
+      "organisation": "Department of Mechanical Engineering, College of Engineering Roorkee",
+      "periodText": "June 2016–June 2017",
+      "description": ""
+    },
+    {
+      "title": "Graduate Research Assistant",
+      "organisation": "Saint Anthony Falls Laboratory, University of Minnesota Twin Cities",
+      "periodText": "August 2011–January 2016",
+      "description": "Worked on government-funded research in fluid mechanics, including supercavitating vehicles and aerated hydroturbines."
+    }
+  ],
+  "courses": [
+    {
+      "title": "Foundations of Traditional Indian Knowledge and Skills",
+      "code": "",
+      "periodText": "",
+      "description": "",
+      "status": "PREVIOUS"
+    },
+    {
+      "title": "Foundations of Biomimicry and Nature-inspired Engineering",
+      "code": "",
+      "periodText": "August–December 2025",
+      "description": "",
+      "status": "PREVIOUS"
+    },
+    {
+      "title": "Indian Knowledge System in Science and Engineering",
+      "code": "",
+      "periodText": "January–May 2023; August–December 2023",
+      "description": "",
+      "status": "PREVIOUS"
+    },
+    {
+      "title": "Fluid Mechanics",
+      "code": "",
+      "periodText": "",
+      "description": "Also taught Applied Fluid Mechanics, Heat Transfer, Turbomachines, Thermodynamics, Aerodynamics and related laboratory courses.",
+      "status": "PREVIOUS"
+    }
+  ],
+  "publications": [
+    {
+      "type": "JOURNAL_ARTICLE",
+      "title": "The Saga of the Dance School: Digital Story-telling in the Fluids classroom",
+      "authors": "A. Karn, M. Verma, R. K. Singh, G. Mittal",
+      "venue": "Journal of Engineering Education Transformations, 38(4), 75–87",
+      "year": 2025,
+      "citation": "",
+      "doi": "",
+      "url": ""
+    },
+    {
+      "type": "JOURNAL_ARTICLE",
+      "title": "Multiphase flow simulations to explore novel technique of air injection to mitigate silt erosion in hydro turbines",
+      "authors": "P. Dhiman, A. Bhat, A. Karn",
+      "venue": "Journal of Applied Fluid Mechanics, 18(2), 468–484",
+      "year": 2025,
+      "citation": "",
+      "doi": "",
+      "url": ""
+    },
+    {
+      "type": "JOURNAL_ARTICLE",
+      "title": "The mustard bullets and the delightful culinary adventure in an Indian kitchen: High-Speed Visualizations, flow physics and mechanisms",
+      "authors": "A. Karn, A. Kar, R. Anand, R. Kanchi, A. Kataria, V. P. Singh",
+      "venue": "Journal of Flow Visualization and Image Processing, 31(2), 77–98",
+      "year": 2024,
+      "citation": "",
+      "doi": "",
+      "url": ""
+    },
+    {
+      "type": "JOURNAL_ARTICLE",
+      "title": "Elegant computational frameworks for the analysis of cantilevers and beams",
+      "authors": "A. Karn, A. Vyas, A. Upadhyay, A. Dwivedi",
+      "venue": "Journal of Engineering Education Transformations, 37(1), 89–97",
+      "year": 2023,
+      "citation": "",
+      "doi": "",
+      "url": ""
+    },
+    {
+      "type": "JOURNAL_ARTICLE",
+      "title": "Playing flute without lips? Tones of music lost in time – An investigation of the indigenous Bastar Flute",
+      "authors": "A. Karn, R. Anand, A. Kataria, V. P. Singh",
+      "venue": "International Journal of Aeroacoustics, 22, 1–2",
+      "year": 2023,
+      "citation": "",
+      "doi": "",
+      "url": ""
+    },
+    {
+      "type": "BOOK",
+      "title": "Names That Count: The Cultural Calculus of Naming in India. How Indian Names Encode a Civilizational Legacy in Mathematics",
+      "authors": "A. Karn, R. K. Singh",
+      "venue": "Clever Fox Publishing",
+      "year": 2025,
+      "citation": "ISBN 9367073569",
+      "doi": "",
+      "url": ""
+    }
+  ],
+  "students": [
+    {
+      "name": "Amit Kumar",
+      "programme": "Ph.D. in Mechanical Engineering",
+      "biography": "",
+      "researchTopic": "Design, Development and Performance Analysis of Heaters for Hybrid Solar Kitchen Applications",
+      "supervisionRole": "Co-guide",
+      "periodText": "Awarded 2026",
+      "status": "GRADUATED",
+      "graduationYear": 2026
+    },
+    {
+      "name": "Vipin Uniyal",
+      "programme": "Ph.D. in Mechanical Engineering",
+      "biography": "",
+      "researchTopic": "Design, Development and Performance Analysis of Archimedes Screw Turbine",
+      "supervisionRole": "Primary guide",
+      "periodText": "Awarded 2026",
+      "status": "GRADUATED",
+      "graduationYear": 2026
+    },
+    {
+      "name": "Prashant Dhiman",
+      "programme": "Ph.D.",
+      "biography": "",
+      "researchTopic": "Investigations on Performance of Air-Injection Technique in Mitigating Silt Erosion in Hydro-Turbines",
+      "supervisionRole": "Sole guide",
+      "periodText": "Awarded 2025",
+      "status": "GRADUATED",
+      "graduationYear": 2025
+    },
+    {
+      "name": "Prashant Kumar Sanjeeviah",
+      "programme": "Ph.D.",
+      "biography": "",
+      "researchTopic": "Moving Towards Environment-Friendly Hydropower: Development and Performance Analysis of Hydrokinetic Water-Lifting Technology for Hilly Areas",
+      "supervisionRole": "Primary guide",
+      "periodText": "Awarded 2025",
+      "status": "GRADUATED",
+      "graduationYear": 2025
+    },
+    {
+      "name": "Kumar Gaurav",
+      "programme": "Ph.D. in Aerospace Engineering",
+      "biography": "",
+      "researchTopic": "Systematic Investigations on Strategies for Enhancement of Supercavity Size",
+      "supervisionRole": "Sole guide",
+      "periodText": "Awarded 2024",
+      "status": "GRADUATED",
+      "graduationYear": 2024
+    }
+  ],
+  "reviewNotes": [
+    "The CV contains overlapping appointments marked present at UPES and IIT Bombay. The page uses the IIT Bombay Associate Professor appointment beginning June 2026 and excludes UPES roles still marked present.",
+    "Forthcoming 2027 publications were excluded.",
+    "The CV lists awards, grants, patents/copyright registrations, and extensive additional publications; this first page uses a concise selection."
+  ]
+}

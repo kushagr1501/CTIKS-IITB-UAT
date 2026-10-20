@@ -66,6 +66,7 @@ export function publicCoreProfileQuery(slug: string) {
               id: true,
               name: true,
               programme: true,
+              biography: true,
               researchTopic: true,
               supervisionRole: true,
               periodText: true,

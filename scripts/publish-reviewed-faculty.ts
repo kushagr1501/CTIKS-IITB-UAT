@@ -82,11 +82,17 @@ const schema = z
         ...source,
         name: z.string().min(1),
         programme: text,
+        biography: text,
         researchTopic: text,
         periodText: text,
         supervisionRole: text,
         status: z.enum(['CURRENT', 'GRADUATED']),
         graduationYear: z.number().int().min(1800).max(2026).nullable().optional(),
+        imageUrl: z.union([https, z.literal('')]).default(''),
+        socialLinks: z.array(z.object({
+          platform: z.enum(['WEBSITE', 'LINKEDIN', 'GOOGLE_SCHOLAR', 'ORCID', 'RESEARCHGATE', 'GITHUB', 'X', 'INSTAGRAM']),
+          url: https,
+        }).strict()).default([]),
       }),
     ),
   })
