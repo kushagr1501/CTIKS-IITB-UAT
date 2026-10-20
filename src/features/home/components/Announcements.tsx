@@ -7,8 +7,8 @@ import { formatActivityDate } from '@/features/activities/dates';
 
 function AnnouncementRow({ title, description, createdAt, registrationUrl, linkLabel }: PublicActivity) {
   return (
-    <article className="flex flex-col gap-6 rounded-[10px] bg-ctiks-sand px-6 py-[30px] lg:flex-row lg:items-center lg:justify-between lg:gap-12 xl:gap-[140px] lg:px-10">
-      <div className="flex min-w-0 max-w-[635px] flex-col gap-3">
+    <article className="flex min-w-0 flex-col gap-6 rounded-[10px] bg-ctiks-sand px-5 py-[30px] sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:gap-8 lg:px-10">
+      <div className="flex min-w-0 flex-col gap-3 text-center sm:text-left lg:max-w-[635px] lg:flex-1">
         <h3 className="font-body text-[20px] font-semibold leading-[33.6px] text-ctiks-red [overflow-wrap:anywhere] sm:text-[24px]">
           {title}
         </h3>
@@ -17,11 +17,12 @@ function AnnouncementRow({ title, description, createdAt, registrationUrl, linkL
         </p>
       </div>
 
-      <div className="flex shrink-0 flex-wrap items-center gap-6">
+      <div className="flex w-full min-w-0 flex-col items-center gap-4 sm:flex-row sm:justify-between sm:gap-6 lg:w-auto lg:shrink-0 lg:justify-start lg:gap-4">
         <Chip icon="iconCalendar">{formatActivityDate(createdAt)}</Chip>
         <Button
           variant="redOnSand"
           href={registrationUrl || '/announcements'}
+          className="max-w-full"
           {...(registrationUrl ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
         >
           {registrationUrl ? linkLabel || 'More info' : 'View notices'}
