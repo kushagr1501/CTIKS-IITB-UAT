@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ASSETS } from '@/config/assets';
 import { apiJson } from '../api-client';
 import { replaceFacultyProfile } from '../faculty-order';
@@ -26,6 +26,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
   const [credentials, setCredentials] = useState<(FacultyLogin & { name: string }) | null>(null);
   const [pendingDelete, setPendingDelete] = useState<FacultyRecord | null>(null);
   const [deleteError, setDeleteError] = useState('');
+  const editorRegionRef = useRef<HTMLDivElement>(null);
   const selected = editor && editor !== 'new' ? editor : null;
 
   useEffect(() => {
@@ -33,6 +34,11 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
     const timeout = window.setTimeout(() => setMessage(''), 5000);
     return () => window.clearTimeout(timeout);
   }, [message]);
+
+  useEffect(() => {
+    if (!editor) return;
+    editorRegionRef.current?.scrollIntoView({ block: 'start' });
+  }, [editor]);
 
   function replaceProfile(profile: FacultyRecord) {
     setFaculty((current) => replaceFacultyProfile(current, profile));
@@ -214,17 +220,19 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
         </p>
       )}
       {editor && (
-        <FacultyEditor
-          key={selected?.id ?? 'new'}
-          profile={selected}
-          busy={busy}
-          error={error}
-          onCancel={() => {
-            setEditor(null);
-            setError('');
-          }}
-          onSave={save}
-        />
+        <div ref={editorRegionRef} className="scroll-mt-28">
+          <FacultyEditor
+            key={selected?.id ?? 'new'}
+            profile={selected}
+            busy={busy}
+            error={error}
+            onCancel={() => {
+              setEditor(null);
+              setError('');
+            }}
+            onSave={save}
+          />
+        </div>
       )}
       <section
         aria-labelledby="faculty-list-heading"

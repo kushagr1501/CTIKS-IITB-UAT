@@ -69,6 +69,7 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
             name="name"
             className="admin-input"
             defaultValue={values.name}
+            autoFocus
             required
             maxLength={160}
             onChange={(event) => {

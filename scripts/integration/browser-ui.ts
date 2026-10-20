@@ -44,6 +44,8 @@ export async function checkAdminFacultyUi(session: Session, origin: string) {
     const row = page.getByRole('row').filter({ hasText: name });
     await uiExpect(row).toContainText('Browser test department');
     await row.getByRole('button', { name: `Edit ${name}` }).click();
+    await uiExpect(page.getByRole('heading', { name: `Edit ${name}` })).toBeInViewport();
+    await uiExpect(page.getByLabel('Full name')).toBeFocused();
     await page.getByLabel('Biography').fill('Edited through the Playwright browser test.');
     await page.getByRole('button', { name: 'Save faculty profile' }).click();
     await uiExpect(row).toContainText(name);
