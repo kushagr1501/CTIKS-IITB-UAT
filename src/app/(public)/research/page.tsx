@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import PageHero from '@/components/ui/PageHero';
 import Button from '@/components/ui/Button';
 import { ASSETS } from '@/config/assets';
@@ -26,12 +27,11 @@ export default function ResearchPage() {
             {RESEARCH_AREAS.map((area) => (
               <article className={styles.card} key={area.title}>
                 <div className={styles.imageWrap}>
-                  <img
+                  <Image
                     src={`/assets/research/${area.image}`}
                     alt={area.title}
-                    width={1080}
-                    height={630}
-                    loading="lazy"
+                    fill
+                    sizes="(max-width: 767px) calc(100vw - 56px), 530px"
                   />
                 </div>
                 <div className={styles.cardBody}>
