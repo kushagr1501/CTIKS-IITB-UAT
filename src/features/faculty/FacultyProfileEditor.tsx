@@ -132,22 +132,22 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
     max: number,
     rows?: number,
     type = 'text',
-      appearance: 'default' | 'heroName' | 'heroDesignation' | 'identity' | 'prose' = 'default',
+    appearance: 'default' | 'profileName' | 'profileDesignation' | 'profileDepartment' | 'profileBio' | 'contact' = 'default',
   ) {
-    const hero = appearance === 'heroName' || appearance === 'heroDesignation';
+    const profileText = appearance.startsWith('profile');
     const inputClass = [
       styles.control,
       rows ? styles.textarea : '',
-      hero ? styles.heroControl : '',
-      appearance === 'heroName' ? styles.heroName : '',
-      appearance === 'heroDesignation' ? styles.heroDesignation : '',
-      appearance === 'identity' ? styles.identityInput : '',
-      appearance === 'prose' ? styles.proseInput : '',
+      appearance === 'profileName' ? styles.profileName : '',
+      appearance === 'profileDesignation' ? styles.profileDesignation : '',
+      appearance === 'profileDepartment' ? styles.profileDepartment : '',
+      appearance === 'profileBio' ? styles.profileBio : '',
+      appearance === 'contact' ? styles.contactControl : '',
     ]
       .filter(Boolean)
       .join(' ');
     return (
-      <label className={`${styles.field} ${hero ? styles.heroField : ''} ${rows ? 'sm:col-span-2' : ''}`}>
+      <label className={`${styles.field} ${profileText ? styles.profileField : ''} ${rows && !profileText ? 'sm:col-span-2' : ''}`}>
         <span>{label}</span>
         {rows ? (
           <textarea
@@ -234,37 +234,33 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
           </div>
         </div>
         <fieldset disabled={busy} className={`${profileStyles.page} ${styles.page} min-w-0 border-0 p-0`}>
-          <header className={profileStyles.banner}>
-            <div className={`${profileStyles.shell} grid gap-4`}>
-              {textField('name', 'Name shown on your page', 160, undefined, 'text', 'heroName')}
-              {textField(
-                'designation',
-                'Role / designation',
-                160,
-                undefined,
-                'text',
-                'heroDesignation',
-              )}
-            </div>
-          </header>
-        <fieldset disabled={busy} className="min-w-0 border-0 p-0">
           <div className={profileStyles.content}>
             <div className={profileStyles.shell}>
-              <section className={`${profileStyles.header} ${styles.profileHeader}`}>
-                <div className={`${profileStyles.portrait} ${styles.portraitColumn}`}>
-                  <FacultyPortrait name={content.name} image={content.imageUrl || undefined} />
-                  {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048, undefined, 'url')}
-                </div>
-                <div className={`${profileStyles.identity} ${styles.identityFields}`}>
-                  {textField('department', 'Department / affiliation', 300, undefined, 'text', 'identity')}
-                  <div className={styles.contactFields}>
-                    {textField('websiteUrl', 'Personal website (HTTPS)', 2048, undefined, 'url')}
-                    {textField('publicEmail', 'Public email', 254, undefined, 'email')}
+              <section className={styles.profileHeader} aria-label="Edit your profile introduction">
+                <div className={styles.profileAside}>
+                  <div className={styles.portrait}>
+                    <FacultyPortrait name={content.name} image={content.imageUrl || undefined} />
+                  </div>
+                  <div className={styles.photoField}>
+                    {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048, undefined, 'url')}
+                  </div>
+                  <div className={styles.contactPanel}>
+                    <p className={styles.contactHeading}>Contact & links</p>
+                    {textField('publicEmail', 'Public email', 254, undefined, 'email', 'contact')}
+                    {textField('publicPhone', 'Public phone', 100, undefined, 'tel', 'contact')}
+                    {textField('officeAddress', 'Office address', 2000, 3, 'text', 'contact')}
+                    {textField('websiteUrl', 'Personal website (HTTPS)', 2048, undefined, 'url', 'contact')}
                   </div>
                 </div>
-                <div className={`${profileStyles.biography} ${styles.biographyFields}`}>
-                  <p className={profileStyles.bioTitle}>{content.designation}, {content.department}</p>
-                  {textField('biography', 'About you', 8000, 6, 'text', 'prose')}
+                <div className={styles.profileIntro}>
+                  <div className={styles.profileIdentity}>
+                    {textField('name', 'Name shown on your page', 160, undefined, 'text', 'profileName')}
+                    {textField('designation', 'Role / designation', 160, undefined, 'text', 'profileDesignation')}
+                    {textField('department', 'Department / affiliation', 300, undefined, 'text', 'profileDepartment')}
+                  </div>
+                  <div className={styles.profileBiography}>
+                    {textField('biography', 'About you', 8000, 6, 'text', 'profileBio')}
+                  </div>
                 </div>
               </section>
               <nav
@@ -279,7 +275,6 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                   <li><a href="#editor-publications">Publications</a></li>
                   <li><a href="#editor-patents">Patents</a></li>
                   <li><a href="#editor-students">Students</a></li>
-                  <li><a href="#editor-officeAddress">Office & contact</a></li>
                 </ul>
               </nav>
               <div className={styles.sectionList}>
@@ -412,17 +407,9 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                     }
                   />
                 </div>
-                <section className={profileStyles.section} id="editor-officeAddress">
-                  <div className={profileStyles.sectionHeading}><h2>Office & contact</h2></div>
-                  <div className={`${profileStyles.sectionContent} grid gap-5 sm:grid-cols-2`}>
-                    {textField('officeAddress', 'Office address', 2000, 3)}
-                    {textField('publicPhone', 'Public phone', 100, undefined, 'tel')}
-                  </div>
-                </section>
               </div>
             </div>
           </div>
-        </fieldset>
         </fieldset>
       </form>
     </div>

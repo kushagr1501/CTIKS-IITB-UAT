@@ -130,11 +130,7 @@
   resize: vertical;
 }
 
-.heroField {
-  color: rgb(255 255 255 / 82%);
-}
-
-.heroField > span {
+.profileField > span {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -144,61 +140,157 @@
   clip-path: inset(50%);
 }
 
-.heroControl {
-  border-color: rgb(255 241 218 / 48%);
+.profileHeader {
+  display: grid;
+  grid-template-columns: minmax(270px, 35%) minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid #e4cbb1;
+  background: rgb(255 253 248 / 86%);
+}
+
+.profileAside {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #f6ebdd;
+}
+
+.portrait {
+  background: #e9dac9;
+}
+
+.portrait img,
+.portrait > div {
+  display: block;
+  width: 100%;
+  height: 340px;
+  border: 0;
   border-radius: 0;
-  background: rgb(97 0 0 / 14%);
-  color: white;
-  padding: 8px 12px;
+  object-fit: cover;
+  object-position: center 28%;
+  box-shadow: none;
 }
 
-.heroControl:focus {
-  border-color: #f3c56c;
-  background: rgb(97 0 0 / 36%);
-  box-shadow: 0 0 0 2px rgb(243 197 108 / 25%);
+.photoField {
+  padding: 14px 24px;
 }
 
-.heroName {
-  font-family: 'Red Rose', serif;
-  font-size: clamp(23px, 2.4vw, 34px);
+.photoField .field {
+  font-size: 11px;
+}
+
+.photoField .control {
+  font-size: 12px;
+}
+
+.contactPanel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  padding: 27px 30px 31px;
+  background: #881716;
+}
+
+.contactHeading {
+  color: #f4ce85;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 2px;
-  line-height: 1.35;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.heroDesignation {
-  max-width: 850px;
-  font-size: 16px;
+.contactPanel .field {
+  gap: 3px;
+  color: #f4ce85;
+  font-size: 11px;
+  font-weight: 600;
 }
 
-.profileHeader {
-  align-items: start;
+.contactControl {
+  border: 1px solid rgb(255 247 235 / 30%);
+  background: rgb(255 255 255 / 8%);
+  color: #fff7eb;
+  font-size: 14px;
+  font-weight: 400;
 }
 
-.portraitColumn {
-  display: grid;
-  gap: 14px;
+.contactControl:focus {
+  border-color: #f4ce85;
+  background: rgb(255 255 255 / 14%);
+  color: white;
+}
+
+.profileIntro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   min-width: 0;
+  padding: clamp(32px, 5vw, 64px);
 }
 
-.identityFields {
+.profileIdentity {
   display: grid;
-  gap: 14px;
+  gap: 4px;
 }
 
-.contactFields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 18px;
+.profileField .control {
+  border-color: transparent;
+  background: transparent;
+  padding: 2px 4px;
+  margin-left: -4px;
 }
 
-.biographyFields {
-  display: grid;
-  gap: 14px;
-  grid-column: 1 / -1;
-  padding-top: 6px;
+.profileField .control:hover {
+  border-color: #e4cbb1;
+  background: rgb(255 255 255 / 48%);
+}
+
+.profileField .control:focus {
+  border-color: #aa1313;
+  background: #fffdfa;
+}
+
+.profileName {
+  color: #b01519;
+  font-family: 'Red Rose', serif;
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 600;
+  line-height: 1.18;
+}
+
+.profileIdentity .field:first-child::after {
+  content: '';
+  display: block;
+  width: 64px;
+  height: 4px;
+  margin: 20px 0 20px;
+  background: #efbf55;
+}
+
+.profileDesignation {
+  color: #39352f;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.profileDepartment {
+  color: #625f5a;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.profileBiography {
+  max-width: 60ch;
+  margin-top: clamp(32px, 5vw, 56px);
+  padding-top: 23px;
+  border-top: 1px solid #dcc4a7;
+}
+
+.profileBio {
+  color: #625f5a;
+  font-size: 16px;
+  line-height: 1.75;
 }
 
 .sectionNav {
@@ -253,32 +345,6 @@
   color: #4a4235;
 }
 
-.identityInput {
-  border-color: #d8aa85;
-  background: rgb(255 253 248 / 66%);
-  padding: 8px 10px;
-  color: #625f5a;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 1.7;
-}
-
-.proseInput {
-  border-color: #d8aa85;
-  background: rgb(255 253 248 / 66%);
-  padding: 10px 12px;
-  color: #625f5a;
-  font-size: 16px;
-  line-height: 1.75;
-}
-
-.identityInput:focus,
-.proseInput:focus {
-  border-color: #aa1313;
-  background: #fffdfa;
-  box-shadow: 0 0 0 2px rgb(170 19 19 / 12%);
-}
-
 .summaryField {
   grid-column: 1 / -1;
 }
@@ -297,8 +363,41 @@
 
   .viewButton { align-self: flex-start; }
 
-  .contactFields {
+  .profileHeader {
+    grid-template-columns: minmax(200px, 36%) minmax(0, 1fr);
+  }
+
+  .profileIntro {
+    padding: 28px;
+  }
+
+  .contactPanel {
+    padding: 22px;
+  }
+
+  .portrait img,
+  .portrait > div {
+    height: 290px;
+  }
+}
+
+@media (max-width: 479px) {
+  .profileHeader {
     grid-template-columns: 1fr;
+  }
+
+  .profileAside {
+    display: contents;
+  }
+
+  .portrait { order: 1; }
+  .profileIntro { order: 2; padding: 28px 24px 34px; }
+  .photoField { order: 3; }
+  .contactPanel { order: 4; }
+
+  .portrait img,
+  .portrait > div {
+    height: 340px;
   }
 }
 
