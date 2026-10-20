@@ -364,41 +364,35 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
 
   return (
     <div className={styles.page}>
-      <div className={styles.banner}>
-        <div className={styles.shell}>
-          <h1>{profile.name}</h1>
-          <p>
-            {profile.designation || 'Core Faculty Member'}, Centre for Traditional Indian Knowledge and Skills
-          </p>
-        </div>
-      </div>
       <div className={styles.content}>
         <div className={styles.shell}>
           <header className={styles.header}>
-            <div className={styles.portrait}>
-              <FacultyPortrait name={profile.name} image={profile.imageUrl || undefined} />
-            </div>
-            <div className={styles.identity}>
-              <h2>{profile.name}</h2>
-              <p className={styles.designation}>{profile.designation || 'Core Faculty Member'}</p>
-              <p className={styles.department}>{profile.department}</p>
-              {(profile.publicEmail || website) && (
-                <div className={styles.headerLinks}>
+            <div className={styles.profileAside}>
+              <div className={styles.portrait}>
+                <FacultyPortrait name={profile.name} image={profile.imageUrl || undefined} />
+              </div>
+              {contact && (
+                <div className={styles.contactPanel}>
+                  <p className={styles.contactLabel}>Contact & links</p>
+                  {profile.publicEmail && <a href={`mailto:${profile.publicEmail}`}>{profile.publicEmail}</a>}
+                  {academic?.publicPhone && <a href={`tel:${academic.publicPhone}`}>{academic.publicPhone}</a>}
+                  {academic?.officeAddress && <p>{academic.officeAddress}</p>}
                   {website && <ExternalLink url={website}>Personal website</ExternalLink>}
-                  {profile.publicEmail && (
-                    <a href={`mailto:${profile.publicEmail}`}>{profile.publicEmail}</a>
-                  )}
                 </div>
               )}
             </div>
-            {profile.biography && (
-              <div className={styles.biography}>
-                <p className={styles.bioTitle}>
-                  {profile.designation || 'Core Faculty Member'}, {profile.department}
-                </p>
-                <p className={styles.prose}>{profile.biography}</p>
+            <div className={styles.intro}>
+              <div className={styles.identity}>
+                <h1>{profile.name}</h1>
+                <p className={styles.designation}>{profile.designation || 'Core Faculty Member'}</p>
+                <p className={styles.department}>{profile.department}</p>
               </div>
-            )}
+              {profile.biography && (
+                <div className={styles.biography}>
+                  <p className={styles.prose}>{profile.biography}</p>
+                </div>
+              )}
+            </div>
           </header>
           {sections.length > 0 && (
             <div className={styles.body}>
