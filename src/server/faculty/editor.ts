@@ -158,22 +158,27 @@ function editorStateFromContent(
 }
 export async function getOwnFacultyEditor(actor: Actor) {
   ownActor(actor);
-  return getDatabase().$transaction(async (tx) => {
-    const profile = await ownProfile(tx, actor);
-    const draft = await tx.facultyProfileRevision.findFirst({
-      where: { facultyId: profile.id, status: { in: [...workingStates] } },
-      include: academicInclude,
-    });
-    if (draft?.status === 'SUBMITTED')
-      throw new HttpError(409, 'A submitted profile is awaiting review. Contact the administrator.');
-    const revision =
-      draft ??
-      (await tx.facultyProfileRevision.findFirst({
-        where: { facultyId: profile.id, status: 'PUBLISHED' },
-        include: academicInclude,
-      }));
-    return editorState(profile, revision, Boolean(draft));
+  const database = getDatabase();
+  const profile = await database.facultyProfile.findFirst({
+    where: { userId: actor.id, category: 'CORE' },
   });
+  if (!profile) throw new HttpError(403, 'A linked core faculty profile is required.');
+  // These are read-only lookups. Keeping relation loading outside an interactive
+  // transaction lets Prisma use the pool instead of overlapping queries on one
+  // pg client, which pg 9 will reject.
+  const draft = await database.facultyProfileRevision.findFirst({
+    where: { facultyId: profile.id, status: { in: [...workingStates] } },
+    include: academicInclude,
+  });
+  if (draft?.status === 'SUBMITTED')
+    throw new HttpError(409, 'A submitted profile is awaiting review. Contact the administrator.');
+  const revision =
+    draft ??
+    (await database.facultyProfileRevision.findFirst({
+      where: { facultyId: profile.id, status: 'PUBLISHED' },
+      include: academicInclude,
+    }));
+  return editorState(profile, revision, Boolean(draft));
 }
 function revisionData(content: AcademicContent) {
   return {
@@ -334,11 +339,9 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
         before: { revisionNumber: working.revisionNumber, draftVersion: working.version },
       }),
     });
-    const published = await tx.facultyProfileRevision.findFirst({
-      where: { facultyId: profile.id, status: 'PUBLISHED' },
-      include: academicInclude,
-    });
-    return editorState(profile, published);
+    // Load the published revision after commit. Prisma resolves relation includes
+    // in parallel, which must not run through a transaction's single pg client.
+    return { reloadAfterCommit: true } as const;
   }
   if (working && working.sourceProfileVersion !== profile.version)
     throw new HttpError(
@@ -436,10 +439,11 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
 }
 export async function saveOwnFacultyContent(actor: Actor, input: unknown) {
   try {
-    return await getDatabase().$transaction((tx) => writeOwnFacultyContent(tx, actor, input), {
+    const result = await getDatabase().$transaction((tx) => writeOwnFacultyContent(tx, actor, input), {
       isolationLevel: 'Serializable',
       timeout: 30000,
     });
+    return 'reloadAfterCommit' in result ? getOwnFacultyEditor(actor) : result;
   } catch (error) {
     if (
       error &&
