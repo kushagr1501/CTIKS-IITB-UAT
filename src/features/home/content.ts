@@ -11,7 +11,7 @@ export const PROGRAMMES: Programme[] = [
     body: 'Advanced doctoral research driving original contribution, interdisciplinary collaboration, and academic innovation.',
     image: ASSETS.programmePhd,
     imageAlt: 'Research notebooks and a laptop on a desk',
-    href: '/academics',
+    href: '/academics/phd',
   },
   {
     title: 'Outreach & Community Engagement',

@@ -36,9 +36,8 @@ export default function ContactPage() {
   return (
     <>
       <InteriorHero title="Contact us" image="/assets/figma/contact-hero.png" contact>
-        We welcome your queries, collaborations, and suggestions.
-        <br className="hidden sm:block" /> Get in touch with the Centre for Traditional Indian Knowledge and
-        Skills (CTIKS), IIT Bombay.
+        <p>CTIKS welcomes collaborations with like-minded organisations and individuals.</p>
+        <p className="mt-2">Kindly get in touch with us to explore opportunities to work together.</p>
       </InteriorHero>
       <div className="mx-auto flex max-w-[1168px] flex-col gap-7 px-4 py-8 sm:gap-8 sm:px-6 sm:py-12">
         <div className="grid items-stretch gap-6 md:grid-cols-2">
@@ -47,8 +46,8 @@ export default function ContactPage() {
             <div className="flex flex-col gap-5">
               <ContactRow icon="location">
                 <address className="not-italic">
-                  Centre for Traditional Indian Knowledge and Skills (CTIKS) IIT Bombay, Powai, Mumbai,
-                  Maharashtra – 400076, India
+                  Centre for Traditional Indian Knowledge and Skills (CTIKS), Second Floor, DSSE,
+                  IIT Bombay, Powai, Mumbai, Maharashtra – 400076, India
                 </address>
               </ContactRow>
               <ContactRow icon="email">
