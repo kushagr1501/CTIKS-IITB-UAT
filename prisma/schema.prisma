@@ -105,8 +105,7 @@ model FacultyProfileRevision {
   id                   String                @id @default(uuid())
   facultyId            String
   revisionNumber       Int
-  sourceProfileVersion Int
-  version              Int                   @default(1)
+  draftVersion         Int                   @default(1)
   status               FacultyRevisionStatus @default(DRAFT)
   name                 String?
   designation          String?

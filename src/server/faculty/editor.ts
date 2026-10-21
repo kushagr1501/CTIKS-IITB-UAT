@@ -130,7 +130,7 @@ function editorState(profile: Profile, revision?: Revision | null, draft = false
       visible: profile.visible,
     },
     profileVersion: profile.version,
-    draftVersion: draft ? (revision?.version ?? null) : null,
+    draftVersion: draft ? (revision?.draftVersion ?? null) : null,
     hasDraft: draft,
     content: contentOf(profile, revision, draft),
   };
@@ -138,7 +138,7 @@ function editorState(profile: Profile, revision?: Revision | null, draft = false
 
 function editorStateFromContent(
   profile: Profile,
-  revision: Pick<Revision, 'version'>,
+  revision: Pick<Revision, 'draftVersion'>,
   content: AcademicContent,
   draft: boolean,
 ): FacultyEditorState {
@@ -151,7 +151,7 @@ function editorStateFromContent(
       visible: profile.visible,
     },
     profileVersion: profile.version,
-    draftVersion: draft ? revision.version : null,
+    draftVersion: draft ? revision.draftVersion : null,
     hasDraft: draft,
     content,
   };
@@ -316,18 +316,22 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
   if (profile.version !== request.profileVersion)
     throw new HttpError(
       409,
-      'The administrator or another session changed this profile. Reload before saving.',
+      'This profile changed in another session. Reload before saving.',
     );
   const working = await tx.facultyProfileRevision.findFirst({
     where: { facultyId: profile.id, status: { in: [...workingStates] } },
   });
   if (working?.status === 'SUBMITTED') throw new HttpError(409, 'Submitted content cannot be edited.');
-  if ((working?.version ?? null) !== request.draftVersion)
+  if ((working?.draftVersion ?? null) !== request.draftVersion)
     throw new HttpError(409, 'This draft changed in another tab. Reload before saving.');
   if (request.action === 'discard') {
     if (!working) throw new HttpError(409, 'There is no saved draft to discard.');
     const removed = await tx.facultyProfileRevision.deleteMany({
-      where: { id: working.id, version: working.version, status: { in: ['DRAFT', 'CHANGES_REQUESTED'] } },
+      where: {
+        id: working.id,
+        draftVersion: working.draftVersion,
+        status: { in: ['DRAFT', 'CHANGES_REQUESTED'] },
+      },
     });
     if (removed.count !== 1) throw new HttpError(409, 'This draft changed. Reload before discarding.');
     await tx.auditEvent.create({
@@ -336,29 +340,24 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
         action: 'FACULTY_DRAFT_DISCARDED',
         targetId: profile.id,
         targetName: profile.name,
-        before: { revisionNumber: working.revisionNumber, draftVersion: working.version },
+        before: { revisionNumber: working.revisionNumber, draftVersion: working.draftVersion },
       }),
     });
     // Load the published revision after commit. Prisma resolves relation includes
     // in parallel, which must not run through a transaction's single pg client.
     return { reloadAfterCommit: true } as const;
   }
-  if (working && working.sourceProfileVersion !== profile.version)
-    throw new HttpError(
-      409,
-      'The administrator changed the profile after this draft was saved. Reload, then discard the draft to start from the current profile.',
-    );
   let revision: Prisma.FacultyProfileRevisionGetPayload<object>;
   if (working) {
     revision = await tx.facultyProfileRevision.update({
       where: {
         id: working.id,
-        version: working.version,
+        draftVersion: working.draftVersion,
         status: { in: ['DRAFT', 'CHANGES_REQUESTED'] },
       },
       data: {
         ...revisionData(request.content),
-        version: { increment: 1 },
+        draftVersion: { increment: 1 },
         status: 'DRAFT',
         reviewNote: '',
         reviewedAt: null,
@@ -373,7 +372,6 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
     revision = await tx.facultyProfileRevision.create({
       data: {
         facultyId: profile.id,
-        sourceProfileVersion: profile.version,
         revisionNumber: (highest._max.revisionNumber ?? 0) + 1,
         status: 'DRAFT',
         ...revisionData(request.content),
@@ -404,7 +402,7 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
     });
     revision = await tx.facultyProfileRevision.update({
       where: { id: revision.id },
-      data: { status: 'PUBLISHED', publishedAt: new Date(), sourceProfileVersion: profile.version + 1 },
+      data: { status: 'PUBLISHED', publishedAt: new Date() },
     });
     updated = {
       ...profile,
@@ -425,12 +423,12 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
       action: request.action === 'publish' ? 'FACULTY_SELF_PUBLISHED' : 'FACULTY_DRAFT_SAVED',
       targetId: profile.id,
       targetName: request.content.name,
-      before: { profileVersion: profile.version, draftVersion: working?.version ?? null },
+      before: { profileVersion: profile.version, draftVersion: working?.draftVersion ?? null },
       after: {
         profileVersion: updated.version,
         revisionId: revision.id,
         revisionNumber: revision.revisionNumber,
-        draftVersion: revision.version,
+        draftVersion: revision.draftVersion,
       },
       details: { ownProfileOnly: true, immediatelyPublished: request.action === 'publish' },
     }),

@@ -88,7 +88,6 @@ try {
           data: {
             facultyId: before.id,
             revisionNumber: Math.max(...original.revisions.map((r) => r.revisionNumber)) + 1,
-            sourceProfileVersion: before.version + 1,
             status: 'PUBLISHED',
             publishedAt: new Date(),
             ...base,

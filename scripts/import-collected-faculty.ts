@@ -197,7 +197,6 @@ try {
           data: {
             facultyId: before.id,
             revisionNumber: 2,
-            sourceProfileVersion: before.version + 1,
             status: 'PUBLISHED',
             publishedAt: new Date(),
             ...base,

@@ -105,7 +105,6 @@ try {
         data: {
           facultyId: profile.id,
           revisionNumber: (highest._max.revisionNumber ?? 0) + 1,
-          sourceProfileVersion: profile.version,
           status: 'PUBLISHED',
           publishedAt: new Date(),
           name: current.name,
