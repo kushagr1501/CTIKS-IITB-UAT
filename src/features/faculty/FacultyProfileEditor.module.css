@@ -10,6 +10,11 @@
   font-family: Montserrat, sans-serif;
 }
 
+.editorShell {
+  width: min(1180px, 100%);
+  max-width: none;
+}
+
 .actionRail {
   position: sticky;
   top: 0;
@@ -295,23 +300,17 @@
 
 .sectionNav {
   display: block !important;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
+  overflow: visible;
   margin: 24px 0 32px;
   padding: 4px 12px;
-  scrollbar-width: thin;
 }
 
 .sectionNav ul {
-  width: max-content;
-  min-width: 100%;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 8px 22px;
-}
-
-.sectionNav a {
-  white-space: nowrap;
 }
 
 .sectionList {

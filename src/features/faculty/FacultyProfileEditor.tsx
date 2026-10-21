@@ -179,7 +179,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
         }}
       >
         <div className={styles.actionRail}>
-          <div className={`${profileStyles.shell} ${styles.actionInner}`}>
+          <div className={`${profileStyles.shell} ${styles.editorShell} ${styles.actionInner}`}>
             <div className={styles.actionMeta}>
               <div aria-live="polite" className={styles.status}>
                 {dirty
@@ -235,7 +235,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
         </div>
         <fieldset disabled={busy} className={`${profileStyles.page} ${styles.page} min-w-0 border-0 p-0`}>
           <div className={profileStyles.content}>
-            <div className={profileStyles.shell}>
+            <div className={`${profileStyles.shell} ${styles.editorShell}`}>
               <section className={styles.profileHeader} aria-label="Edit your profile introduction">
                 <div className={styles.profileAside}>
                   <div className={styles.portrait}>
@@ -244,8 +244,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                   <div className={styles.photoField}>
                     {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048, undefined, 'url')}
                   </div>
-                  <div className={styles.contactPanel}>
-                    <p className={styles.contactHeading}>Contact & links</p>
+                  <div id="editor-office-contact" className={styles.contactPanel}>
+                    <p className={styles.contactHeading}>Office & contact</p>
                     {textField('publicEmail', 'Public email', 254, undefined, 'email', 'contact')}
                     {textField('publicPhone', 'Public phone', 100, undefined, 'tel', 'contact')}
                     {textField('officeAddress', 'Office address', 2000, 3, 'text', 'contact')}
@@ -268,16 +268,34 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                 className={`${profileStyles.navigation} ${styles.sectionNav}`}
               >
                 <ul>
-                  <li><a href="#editor-researchTags">Research areas</a></li>
                   <li><a href="#editor-education">Education</a></li>
                   <li><a href="#editor-courses">Teaching</a></li>
+                  <li><a href="#editor-researchTags">Research areas</a></li>
                   <li><a href="#editor-experience">Work experience</a></li>
                   <li><a href="#editor-publications">Publications</a></li>
                   <li><a href="#editor-patents">Patents</a></li>
-                  <li><a href="#editor-students">Students</a></li>
+                  <li><a href="#editor-graduated-students">Graduated students</a></li>
+                  <li><a href="#editor-current-students">Current students</a></li>
+                  <li><a href="#editor-office-contact">Office & contact</a></li>
                 </ul>
               </nav>
               <div className={styles.sectionList}>
+                <div className={styles.collectionWrap}>
+                  <AcademicEntries
+                    name="education"
+                    rows={content.education}
+                    {...collections.education}
+                    onChange={(rows) => setField('education', rows)}
+                  />
+                </div>
+                <div className={styles.collectionWrap}>
+                  <AcademicEntries
+                    name="courses"
+                    rows={content.courses}
+                    {...collections.courses}
+                    onChange={(rows) => setField('courses', rows)}
+                  />
+                </div>
                 <section className={profileStyles.section} id="editor-researchTags">
                   <div className={profileStyles.sectionHeading}><h2>Research areas</h2></div>
                   <div className={`${profileStyles.sectionContent} grid gap-5`}>
@@ -354,22 +372,6 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                 </section>
                 <div className={styles.collectionWrap}>
                   <AcademicEntries
-                    name="education"
-                    rows={content.education}
-                    {...collections.education}
-                    onChange={(rows) => setField('education', rows)}
-                  />
-                </div>
-                <div className={styles.collectionWrap}>
-                  <AcademicEntries
-                    name="courses"
-                    rows={content.courses}
-                    {...collections.courses}
-                    onChange={(rows) => setField('courses', rows)}
-                  />
-                </div>
-                <div className={styles.collectionWrap}>
-                  <AcademicEntries
                     name="experience"
                     rows={content.experience}
                     {...collections.experience}
@@ -392,21 +394,30 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                     onChange={(rows) => setField('patents', rows)}
                   />
                 </div>
-                <div className={styles.collectionWrap}>
-                  <AcademicEntries
-                    name="students"
-                    rows={content.students}
-                    {...collections.students}
-                    onChange={(rows) =>
-                      setField(
-                        'students',
-                        rows.map((row) =>
-                          row.status === 'CURRENT' ? { ...row, graduationYear: null } : row,
-                        ),
-                      )
-                    }
-                  />
-                </div>
+                {(['GRADUATED', 'CURRENT'] as const).map((status) => {
+                  const rows = content.students.filter((student) => student.status === status);
+                  const label = status === 'GRADUATED' ? 'Graduated students' : 'Current students';
+                  return (
+                    <div key={status} className={styles.collectionWrap}>
+                      <AcademicEntries
+                        name="students"
+                        {...collections.students}
+                        sectionId={`editor-${status === 'GRADUATED' ? 'graduated' : 'current'}-students`}
+                        label={label}
+                        rows={rows}
+                        create={() => ({ ...collections.students.create(), status })}
+                        onChange={(updatedRows) =>
+                          setField('students', [
+                            ...content.students.filter((student) => student.status !== status),
+                            ...updatedRows.map((row) =>
+                              row.status === 'CURRENT' ? { ...row, graduationYear: null } : row,
+                            ),
+                          ])
+                        }
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

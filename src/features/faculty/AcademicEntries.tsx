@@ -40,6 +40,7 @@ const moveButtonClass =
 
 export default function AcademicEntries<T extends Record<string, EntryValue>>({
   name,
+  sectionId,
   label,
   rows,
   fields,
@@ -48,6 +49,7 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
   limit,
 }: {
   name: AcademicCollection;
+  sectionId?: string;
   label: string;
   rows: T[];
   fields: EntryField<T>[];
@@ -62,7 +64,7 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
     onChange(next);
   }
   return (
-    <section id={`editor-${name}`} className="admin-panel scroll-mt-6">
+    <section id={sectionId ?? `editor-${name}`} className="admin-panel scroll-mt-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-display text-2xl text-ctiks-maroon">
           {label} <span className="text-base font-normal text-stone-500">({rows.length})</span>
