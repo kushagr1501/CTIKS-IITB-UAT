@@ -45,6 +45,9 @@
   letter-spacing: 3.6px;
   text-transform: uppercase;
 }
+.degree {
+  text-transform: none;
+}
 .hero p {
   margin-top: 20px;
   font-size: 20px;

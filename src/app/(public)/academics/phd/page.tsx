@@ -15,7 +15,7 @@ export default function PhdPage() {
     <div className={styles.paper}>
       <header className={`${styles.hero} ${viewport.banner}`}>
         <div className={styles.heroInner}>
-          <h1>Doctor of Philosophy (Ph.D) Program</h1>
+          <h1>Doctor of Philosophy (<span className={styles.degree}>Ph.D</span>) Program</h1>
           <p>Ph.D. program at CTIKS, IITB has been introduced from Academic Year 2026-27</p>
         </div>
       </header>
