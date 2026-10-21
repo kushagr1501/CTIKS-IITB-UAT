@@ -9,12 +9,6 @@ const accountFields = [
   'id',
   'userId',
   'password',
-  'accessToken',
-  'refreshToken',
-  'idToken',
-  'accessTokenExpiresAt',
-  'refreshTokenExpiresAt',
-  'scope',
   'createdAt',
   'updatedAt',
 ];
