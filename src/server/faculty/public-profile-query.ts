@@ -1,6 +1,9 @@
 // Explicit public projection: never select login, drafts, reviewer or audit data.
 // Kept independent of server initialization so integration tests exercise this query.
-export function publicCoreProfileQuery(slug: string) {
+export function publicCoreProfileQuery(
+  slug: string,
+  limits?: { publications: number; patents: number; students: number },
+) {
   return {
     where: { slug, visible: true, category: 'CORE' as const },
     select: {
@@ -17,6 +20,7 @@ export function publicCoreProfileQuery(slug: string) {
         where: { status: 'PUBLISHED' as const },
         take: 1,
         select: {
+          id: true,
           researchTags: true,
           researchOverview: true,
           officeAddress: true,
@@ -34,6 +38,7 @@ export function publicCoreProfileQuery(slug: string) {
             select: { id: true, title: true, code: true, periodText: true, description: true, status: true },
           },
           publications: {
+            ...(limits ? { take: limits.publications } : {}),
             orderBy: [{ displayOrder: 'asc' as const }, { id: 'asc' as const }],
             select: {
               id: true,
@@ -48,6 +53,7 @@ export function publicCoreProfileQuery(slug: string) {
             },
           },
           patents: {
+            ...(limits ? { take: limits.patents } : {}),
             orderBy: [{ displayOrder: 'asc' as const }, { id: 'asc' as const }],
             select: {
               id: true,
@@ -61,6 +67,7 @@ export function publicCoreProfileQuery(slug: string) {
             },
           },
           students: {
+            ...(limits ? { take: limits.students } : {}),
             orderBy: [{ displayOrder: 'asc' as const }, { id: 'asc' as const }],
             select: {
               id: true,

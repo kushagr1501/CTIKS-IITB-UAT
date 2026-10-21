@@ -420,20 +420,21 @@
   margin-top: 24px;
 }
 
-.tabs {
-  display: flex;
-  gap: 20px;
-  border-bottom: 1px solid #e5d7bc;
-  overflow-x: auto;
-  margin-bottom: 18px;
+.viewCollection {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  color: #8c1818;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #d8bf93;
+  text-underline-offset: 5px;
 }
 
-.tabs button {
-  color: #6d6251;
-  font-size: 14px;
-  padding: 0 0 10px;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
+.viewCollection:hover {
+  text-decoration-color: currentColor;
 }
 
 .section[id='education'] .sectionContent>ul {
@@ -467,12 +468,6 @@
 .section[id='publications'] .entry::before {
   top: 25px;
   left: 0;
-}
-
-.tabs button[aria-selected='true'] {
-  color: #aa1313;
-  border-bottom-color: #aa1313;
-  font-weight: 600;
 }
 
 @media (max-width: 1023px) {

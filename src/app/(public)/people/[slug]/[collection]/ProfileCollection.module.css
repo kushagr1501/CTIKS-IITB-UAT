@@ -1,0 +1,138 @@
+.back {
+  display: inline-flex;
+  color: #8c1818;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 30px 0 26px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #dcc59e;
+}
+
+.headingCopy {
+  min-width: 0;
+}
+
+.heading h1 {
+  color: #8c1818;
+  font-family: 'Red Rose', serif;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.2;
+}
+
+.headingCopy > p:last-child {
+  margin-top: 8px;
+  color: #625b51;
+}
+
+.kicker {
+  margin-bottom: 8px;
+  color: #a65c2a;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.statusFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 18px;
+  margin-bottom: 24px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(140px, 0.75fr);
+  align-items: end;
+  gap: 14px;
+  width: min(100%, 380px);
+  flex: 0 1 380px;
+}
+
+.filters label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: #6d6251;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.filters select {
+  min-height: 42px;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d8bf93;
+  border-radius: 4px;
+  background: #fffdfa;
+  padding: 8px 12px;
+  color: #49453f;
+}
+
+.statusFilters a,
+.pageLinks a {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  border: 1px solid #bd9765;
+  border-radius: 4px;
+  padding: 8px 14px;
+  color: #8c1818;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.statusFilters a:hover,
+.pageLinks a:hover {
+  background: #f6ead6;
+}
+
+.statusFilters a[aria-current='page'] {
+  border-color: #8c1818;
+  background: #8c1818;
+  color: white;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid #e5d7bc;
+  color: #625b51;
+  font-size: 14px;
+}
+
+.pageLinks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 780px) {
+  .heading {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .filters {
+    width: 100%;
+    flex-basis: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getPublicCoreFacultyProfile } from '@/server/faculty/public';
+import { getPublicCoreFacultyOverview } from '@/server/faculty/public';
 import FacultyProfile from '@/features/people/components/FacultyProfile';
 
 export const dynamic = 'force-dynamic';
@@ -8,7 +8,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const profile = await getPublicCoreFacultyProfile(slug);
+  const { profile } = await getPublicCoreFacultyOverview(slug);
   if (!profile) notFound();
   return {
     title: profile.name,
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function FacultyProfilePage({ params }: Props) {
   const { slug } = await params;
-  const profile = await getPublicCoreFacultyProfile(slug);
+  const { profile, totals } = await getPublicCoreFacultyOverview(slug);
   if (!profile) notFound();
-  return <FacultyProfile profile={profile} />;
+  return <FacultyProfile profile={profile} totals={totals} />;
 }

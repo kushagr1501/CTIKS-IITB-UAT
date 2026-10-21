@@ -47,6 +47,7 @@ export function buildFacultyDemoProfile(existing: Profile): Profile {
     interests: source.profile.researchTags.join(', '),
     revisions: [
       {
+        id: existing.revisions[0]?.id ?? 'demo-revision',
         researchTags: source.profile.researchTags,
         researchOverview: source.profile.researchOverview,
         officeAddress: 'Room A-204, Academic Block (demo)',

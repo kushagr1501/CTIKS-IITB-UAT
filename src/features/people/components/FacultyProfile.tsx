@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 import type { getPublicCoreFacultyProfile } from '@/server/faculty/public';
 import FacultyPortrait from './FacultyPortrait';
 import styles from './FacultyProfile.module.css';
-import ProfilePublicationTabs from './ProfilePublicationTabs';
 import {
   STUDENT_LINK_LABELS,
   readStudentSocialLinks,
@@ -13,7 +12,11 @@ import studentStyles from './StudentCard.module.css';
 
 type Profile = NonNullable<Awaited<ReturnType<typeof getPublicCoreFacultyProfile>>>;
 type Student = Profile['revisions'][number]['students'][number];
-const publicationTypes = {
+type Publication = Profile['revisions'][number]['publications'][number];
+type Patent = Profile['revisions'][number]['patents'][number];
+type CollectionTotals = { publications: number; patents: number; graduated: number; current: number };
+
+export const publicationTypes = {
   JOURNAL_ARTICLE: 'Journal articles',
   CONFERENCE_PAPER: 'Conference papers',
   BOOK: 'Books',
@@ -68,7 +71,40 @@ function AcademicEntry({
   );
 }
 
-function StudentCard({ student }: { student: Student }) {
+export function PublicationEntry({ item }: { item: Publication }) {
+  return (
+    <AcademicEntry
+      title={item.title}
+      detail={[item.authors, item.venue].filter(Boolean).join(' · ')}
+      period={item.year?.toString()}
+    >
+      {item.citation && <p className={styles.prose}>{item.citation}</p>}
+      <div className={styles.entryLinks}>
+        {item.doi && (
+          <ExternalLink url={`https://doi.org/${encodeURIComponent(item.doi.replace(/^https?:\/\/doi\.org\//i, ''))}`}>
+            DOI: {item.doi.replace(/^https?:\/\/doi\.org\//i, '')}
+          </ExternalLink>
+        )}
+        {item.url && <ExternalLink url={item.url}>View publication</ExternalLink>}
+      </div>
+    </AcademicEntry>
+  );
+}
+
+export function PatentEntry({ item }: { item: Patent }) {
+  return (
+    <AcademicEntry
+      title={item.title}
+      detail={[item.inventors, item.identifier, item.status].filter(Boolean).join(' · ')}
+      period={item.year?.toString()}
+    >
+      {item.description && <p className={styles.prose}>{item.description}</p>}
+      {item.url && <ExternalLink url={item.url}>View patent</ExternalLink>}
+    </AcademicEntry>
+  );
+}
+
+export function StudentCard({ student }: { student: Student }) {
   const photo = studentPhotoSchema.safeParse(student.imageUrl);
   const image = photo.success ? photo.data : '';
   const links = readStudentSocialLinks(student.socialLinks);
@@ -114,7 +150,7 @@ function StudentCard({ student }: { student: Student }) {
   );
 }
 
-export default function FacultyProfile({ profile }: { profile: Profile }) {
+export default function FacultyProfile({ profile, totals }: { profile: Profile; totals?: CollectionTotals }) {
   const academic = profile.revisions[0];
   const website = safeLink(profile.websiteUrl);
   const tags = academic?.researchTags ?? [];
@@ -217,42 +253,16 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
       id: 'publications',
       title: 'Publications',
       content: (
-        <ProfilePublicationTabs
-          groups={(Object.keys(publicationTypes) as (keyof typeof publicationTypes)[]).flatMap((type) => {
-            const publications = academic.publications.filter((item) => item.type === type);
-            return publications.length
-              ? [
-                  {
-                    label: publicationTypes[type],
-                    content: (
-                      <ul>
-                        {publications.map((item) => (
-                          <AcademicEntry
-                            key={item.id}
-                            title={item.title}
-                            detail={[item.authors, item.venue].filter(Boolean).join(' · ')}
-                            period={item.year?.toString()}
-                          >
-                            {item.citation && <p className={styles.prose}>{item.citation}</p>}
-                            <div className={styles.entryLinks}>
-                              {item.doi && (
-                                <ExternalLink
-                                  url={`https://doi.org/${encodeURIComponent(item.doi.replace(/^https?:\/\/doi\.org\//i, ''))}`}
-                                >
-                                  DOI: {item.doi.replace(/^https?:\/\/doi\.org\//i, '')}
-                                </ExternalLink>
-                              )}
-                              {item.url && <ExternalLink url={item.url}>View publication</ExternalLink>}
-                            </div>
-                          </AcademicEntry>
-                        ))}
-                      </ul>
-                    ),
-                  },
-                ]
-              : [];
-          })}
-        />
+        <>
+          <ul>
+            {academic.publications.slice(0, 6).map((item) => <PublicationEntry key={item.id} item={item} />)}
+          </ul>
+          {totals && totals.publications > academic.publications.length && (
+            <Link className={styles.viewCollection} href={`/people/${profile.slug}/publications`} target="_blank" rel="noopener noreferrer">
+              View all {totals.publications} publications <span aria-hidden="true">→</span>
+            </Link>
+          )}
+        </>
       ),
     });
   if (academic?.patents.length)
@@ -260,19 +270,14 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
       id: 'patents',
       title: 'Patents',
       content: (
-        <ul>
-          {academic.patents.map((item) => (
-            <AcademicEntry
-              key={item.id}
-              title={item.title}
-              detail={[item.inventors, item.identifier, item.status].filter(Boolean).join(' · ')}
-              period={item.year?.toString()}
-            >
-              {item.description && <p className={styles.prose}>{item.description}</p>}
-              {item.url && <ExternalLink url={item.url}>View patent</ExternalLink>}
-            </AcademicEntry>
-          ))}
-        </ul>
+        <>
+          <ul>{academic.patents.slice(0, 6).map((item) => <PatentEntry key={item.id} item={item} />)}</ul>
+          {totals && totals.patents > academic.patents.length && (
+            <Link className={styles.viewCollection} href={`/people/${profile.slug}/patents`} target="_blank" rel="noopener noreferrer">
+              View all {totals.patents} patents <span aria-hidden="true">→</span>
+            </Link>
+          )}
+        </>
       ),
     });
   if (academic?.students.length)
@@ -283,11 +288,22 @@ export default function FacultyProfile({ profile }: { profile: Profile }) {
           id: status === 'CURRENT' ? 'current-students' : 'graduated-students',
           title: status === 'CURRENT' ? 'Current students' : 'Graduated students',
           content: (
-            <ul className={styles.students}>
-              {students.map((item) => (
-                <StudentCard key={item.id} student={item} />
-              ))}
-            </ul>
+            <>
+              <ul className={styles.students}>
+                {students.slice(0, 6).map((item) => <StudentCard key={item.id} student={item} />)}
+              </ul>
+              {totals && totals[status === 'CURRENT' ? 'current' : 'graduated'] > students.length && (
+                <Link
+                  className={styles.viewCollection}
+                  href={`/people/${profile.slug}/students?status=${status === 'CURRENT' ? 'current' : 'graduated'}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View all {totals[status === 'CURRENT' ? 'current' : 'graduated']}{' '}
+                  {status === 'CURRENT' ? 'current' : 'graduated'} students <span aria-hidden="true">→</span>
+                </Link>
+              )}
+            </>
           ),
         });
     });
