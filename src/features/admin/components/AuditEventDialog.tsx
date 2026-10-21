@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from 'react';
 import { formatAuditTime, presentAuditEvent } from '../audit-presentation';
 import type { AuditRecord } from '../types';
 import AuditEventDetails from './AuditEventDetails';
+import AuditActorEmail from './AuditActorEmail';
 
 export default function AuditEventDialog({ event, onClose }: { event: AuditRecord; onClose: () => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -71,7 +72,7 @@ export default function AuditEventDialog({ event, onClose }: { event: AuditRecor
                 <p className="text-base font-semibold text-stone-900">
                   {event.actorName ?? 'Unverified attempt / system'}
                 </p>
-                {event.actorEmail && <p className="mt-1 text-sm text-stone-600">{event.actorEmail}</p>}
+                <AuditActorEmail event={event} className="mt-1 text-sm text-stone-600" />
               </dd>
             </div>
             <div>

@@ -33,6 +33,7 @@ export type FacultySubmission = FacultyValues & { login?: FacultyLogin };
 export type AuditRecord = {
   id: string;
   actorEmail: string | null;
+  currentActorEmail?: string | null;
   actorName: string | null;
   action: string;
   targetName: string | null;

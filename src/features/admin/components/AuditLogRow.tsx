@@ -1,5 +1,6 @@
 import { formatAuditTime, presentAuditEvent } from '../audit-presentation';
 import type { AuditRecord } from '../types';
+import AuditActorEmail from './AuditActorEmail';
 
 export default function AuditLogRow({
   event,
@@ -20,7 +21,7 @@ export default function AuditLogRow({
       <td className="whitespace-nowrap p-3">{formatAuditTime(event.createdAt)}</td>
       <td className="p-3 [overflow-wrap:anywhere]">
         <p>{event.actorName ?? 'Unverified attempt / system'}</p>
-        <p className="mt-1 text-xs text-stone-500">{event.actorEmail}</p>
+        <AuditActorEmail event={event} />
       </td>
       <td className="p-3 text-xs font-semibold [overflow-wrap:anywhere]">
         {event.action.replaceAll('_', ' ')}

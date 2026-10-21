@@ -5,12 +5,15 @@ import { useRouter } from 'next/navigation';
 import { MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH } from '@/config/password-policy';
 import { apiJson } from '../api-client';
 import PasswordInput from '@/components/ui/PasswordInput';
+import AdminNotice from './AdminNotice';
+import { useActionConfirmation } from './ActionConfirmation';
 
 export default function SecuritySettings() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const { confirm, confirmation } = useActionConfirmation();
 
   async function changePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -20,6 +23,14 @@ export default function SecuritySettings() {
       setError('The new passwords do not match.');
       return;
     }
+    if (
+      !(await confirm({
+        title: 'Change your password?',
+        description: 'Your other signed-in sessions will end after this change.',
+        label: 'Change password',
+      }))
+    )
+      return;
     setBusy(true);
     setError('');
     setMessage('');
@@ -44,18 +55,17 @@ export default function SecuritySettings() {
 
   return (
     <div className="mx-auto w-full max-w-xl">
+      {confirmation}
       <h1 className="font-display text-3xl text-ctiks-maroon">Change password</h1>
       <p className="mb-7 mt-2 text-sm text-stone-600">Change your account password.</p>
-      {error && (
-        <p role="alert" className="admin-error mb-5">
-          {error}
-        </p>
-      )}
-      {message && (
-        <p role="status" className="admin-success mb-5">
-          {message}
-        </p>
-      )}
+      <AdminNotice
+        message={error || message}
+        error={Boolean(error)}
+        onDismiss={() => {
+          setError('');
+          setMessage('');
+        }}
+      />
       <div>
         <section className="admin-panel">
           <h2 className="text-xl font-semibold">Set a new password</h2>

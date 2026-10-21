@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { ASSETS } from '@/config/assets';
+import { useState } from 'react';
 import { apiJson } from '../api-client';
 import { replaceFacultyProfile } from '../faculty-order';
 import {
@@ -14,6 +13,9 @@ import {
 import FacultyEditor from './FacultyEditor';
 import FacultyCredentialsDialog from './FacultyCredentialsDialog';
 import DeleteFacultyDialog from './DeleteFacultyDialog';
+import AdminNotice from './AdminNotice';
+import { useActionConfirmation } from './ActionConfirmation';
+import filterStyles from './FacultyFilters.module.css';
 
 export default function FacultyManager({ initialFaculty }: { initialFaculty: FacultyRecord[] }) {
   const [faculty, setFaculty] = useState(initialFaculty);
@@ -26,25 +28,22 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
   const [credentials, setCredentials] = useState<(FacultyLogin & { name: string }) | null>(null);
   const [pendingDelete, setPendingDelete] = useState<FacultyRecord | null>(null);
   const [deleteError, setDeleteError] = useState('');
-  const editorRegionRef = useRef<HTMLDivElement>(null);
   const selected = editor && editor !== 'new' ? editor : null;
-
-  useEffect(() => {
-    if (!message) return;
-    const timeout = window.setTimeout(() => setMessage(''), 5000);
-    return () => window.clearTimeout(timeout);
-  }, [message]);
-
-  useEffect(() => {
-    if (!editor) return;
-    editorRegionRef.current?.scrollIntoView({ block: 'start' });
-  }, [editor]);
+  const { confirm, confirmation } = useActionConfirmation();
 
   function replaceProfile(profile: FacultyRecord) {
     setFaculty((current) => replaceFacultyProfile(current, profile));
   }
 
   async function save(values: FacultySubmission) {
+    if (
+      !(await confirm({
+        title: selected ? 'Save profile changes?' : 'Add this faculty member?',
+        description: `The profile for ${values.name} will be ${selected ? 'updated' : 'added'} in the faculty directory.`,
+        label: selected ? 'Save changes' : 'Add faculty',
+      }))
+    )
+      return;
     setBusy(true);
     setError('');
     setMessage('');
@@ -69,6 +68,14 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
   }
 
   async function changeVisibility(profile: FacultyRecord) {
+    if (
+      !(await confirm({
+        title: `${profile.visible ? 'Hide' : 'Show'} this profile?`,
+        description: `${profile.name} will ${profile.visible ? 'be hidden from' : 'appear on'} the public People page. You can change this again later.`,
+        label: profile.visible ? 'Hide profile' : 'Show profile',
+      }))
+    )
+      return;
     setBusy(true);
     setError('');
     setMessage('');
@@ -133,12 +140,16 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
 
   return (
     <>
+      {confirmation}
       {pendingDelete && (
         <DeleteFacultyDialog
           profile={pendingDelete}
           busy={busy}
           error={deleteError}
-          onClose={() => setPendingDelete(null)}
+          onClose={() => {
+            setPendingDelete(null);
+            setDeleteError('');
+          }}
           onDelete={confirmDelete}
         />
       )}
@@ -175,71 +186,34 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
           Add faculty member
         </button>
       </div>
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        className="fixed bottom-5 left-4 right-4 z-50 sm:left-auto sm:right-6 sm:w-full sm:max-w-md"
-      >
-        {message && (
-          <div className="flex items-start gap-3 rounded-xl border border-stone-200 bg-white p-5 text-stone-900 shadow-xl">
-            <img
-              src={ASSETS.ctiksLogo}
-              alt=""
-              width={44}
-              height={44}
-              className="h-11 w-11 shrink-0 object-contain"
-            />
-            <div className="min-w-0 flex-1">
-              <p className="text-base font-semibold">Changes saved</p>
-              <p className="mt-1 text-base leading-6 text-stone-700 [overflow-wrap:anywhere]">{message}</p>
-            </div>
-            <button
-              type="button"
-              aria-label="Dismiss notification"
-              className="-m-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-stone-500 hover:bg-stone-100 hover:text-stone-900"
-              onClick={() => setMessage('')}
-            >
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="h-5 w-5"
-              >
-                <path d="m6 6 12 12M18 6 6 18" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-        )}
-      </div>
-      {!editor && error && (
-        <p role="alert" className="admin-error mb-6">
-          {error}
-        </p>
-      )}
+      <AdminNotice
+        message={error || deleteError || message}
+        error={Boolean(error || deleteError)}
+        onDismiss={() => {
+          setMessage('');
+          setError('');
+          setDeleteError('');
+        }}
+      />
       {editor && (
-        <div ref={editorRegionRef} className="scroll-mt-28">
-          <FacultyEditor
-            key={selected?.id ?? 'new'}
-            profile={selected}
-            busy={busy}
-            error={error}
-            onCancel={() => {
-              setEditor(null);
-              setError('');
-            }}
-            onSave={save}
-          />
-        </div>
+        <FacultyEditor
+          key={selected?.id ?? 'new'}
+          profile={selected}
+          busy={busy}
+          error={error}
+          onCancel={() => {
+            setEditor(null);
+            setError('');
+          }}
+          onSave={save}
+        />
       )}
       <section
         aria-labelledby="faculty-list-heading"
         className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm"
       >
-        <div className="space-y-5 p-5 sm:p-6">
-          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+        <div className={filterStyles.filters}>
+          <div className={filterStyles.heading}>
             <div>
               <h2 id="faculty-list-heading" className="text-lg font-semibold text-stone-900">
                 Browse faculty
@@ -248,7 +222,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                 Find a profile or choose a faculty group.
               </p>
             </div>
-            <label className="relative block w-full sm:max-w-sm">
+            <label className={filterStyles.search}>
               <span className="sr-only">Search faculty by name or department</span>
               <svg
                 aria-hidden="true"
@@ -256,35 +230,30 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="1.75"
-                className="pointer-events-none absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-stone-500"
               >
                 <circle cx="10.5" cy="10.5" r="6.5" />
                 <path d="m16 16 4.5 4.5" strokeLinecap="round" />
               </svg>
               <input
                 type="search"
-                className="w-full rounded-xl border border-stone-300 bg-stone-50 py-3 pl-11 pr-4 text-sm text-stone-900 placeholder:text-stone-500 focus:border-ctiks-red focus:bg-white focus:outline-none focus:ring-2 focus:ring-ctiks-red/10"
+                className={filterStyles.input}
                 placeholder="Search name or department…"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
               />
             </label>
           </div>
-          <div role="group" aria-label="Filter faculty by category" className="flex flex-wrap gap-2">
+          <div role="group" aria-label="Filter faculty by category" className={filterStyles.tabs}>
             {categoryFilters.map((filter) => (
               <button
                 key={filter.value}
                 type="button"
                 aria-pressed={category === filter.value}
                 onClick={() => setCategory(filter.value)}
-                className={`inline-flex min-h-11 items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition-colors ${category === filter.value ? 'border-ctiks-red bg-ctiks-red text-white' : 'border-stone-200 bg-white text-stone-700 hover:border-stone-300 hover:bg-stone-50'}`}
+                className={filterStyles.tab}
               >
                 {filter.label}
-                <span
-                  className={`flex min-w-6 items-center justify-center rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums ${category === filter.value ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-600'}`}
-                >
-                  {filter.count}
-                </span>
+                <span className={filterStyles.count}>{filter.count}</span>
               </button>
             ))}
           </div>
@@ -308,7 +277,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
           )}
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[920px] text-left text-sm text-stone-700">
+          <table data-faculty-table className="w-full min-w-[920px] text-left text-sm text-stone-700">
             <caption className="sr-only">
               Faculty profiles and controls to edit, show, hide, or delete each profile.
             </caption>
@@ -338,30 +307,50 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                   className="border-b border-stone-100 last:border-b-0 hover:bg-stone-50/70"
                 >
                   <th scope="row" className="px-5 py-5 font-normal sm:pl-6">
-                    <p className="text-base font-semibold leading-6 text-stone-900">{person.name}</p>
-                    <p className="mt-1 max-w-md text-sm leading-6 text-stone-600">{person.department}</p>
-                    {person.loginEmail && (
-                      <p className="mt-1 break-all text-xs leading-5 text-stone-500">
-                        Login: {person.loginEmail}
-                      </p>
-                    )}
+                    <div className="flex items-start gap-4">
+                      {person.imageUrl && (
+                        <img
+                          src={person.imageUrl}
+                          alt=""
+                          width={48}
+                          height={56}
+                          className="h-14 w-12 shrink-0 rounded-md border border-[#ead7bd] bg-[#faecd9] object-cover object-top"
+                        />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-base font-semibold leading-6 text-stone-900">{person.name}</p>
+                        <p className="mt-1 max-w-md text-sm leading-6 text-stone-600">{person.department}</p>
+                        {person.loginEmail && (
+                          <p className="mt-1 break-all text-xs leading-5 text-stone-500">
+                            Login: {person.loginEmail}
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </th>
-                  <td className="px-4 py-5 leading-6">{FACULTY_CATEGORIES[person.category]}</td>
-                  <td className="px-4 py-5">
+                  <td data-label="Category" className="px-4 py-5 leading-6">
+                    {FACULTY_CATEGORIES[person.category]}
+                  </td>
+                  <td data-label="Visibility" className="px-4 py-5">
                     <span className={`text-sm ${person.visible ? 'text-stone-800' : 'text-stone-500'}`}>
                       {person.visible ? 'Visible' : 'Hidden'}
                     </span>
                   </td>
-                  <td className="px-4 py-5 text-center font-medium tabular-nums text-stone-600">
+                  <td
+                    data-label="Order"
+                    className="px-4 py-5 text-center font-medium tabular-nums text-stone-600"
+                  >
                     {person.displayOrder + 1}
                   </td>
-                  <td className="px-5 py-5 sm:pr-6">
+                  <td data-actions className="px-5 py-5 sm:pr-6">
                     <div className="flex items-center justify-end gap-1.5">
                       <button
                         type="button"
                         className="inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-3.5 text-sm font-semibold text-stone-800 hover:border-stone-400 hover:bg-stone-50 disabled:cursor-wait disabled:opacity-50"
                         disabled={busy || Boolean(editor)}
                         aria-label={`Edit ${person.name}`}
+                        data-admin-action="edit"
+                        aria-haspopup="dialog"
                         onClick={() => {
                           setEditor(person);
                           setError('');
@@ -375,6 +364,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                         className="inline-flex min-h-10 min-w-[68px] items-center justify-center rounded-lg border border-stone-200 bg-white px-3 text-sm font-medium text-stone-700 hover:border-stone-300 hover:bg-stone-50 disabled:cursor-wait disabled:opacity-50"
                         disabled={busy || Boolean(editor)}
                         onClick={() => changeVisibility(person)}
+                        data-admin-action={person.visible ? 'hide' : 'show'}
                         aria-label={`${person.visible ? 'Hide' : 'Show'} ${person.name} on the website`}
                       >
                         {person.visible ? 'Hide' : 'Show'}
@@ -384,6 +374,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                         className="inline-flex min-h-10 items-center justify-center rounded-lg px-3 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-wait disabled:opacity-50"
                         disabled={busy || Boolean(editor)}
                         aria-label={`Delete ${person.name}`}
+                        data-admin-action="delete"
                         aria-haspopup="dialog"
                         onClick={() => {
                           setPendingDelete(person);

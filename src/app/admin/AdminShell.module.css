@@ -1,0 +1,193 @@
+.shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgb(255 247 237 / 94%), rgb(255 247 237 / 94%)),
+    url('/assets/paper-texture.png') center / 900px;
+  color: #4a4235;
+}
+.masthead {
+  border-top: 4px solid #820d0d;
+  border-bottom: 1px solid #e8d4b8;
+  background: #fff7ed;
+}
+.navigation {
+  border-top: 1px solid #ead7bd;
+  padding-top: 16px;
+}
+.main {
+  width: 100%;
+}
+.shell :global(.admin-panel),
+.shell :global(main section.bg-white) {
+  border-color: #e7d4b8;
+  background: #fffcf7;
+  box-shadow: 0 4px 20px rgb(103 69 34 / 3%);
+}
+.shell :global(.admin-primary) {
+  background: #820d0d;
+  border-radius: 8px;
+}
+.shell :global(.admin-primary:hover) {
+  background: #a41313;
+}
+.shell :global(.admin-secondary) {
+  border-color: #e2cdae;
+  background: #fffcf7;
+  color: #714b33;
+}
+.shell :global(.admin-secondary:hover) {
+  background: #faecd9;
+}
+.shell :global(button[data-sign-out]) {
+  background: #f7e5e0;
+  border-color: #dfb6ad;
+  color: #820d0d;
+  font-weight: 600;
+}
+.shell :global(button[data-sign-out]:hover) {
+  background: #820d0d;
+  border-color: #820d0d;
+  color: #fff7ed;
+}
+.shell :global(.admin-input) {
+  border-color: #dec7a7;
+  background: #fffdf9;
+  border-radius: 8px;
+}
+.shell :global(.admin-input:focus) {
+  border-color: #a64c30;
+  box-shadow: 0 0 0 3px rgb(190 132 48 / 12%);
+}
+.shell :global(.admin-label) {
+  color: #65533e;
+}
+.shell :global(.admin-error),
+.shell :global(.admin-success) {
+  border-color: #e2cdae;
+  background: #fff6e8;
+  color: #714b33;
+}
+.shell :global(dialog) {
+  border-color: #e4cfaf;
+  background: #fffaf2;
+}
+.shell :global(dialog header) {
+  border-color: #e7d4b8;
+  background: #faecd9;
+}
+.shell :global(dialog::backdrop) {
+  background: rgb(48 37 28 / 50%);
+}
+.shell :global(thead tr) {
+  border-color: #e7d4b8;
+  background: #faecd9;
+  color: #714b33;
+}
+.shell :global(tbody tr) {
+  border-color: #f0e4d2;
+}
+.shell :global(tbody tr:hover) {
+  background: #fff4e3;
+}
+.shell :global(input[type='search']) {
+  border-color: #e2cdae;
+  background: #fffdf9;
+}
+.shell :global(nav[aria-label='Administration'] a[aria-current='page']) {
+  background: #820d0d;
+}
+.shell :global(nav[aria-label='Administration'] a:not([aria-current])) {
+  color: #71573f;
+}
+.shell :global(nav[aria-label='Administration'] a:hover) {
+  background: #faecd9;
+  color: #820d0d;
+}
+.shell :global(nav[aria-label='Administration'] a[aria-current='page']:hover) {
+  background: #820d0d;
+  color: white;
+}
+.shell :global(h1) {
+  letter-spacing: -0.025em;
+}
+.shell :global(h2) {
+  color: #820d0d;
+}
+.shell :global(nav[aria-label='Administration'] a[href='/']:hover) {
+  background: transparent;
+}
+.shell :global([data-admin-action]) {
+  min-height: 38px;
+  padding: 8px 14px;
+  border: 1px solid var(--action-border);
+  border-radius: 8px;
+  color: var(--action-text);
+  background: var(--action-bg);
+  font-weight: 600;
+}
+.shell :global([data-admin-action]:hover) {
+  background: var(--action-hover);
+  border-color: var(--action-text);
+}
+.shell :global([data-admin-action='edit']) {
+  --action-bg: #edf3fa;
+  --action-text: #31567f;
+  --action-border: #c6d5e7;
+  --action-hover: #dfeaf7;
+}
+.shell :global([data-admin-action='hide']) {
+  --action-bg: #fff2d8;
+  --action-text: #805313;
+  --action-border: #e8cf9f;
+  --action-hover: #f9e5ba;
+}
+.shell :global([data-admin-action='show']) {
+  --action-bg: #edf5ef;
+  --action-text: #356446;
+  --action-border: #c4d9c9;
+  --action-hover: #dfede3;
+}
+.shell :global([data-admin-action='delete']) {
+  --action-bg: #fae9e5;
+  --action-text: #9d302b;
+  --action-border: #e7bfb5;
+  --action-hover: #f4d9d2;
+}
+@media (max-width: 640px) {
+  .shell :global([data-faculty-table]),
+  .shell :global([data-faculty-table] tbody) {
+    display: block;
+    min-width: 0;
+    width: 100%;
+  }
+  .shell :global([data-faculty-table] thead) {
+    display: none;
+  }
+  .shell :global([data-faculty-table] tbody tr) {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 0.6fr;
+    padding: 20px;
+    gap: 16px 12px;
+  }
+  .shell :global([data-faculty-table] th[scope='row']) {
+    grid-column: 1 / -1;
+    padding: 0;
+  }
+  .shell :global([data-faculty-table] td) {
+    padding: 0;
+    text-align: left;
+  }
+  .shell :global([data-faculty-table] td[data-label]::before) {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 5px;
+    font-size: 11px;
+    color: #927658;
+  }
+  .shell :global([data-faculty-table] td[data-actions]) {
+    grid-column: 1 / -1;
+  }
+  .shell :global([data-faculty-table] td[data-actions] > div) {
+    justify-content: flex-start;
+  }
+}

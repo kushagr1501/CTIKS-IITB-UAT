@@ -5,11 +5,13 @@ import { apiFetch, apiJson } from '../api-client';
 import type { AuditRecord, AuditResult } from '../types';
 import AuditEventDialog from './AuditEventDialog';
 import AuditLogRow from './AuditLogRow';
+import AdminNotice from './AdminNotice';
 
 export default function AuditLogViewer({ initialResult }: { initialResult: AuditResult }) {
   const [result, setResult] = useState(initialResult);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<AuditRecord | null>(null);
 
   async function changePage(page: number) {
@@ -35,6 +37,7 @@ export default function AuditLogViewer({ initialResult }: { initialResult: Audit
       link.click();
       URL.revokeObjectURL(url);
       setResult(await apiJson<AuditResult>(`/api/admin/audit-logs?page=${result.page}`));
+      setMessage('Audit history exported. Your CSV file is ready.');
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Unable to export activity.');
     } finally {
@@ -55,11 +58,14 @@ export default function AuditLogViewer({ initialResult }: { initialResult: Audit
           Export CSV
         </button>
       </div>
-      {error && (
-        <p role="alert" className="admin-error mb-5">
-          {error}
-        </p>
-      )}
+      <AdminNotice
+        message={error || message}
+        error={Boolean(error)}
+        onDismiss={() => {
+          setError('');
+          setMessage('');
+        }}
+      />
       <section className="admin-panel">
         <p className="mb-4 text-sm text-stone-500">{result.total} entries · Read-only history</p>
         <div className="overflow-x-auto">

@@ -79,13 +79,22 @@ export async function listAuditEvents(actor: Actor, search: URLSearchParams) {
   const [events, total] = await Promise.all([
     database.auditEvent.findMany({
       where,
+      include: { actor: { select: { email: true } } },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       skip: (filters.page - 1) * 50,
       take: 50,
     }),
     database.auditEvent.count({ where }),
   ]);
-  return { events, total, page: filters.page, pageSize: 50 };
+  return {
+    events: events.map(({ actor: currentActor, ...event }) => ({
+      ...event,
+      currentActorEmail: currentActor?.email.trim() ?? null,
+    })),
+    total,
+    page: filters.page,
+    pageSize: 50,
+  };
 }
 
 export async function exportAuditEvents(actor: Actor, search: URLSearchParams) {

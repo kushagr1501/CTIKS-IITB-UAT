@@ -8,9 +8,7 @@ type Session = { cookies: Map<string, string> };
 async function openAuthenticatedPage(session: Session, origin: string) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext();
-  await context.addCookies(
-    [...session.cookies].map(([name, value]) => ({ name, value, url: origin })),
-  );
+  await context.addCookies([...session.cookies].map(([name, value]) => ({ name, value, url: origin })));
   const page = await context.newPage();
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -40,19 +38,44 @@ export async function checkAdminFacultyUi(session: Session, origin: string) {
     await page.getByLabel('Department / affiliation').fill('Browser test department');
     await page.getByLabel('Biography').fill('Created through the Playwright browser test.');
     await page.getByRole('button', { name: 'Save faculty profile' }).click();
+    await page
+      .getByRole('dialog', { name: 'Add this faculty member?' })
+      .getByRole('button', { name: 'Add faculty', exact: true })
+      .click();
 
     const row = page.getByRole('row').filter({ hasText: name });
     await uiExpect(row).toContainText('Browser test department');
     await row.getByRole('button', { name: `Edit ${name}` }).click();
+    await uiExpect(page.getByRole('dialog', { name: `Edit ${name}` })).toBeVisible();
     await uiExpect(page.getByRole('heading', { name: `Edit ${name}` })).toBeInViewport();
     await uiExpect(page.getByLabel('Full name')).toBeFocused();
+    await page.getByLabel('Biography').fill('Unsaved changes for close confirmation.');
+    await page.getByRole('button', { name: 'Close faculty editor' }).click();
+    await page
+      .getByRole('dialog', { name: 'Discard unsaved changes?' })
+      .getByRole('button', { name: 'Discard changes', exact: true })
+      .click();
+    await uiExpect(page.getByRole('dialog', { name: `Edit ${name}` })).toHaveCount(0);
+    await row.getByRole('button', { name: `Edit ${name}` }).click();
     await page.getByLabel('Biography').fill('Edited through the Playwright browser test.');
     await page.getByRole('button', { name: 'Save faculty profile' }).click();
+    await page
+      .getByRole('dialog', { name: 'Save profile changes?' })
+      .getByRole('button', { name: 'Save changes', exact: true })
+      .click();
     await uiExpect(row).toContainText(name);
 
     await row.getByRole('button', { name: `Show ${name} on the website` }).click();
+    await page
+      .getByRole('dialog', { name: 'Show this profile?' })
+      .getByRole('button', { name: 'Show profile', exact: true })
+      .click();
     await uiExpect(row).toContainText('Visible');
     await row.getByRole('button', { name: `Hide ${name} on the website` }).click();
+    await page
+      .getByRole('dialog', { name: 'Hide this profile?' })
+      .getByRole('button', { name: 'Hide profile', exact: true })
+      .click();
     await uiExpect(row).toContainText('Hidden');
 
     await row.getByRole('button', { name: `Delete ${name}` }).click();
@@ -79,8 +102,7 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
     await about.fill(draftBiography);
     await uiExpect(about).toHaveValue(draftBiography);
     const draftResponse = page.waitForResponse(
-      (response) =>
-        response.url().endsWith('/api/faculty/profile') && response.request().method() === 'PUT',
+      (response) => response.url().endsWith('/api/faculty/profile') && response.request().method() === 'PUT',
     );
     await page.getByRole('button', { name: 'Save draft' }).click();
     const savedDraft = await draftResponse;

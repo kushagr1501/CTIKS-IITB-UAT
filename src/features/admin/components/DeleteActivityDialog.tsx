@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef } from 'react';
 import type { ActivityRecord } from '@/features/activities/types';
+import ConfirmationHeading from './ConfirmationHeading';
 
 export default function DeleteActivityDialog({
   activity,
@@ -46,9 +47,9 @@ export default function DeleteActivityDialog({
       }}
       className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-2xl border border-stone-200 bg-white p-6 text-stone-900 shadow-2xl backdrop:bg-stone-900/60 sm:p-8"
     >
-      <h2 id={titleId} className="text-2xl font-semibold text-ctiks-maroon">
+      <ConfirmationHeading id={titleId}>
         Are you sure you want to delete this activity?
-      </h2>
+      </ConfirmationHeading>
       <p className="mt-3 text-lg font-semibold [overflow-wrap:anywhere]">{activity.title}</p>
       <p id={descriptionId} className="mt-4 text-sm leading-6 text-stone-600">
         This permanently removes the activity from the website. This cannot be undone.
@@ -67,12 +68,7 @@ export default function DeleteActivityDialog({
         >
           Cancel
         </button>
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-lg bg-red-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-800 disabled:cursor-wait disabled:opacity-60"
-          disabled={busy}
-          onClick={onDelete}
-        >
+        <button type="button" className="admin-primary" disabled={busy} onClick={onDelete}>
           {busy ? 'Deleting…' : 'Delete activity'}
         </button>
       </div>

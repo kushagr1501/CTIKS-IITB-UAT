@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { apiJson } from '@/features/admin/api-client';
+import AdminNotice from '@/features/admin/components/AdminNotice';
 
 const adminLinks = [
   { href: '/admin/people', label: 'Faculty directory' },
@@ -36,7 +37,7 @@ export default function AccountNavigation({ area }: { area: 'admin' | 'faculty' 
   return (
     <nav
       aria-label={area === 'admin' ? 'Administration' : 'Faculty account'}
-      className="flex flex-wrap items-center gap-2"
+      className={`flex flex-wrap items-center gap-2 ${area === 'admin' ? 'justify-center' : ''}`}
     >
       {links.map((link) => (
         <Link
@@ -53,25 +54,22 @@ export default function AccountNavigation({ area }: { area: 'admin' | 'faculty' 
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View website (opens in a new tab)"
-        className="rounded-lg px-3 py-2 text-sm text-stone-600"
+        className="rounded-lg px-3 py-2 text-sm text-stone-600 underline decoration-current underline-offset-4"
       >
         View website ↗
       </Link>
       {/* Browser extensions can add fdprocessedid before this control hydrates. */}
       <button
         suppressHydrationWarning
-        className="admin-secondary ml-auto"
+        data-sign-out
+        className={`admin-secondary ${area === 'admin' ? 'sm:ml-3' : 'ml-auto'}`}
         type="button"
         disabled={busy}
         onClick={logout}
       >
         {busy ? 'Signing out…' : 'Sign out'}
       </button>
-      {error && (
-        <p role="alert" className="admin-error w-full">
-          {error}
-        </p>
-      )}
+      <AdminNotice message={error} error onDismiss={() => setError('')} />
     </nav>
   );
 }

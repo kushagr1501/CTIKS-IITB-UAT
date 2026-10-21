@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { apiJson } from '../api-client';
 import ActivityEditor from './ActivityEditor';
 import DeleteActivityDialog from './DeleteActivityDialog';
+import AdminNotice from './AdminNotice';
+import { useActionConfirmation } from './ActionConfirmation';
 import { ACTIVITY_SECTIONS, type ActivityRecord, type ActivityValues } from '@/features/activities/types';
 import { eventSchedule, formatActivityDate } from '@/features/activities/dates';
 
@@ -21,6 +23,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
   const [section, setSection] = useState('');
   const [page, setPage] = useState(1);
   const selected = editor && editor !== 'new' ? editor : null;
+  const { confirm, confirmation } = useActionConfirmation();
 
   function replace(activity: ActivityRecord) {
     setActivities((current) =>
@@ -43,6 +46,14 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
     }
   }
   async function save(values: ActivityValues) {
+    if (
+      !(await confirm({
+        title: selected ? 'Save activity changes?' : 'Add this activity?',
+        description: `“${values.title}” will be ${selected ? 'updated' : 'added'}. Visible activities also appear on the public website.`,
+        label: selected ? 'Save changes' : 'Add activity',
+      }))
+    )
+      return;
     await run(async () => {
       const result = await apiJson<{ activity: ActivityRecord }>(
         selected ? `/api/admin/activities/${selected.id}` : '/api/admin/activities',
@@ -57,6 +68,14 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
     });
   }
   async function toggle(activity: ActivityRecord) {
+    if (
+      !(await confirm({
+        title: `${activity.visible ? 'Hide' : 'Show'} this activity?`,
+        description: `“${activity.title}” will ${activity.visible ? 'be hidden from' : 'appear on'} the public website. You can change this again later.`,
+        label: activity.visible ? 'Hide activity' : 'Show activity',
+      }))
+    )
+      return;
     await run(async () => {
       const result = await apiJson<{ activity: ActivityRecord }>(
         `/api/admin/activities/${activity.id}/visibility`,
@@ -101,17 +120,24 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
 
   return (
     <>
-      <div className="mb-7 flex flex-wrap items-start justify-between gap-4">
+      {confirmation}
+      <div className="mb-7 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
         <div>
           <h1 className="font-display text-3xl text-ctiks-maroon">Activities</h1>
-          <p className="mt-2 text-sm leading-6 text-stone-600">
+          <p className="mt-2 max-w-xl text-sm leading-6 text-stone-600">
             Manage news, announcements and events. The latest visible entries also appear on the homepage.
           </p>
-          <Link href="/activities" className="mt-2 inline-block text-sm text-ctiks-red underline">
-            View public activities ↗
-          </Link>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href="/activities"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View activities page (opens in a new tab)"
+            className="mr-1 text-sm font-medium text-ctiks-maroon underline underline-offset-4"
+          >
+            View activities page ↗
+          </Link>
           <button className="admin-secondary" disabled={busy} onClick={reload}>
             Refresh list
           </button>
@@ -128,11 +154,14 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
           </button>
         </div>
       </div>
-      {message && (
-        <p role="status" className="mb-5 rounded-lg bg-green-50 p-4 text-sm text-green-800">
-          {message}
-        </p>
-      )}
+      <AdminNotice
+        message={error || message}
+        error={Boolean(error)}
+        onDismiss={() => {
+          setMessage('');
+          setError('');
+        }}
+      />
       {editor && (
         <ActivityEditor
           key={selected?.id ?? 'new'}
@@ -145,11 +174,6 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
             setError('');
           }}
         />
-      )}
-      {!editor && !pendingDelete && error && (
-        <p role="alert" className="admin-error mb-5">
-          {error}
-        </p>
       )}
       {pendingDelete && (
         <DeleteActivityDialog
@@ -208,7 +232,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                 <div className="min-w-0">
                   <div className="mb-2 flex flex-wrap gap-2 text-xs">
                     <span
-                      className={`rounded px-2 py-1 ${activity.visible ? 'bg-green-50 text-green-800' : 'bg-stone-100 text-stone-600'}`}
+                      className={`rounded px-2 py-1 ${activity.visible ? 'bg-[#faecd9] text-[#714b33]' : 'bg-stone-100 text-stone-600'}`}
                     >
                       {activity.visible ? 'Visible' : 'Hidden'}
                     </span>
@@ -236,6 +260,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                       setError('');
                     }}
                     aria-label={`Edit ${activity.title}`}
+                    data-admin-action="edit"
                   >
                     Edit
                   </button>
@@ -244,6 +269,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                     disabled={busy || !!editor || !!pendingDelete}
                     onClick={() => toggle(activity)}
                     aria-label={`${activity.visible ? 'Hide' : 'Show'} ${activity.title}`}
+                    data-admin-action={activity.visible ? 'hide' : 'show'}
                   >
                     {activity.visible ? 'Hide' : 'Show'}
                   </button>
@@ -255,6 +281,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                       setError('');
                     }}
                     aria-label={`Delete ${activity.title}`}
+                    data-admin-action="delete"
                   >
                     Delete
                   </button>
