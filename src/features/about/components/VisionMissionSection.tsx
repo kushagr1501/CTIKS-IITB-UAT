@@ -4,12 +4,12 @@ const VISION_BODY =
   "The Centre for Traditional Indian Knowledge and Skills is envisioned to be a leading centre of excellence dedicated to the rigorous study, reconstruction, and contemporary application of India's scientific and artisanal knowledge traditions. The Centre aspires to create a scholarly environment where clarity of method, depth of inquiry, and integrity of interpretation are all seamlessly blended.";
 
 const MISSION_ITEMS = [
-  'To strengthen foundational scholarship in various domains of Indian Knowledge Systems (IKS).',
-  'To revitalize traditional craft and artisanal traditions through modern research and support.',
-  'To foster interdisciplinary research by bridging traditional wisdom with contemporary scientific methods.',
-  'To create authentic educational resources and academic programs in IKS.',
-  'To engage with the community through outreach, workshops, and international conferences.',
-  'To act as a bridge between the wisdom of the past and the challenges of the future.',
+  'Strengthen foundational scholarship in various domains of Indian Knowledge Systems (IKS).',
+  'Revitalize traditional craft and artisanal traditions through modern research and support.',
+  'Foster interdisciplinary research by bridging traditional wisdom with contemporary scientific methods.',
+  'Create authentic educational resources and academic programs in IKS.',
+  'Engage with the community through outreach, workshops, and international conferences.',
+  'Act as a bridge between the wisdom of the past and the challenges of the future.',
 ];
 
 export default function VisionMissionSection() {

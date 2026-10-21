@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiJson } from '../api-client';
 import ActivityEditor from './ActivityEditor';
+import DeleteActivityDialog from './DeleteActivityDialog';
 import { ACTIVITY_SECTIONS, type ActivityRecord, type ActivityValues } from '@/features/activities/types';
 import { eventSchedule, formatActivityDate } from '@/features/activities/dates';
 
@@ -145,34 +146,22 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
           }}
         />
       )}
-      {!editor && error && (
+      {!editor && !pendingDelete && error && (
         <p role="alert" className="admin-error mb-5">
           {error}
         </p>
       )}
       {pendingDelete && (
-        <section className="admin-panel mb-6 border-red-200" aria-label="Confirm deletion">
-          <h2 className="font-semibold">Delete “{pendingDelete.title}”?</h2>
-          <p className="my-3 text-sm text-stone-600">
-            This removes the entry from all public pages and the homepage. You can hide it instead if you want
-            to keep it.
-          </p>
-          <div className="flex gap-3">
-            <button className="admin-primary" disabled={busy} onClick={remove}>
-              Delete activity
-            </button>
-            <button
-              className="admin-secondary"
-              disabled={busy}
-              onClick={() => {
-                setPendingDelete(null);
-                setError('');
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </section>
+        <DeleteActivityDialog
+          activity={pendingDelete}
+          busy={busy}
+          error={error}
+          onDelete={remove}
+          onClose={() => {
+            setPendingDelete(null);
+            setError('');
+          }}
+        />
       )}
       <section className="admin-panel">
         <div className="mb-6 flex flex-wrap gap-4">

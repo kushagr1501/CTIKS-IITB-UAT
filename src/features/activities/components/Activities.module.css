@@ -246,12 +246,14 @@
 .empty {
   text-align: center;
   padding: 72px 16px;
-  border-block: 1px solid #e9d8bd;
+  background: #ffe8c8;
 }
 .empty h2 {
   color: #820d0d;
   font-size: 22px;
-  margin-bottom: 12px;
+}
+.empty p {
+  margin-top: 12px;
 }
 .empty a {
   display: inline-block;

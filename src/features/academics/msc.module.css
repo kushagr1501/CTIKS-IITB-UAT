@@ -1,6 +1,9 @@
 .hero::before {
   background-image: url('/assets/figma/phd-pattern.png');
 }
+.degree {
+  text-transform: none;
+}
 .comingSoon {
   position: relative;
   display: inline-flex;

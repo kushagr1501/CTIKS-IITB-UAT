@@ -153,16 +153,8 @@ export default async function ActivityListing({
         </div>
         {!items.length && (
           <div className={styles.empty}>
-            <h2>
-              {query
-                ? 'No matching activities'
-                : `No ${section ? title.toLowerCase() : 'activities'} to share yet`}
-            </h2>
-            <p>
-              {query
-                ? 'Try another keyword or browse all activities.'
-                : 'Please check back for updates from CTIKS.'}
-            </p>
+            <h2>{query ? 'No matching activities' : 'Activity will be updated soon'}</h2>
+            {query && <p>Try another keyword or browse all activities.</p>}
             {query && (
               <Link href={path} scroll={false}>
                 Clear search

@@ -20,7 +20,9 @@ export default function MscPage() {
     <div className={styles.paper}>
       <header className={`${styles.hero} ${msc.hero} ${viewport.banner}`}>
         <div className={styles.heroInner}>
-          <h1>Master of Science (M.Sc.) Program</h1>
+          <h1>
+            Master of Science (<span className={msc.degree}>M.Sc.</span>) Program
+          </h1>
           <p>M.Sc. programs at CTIKS, IITB will be offered from the academic year 2027-28.</p>
         </div>
       </header>

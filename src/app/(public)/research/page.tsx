@@ -17,7 +17,9 @@ export default function ResearchPage() {
   return (
     <div className={styles.page}>
       <PageHero title="Research" image={ASSETS.peopleHeroBackdrop}>
-        Explore areas of research at the Centre for Traditional Indian Knowledge and Skills, IIT Bombay.
+        Explore areas of research at the{' '}
+        <br />
+        Centre for Traditional Indian Knowledge and Skills, IIT Bombay.
       </PageHero>
       <section className={styles.research} aria-labelledby="research-areas">
         <div className={styles.shell}>

@@ -15,14 +15,14 @@ export default function MottoSection() {
           Our Motto
         </h2>
 
-        <div className="mt-8 flex flex-col gap-5 border border-ctiks-maroon/40 bg-white/40 p-8 shadow-[0px_4px_16px_rgba(130,13,13,0.04)] backdrop-blur-sm sm:p-12 text-center sm:text-left">
-          <p className="font-deva text-[36px] font-semibold tracking-[2px] text-ctiks-maroon sm:text-[48px]">
+        <div className="mt-8 flex flex-col gap-5 border border-ctiks-maroon/40 bg-white/40 p-8 shadow-[0px_4px_16px_rgba(130,13,13,0.04)] backdrop-blur-sm sm:p-12">
+          <p className="text-center font-deva text-[36px] font-semibold tracking-[2px] text-ctiks-maroon sm:text-[48px]">
             {DEVANAGARI}
           </p>
-          <p className="font-motto text-[22px] font-semibold italic text-[#4a4235] sm:text-[26px]">
+          <p className="text-center font-motto text-[22px] font-semibold italic text-[#4a4235] sm:text-[26px]">
             jñānamayaṁ tapaḥ
           </p>
-          <p className="font-body text-[13px] font-bold uppercase tracking-[1.5px] text-ctiks-red">
+          <p className="text-center font-body text-[13px] font-bold uppercase tracking-[1.5px] text-ctiks-red">
             Muṇḍakopaniṣad (1.1.9)
           </p>
 

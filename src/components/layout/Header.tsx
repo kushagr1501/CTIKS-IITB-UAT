@@ -24,11 +24,8 @@ export default function Header() {
             href="/"
             className="w-full text-center uppercase text-ctiks-maroon"
           >
-            <span className="block font-display text-[10px] sm:text-[14px] md:text-[20px] font-normal tracking-wide md:tracking-[1.44px]">
-              Centre for Traditional
-            </span>
-            <span className="block font-display text-[12px] sm:text-[16px] md:text-[30px] font-semibold leading-tight">
-              Indian Knowledge and Skills
+            <span className="block whitespace-nowrap font-display text-[clamp(8px,2vw,26px)] font-semibold leading-tight tracking-tight text-ctiks-maroon">
+              Centre for Traditional Indian Knowledge and Skills
             </span>
           </Link>
 
