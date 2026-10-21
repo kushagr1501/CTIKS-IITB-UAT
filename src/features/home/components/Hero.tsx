@@ -8,7 +8,7 @@ import { ASSETS } from '@/config/assets';
  */
 export default function Hero() {
   return (
-    <section className="relative isolate min-h-[400px] h-[calc(100svh-170px)] sm:min-h-0 sm:h-[531px] overflow-hidden bg-ctiks-clay">
+    <section className="relative isolate h-[calc(100svh-150px)] sm:h-[calc(100svh-173px)] md:h-[calc(100svh-221px)] overflow-hidden bg-ctiks-clay">
       <img
         src={ASSETS.heroBackdrop}
         alt=""
@@ -24,14 +24,14 @@ export default function Hero() {
         }}
       />
 
-      <div className="flex h-full flex-col items-center justify-center pt-[20%] sm:pt-[15%] pb-4 sm:pb-0 text-center">
+      <div className="flex h-full flex-col items-center justify-center pt-6 pb-4 sm:pt-10 sm:pb-0 text-center">
         <p className="font-deva text-[44px] font-semibold uppercase text-ctiks-gold sm:text-[56px] lg:text-[70px]">
           ज्ञानमयं तपः
         </p>
         <p className="mt-1 px-6 font-motto text-[26px] font-semibold italic leading-[38.27px] tracking-[0.5px] text-white sm:text-[30px] lg:text-[36px]">
           Knowledge as disciplined pursuit
         </p>
-        <Button variant="gold" href="/about-us" className="mt-8">
+        <Button variant="gold" href="/about-us" className="mt-6 scale-[0.82]">
           Know more
         </Button>
       </div>

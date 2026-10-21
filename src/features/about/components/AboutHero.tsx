@@ -1,4 +1,5 @@
 import { ASSETS } from '@/config/assets';
+import viewport from '@/components/ui/ViewportBanner.module.css';
 
 /**
  * About-page hero banner.
@@ -6,7 +7,7 @@ import { ASSETS } from '@/config/assets';
  */
 export default function AboutHero() {
   return (
-    <section className="relative isolate flex min-h-[400px] sm:min-h-[500px] flex-col items-center justify-center gap-6 overflow-hidden border-b-2 border-ctiks-maroon px-6 py-[100px] sm:py-[140px] text-center sm:px-20">
+    <section className={`${viewport.banner} relative isolate flex flex-col items-center justify-center gap-6 overflow-hidden border-b-2 border-ctiks-maroon px-6 py-8 text-center sm:px-20 sm:py-12`}>
       <img
         src={ASSETS.aboutHeroBackdrop}
         alt=""

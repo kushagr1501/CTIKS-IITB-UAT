@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import viewport from './ViewportBanner.module.css';
 
 export default function InteriorHero({
   title,
@@ -12,7 +13,7 @@ export default function InteriorHero({
   contact?: boolean;
 }) {
   return (
-    <section className="relative isolate flex min-h-[400px] flex-col items-center justify-center overflow-hidden border-b-2 border-ctiks-maroon px-6 py-20 text-center sm:h-[500px] sm:py-0">
+    <section className={`${viewport.banner} relative isolate flex flex-col items-center justify-center overflow-hidden border-b-2 border-ctiks-maroon px-6 py-8 text-center sm:py-12`}>
       <img
         src={image}
         alt=""

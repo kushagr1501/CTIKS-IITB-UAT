@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import viewport from '@/components/ui/ViewportBanner.module.css';
 import {
   MSC_APPLICANT_INFORMATION,
   MSC_APPLICATION_STEPS,
@@ -17,7 +18,7 @@ export const metadata: Metadata = {
 export default function MscPage() {
   return (
     <div className={styles.paper}>
-      <header className={`${styles.hero} ${msc.hero}`}>
+      <header className={`${styles.hero} ${msc.hero} ${viewport.banner}`}>
         <div className={styles.heroInner}>
           <h1>Master of Science (M.Sc.) Program</h1>
           <p>M.Sc. programs at CTIKS, IITB will be offered from the academic year 2027-28.</p>

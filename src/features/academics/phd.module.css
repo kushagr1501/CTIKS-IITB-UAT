@@ -14,7 +14,6 @@
 .hero {
   position: relative;
   isolation: isolate;
-  min-height: 400px;
   display: flex;
   align-items: center;
   background: #aa1313;
@@ -452,9 +451,6 @@
   .heroInner,
   .content {
     width: calc(100% - 32px);
-  }
-  .hero {
-    min-height: 340px;
   }
   .hero h1 {
     font-size: 27px;

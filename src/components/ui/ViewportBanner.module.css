@@ -1,0 +1,15 @@
+.banner {
+  min-height: calc(100svh - 150px);
+}
+
+@media (min-width: 640px) {
+  .banner {
+    min-height: calc(100svh - 173px);
+  }
+}
+
+@media (min-width: 768px) {
+  .banner {
+    min-height: calc(100svh - 221px);
+  }
+}

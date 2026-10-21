@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { ASSETS } from '@/config/assets';
+import viewport from './ViewportBanner.module.css';
 
 export default function PageHero({
   title,
@@ -11,7 +12,7 @@ export default function PageHero({
   children: ReactNode;
 }) {
   return (
-    <section className="relative isolate flex min-h-[380px] sm:min-h-[460px] lg:min-h-[500px] flex-col items-center justify-center gap-4 sm:gap-6 overflow-hidden border-b-2 border-ctiks-maroon px-4 sm:px-8 md:px-16 py-16 sm:py-24 lg:py-[140px] text-center">
+    <section className={`${viewport.banner} relative isolate flex flex-col items-center justify-center gap-4 overflow-hidden border-b-2 border-ctiks-maroon px-4 py-8 text-center sm:gap-6 sm:px-8 sm:py-12 md:px-16`}>
       <img
         src={image}
         alt=""
