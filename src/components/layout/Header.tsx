@@ -13,18 +13,18 @@ export default function Header() {
           <img
             src={ASSETS.iitbLogo}
             alt="Indian Institute of Technology Bombay"
-            width={120}
-            height={120}
-            className="h-[45px] w-[45px] sm:h-[70px] sm:w-[70px] md:h-[100px] md:w-[100px] object-contain"
+            width={144}
+            height={144}
+            className="h-[54px] w-[54px] sm:h-[84px] sm:w-[84px] md:h-[120px] md:w-[120px] object-contain"
           />
         </a>
 
-        <div className="flex flex-1 flex-col items-center gap-1.5 md:gap-2">
+        <div className="flex min-w-0 flex-1 flex-col items-center gap-1.5 md:gap-2">
           <Link
             href="/"
             className="w-full text-center uppercase text-ctiks-maroon"
           >
-            <span className="block whitespace-nowrap font-display text-[clamp(8px,2vw,26px)] font-semibold leading-tight tracking-tight text-ctiks-maroon">
+            <span className="block font-display text-[10px] font-semibold leading-tight tracking-tight text-ctiks-maroon sm:text-[14px] md:text-[20px] lg:whitespace-nowrap xl:text-[26px]">
               Centre for Traditional Indian Knowledge and Skills
             </span>
           </Link>
@@ -46,9 +46,9 @@ export default function Header() {
           <img
             src={ASSETS.ctiksLogo}
             alt="Centre for Traditional Indian Knowledge and Skills"
-            width={140}
-            height={140}
-            className="h-[50px] w-[50px] sm:h-[80px] sm:w-[80px] md:h-[110px] md:w-[110px] object-cover"
+            width={168}
+            height={168}
+            className="h-[60px] w-[60px] sm:h-[96px] sm:w-[96px] md:h-[132px] md:w-[132px] object-contain"
           />
         </Link>
       </div>
