@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { ASSETS } from '@/config/assets';
 import { NAV_ITEMS } from '@/config/navigation';
+import PeopleNavMenu from './PeopleNavMenu';
 
 export default function Nav() {
   const pathname = usePathname() ?? '/';
@@ -14,6 +15,7 @@ export default function Nav() {
 function NavigationMenu({ current }: { current: string }) {
   const [open, setOpen] = useState(false);
   const [activitiesOpen, setActivitiesOpen] = useState(false);
+  const [peopleOpen, setPeopleOpen] = useState(false);
 
   // Close menu when resizing to tablet/desktop
   useEffect(() => {
@@ -71,6 +73,7 @@ function NavigationMenu({ current }: { current: string }) {
       >
         <ul className="mx-auto flex max-w-shell flex-col gap-8 px-8 py-8 md:flex-row md:items-center md:justify-center md:gap-4 lg:gap-[32px] xl:gap-[48px] md:px-4 lg:px-6 md:py-0 md:h-[73px]">
           {NAV_ITEMS.map((item) => {
+            const isPeople = item.href === '/people';
             const active =
               item.href === current ||
               (item.href !== '/' && current.startsWith(`${item.href}/`)) ||
@@ -78,13 +81,37 @@ function NavigationMenu({ current }: { current: string }) {
             return (
               <li
                 key={item.label}
-                className="relative flex flex-col items-start md:items-center gap-1.5 group"
+                className="relative flex w-full flex-col items-start gap-1.5 md:w-auto md:items-center group"
+                onMouseEnter={() => {
+                  if (!window.matchMedia('(hover: hover) and (min-width: 768px)').matches) return;
+                  if (isPeople) {
+                    setPeopleOpen(true);
+                    setActivitiesOpen(false);
+                  } else if (item.children) {
+                    setActivitiesOpen(true);
+                    setPeopleOpen(false);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (isPeople) setPeopleOpen(false);
+                  if (item.children) setActivitiesOpen(false);
+                }}
+                onFocus={(event) => {
+                  if (event.target instanceof HTMLAnchorElement && event.target.getAttribute('href') === item.href) {
+                    if (isPeople) setPeopleOpen(true);
+                    if (item.children) setActivitiesOpen(true);
+                  }
+                }}
                 onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget)) setActivitiesOpen(false);
+                  if (!event.currentTarget.contains(event.relatedTarget)) {
+                    setActivitiesOpen(false);
+                    setPeopleOpen(false);
+                  }
                 }}
                 onKeyDown={(event) => {
                   if (event.key === 'Escape') {
                     setActivitiesOpen(false);
+                    setPeopleOpen(false);
                     event.currentTarget.querySelector('button')?.focus();
                   }
                 }}
@@ -92,7 +119,7 @@ function NavigationMenu({ current }: { current: string }) {
                 <div className="flex items-center gap-1">
                   <Link
                     href={item.href}
-                    onNavigate={() => setOpen(false)}
+                    onNavigate={() => { setOpen(false); setPeopleOpen(false); setActivitiesOpen(false); }}
                     aria-current={active ? 'page' : undefined}
                     className={`
                     flex items-center justify-between w-full md:w-auto font-body text-[16px] md:text-[13px] lg:text-[15px] xl:text-[17px]
@@ -102,28 +129,37 @@ function NavigationMenu({ current }: { current: string }) {
                   >
                     {item.label}
                   </Link>
-                  {item.children && (
+                  {(item.children || isPeople) && (
                     <button
                       type="button"
-                      aria-label="Toggle Activities submenu"
-                      aria-expanded={activitiesOpen}
-                      aria-controls="activities-submenu"
-                      onClick={() => setActivitiesOpen((value) => !value)}
+                      aria-label={`Toggle ${item.label} submenu`}
+                      aria-expanded={isPeople ? peopleOpen : activitiesOpen}
+                      aria-controls={isPeople ? 'people-submenu' : 'activities-submenu'}
+                      onClick={() => {
+                        if (isPeople) {
+                          setPeopleOpen((value) => !value);
+                          setActivitiesOpen(false);
+                        } else {
+                          setActivitiesOpen((value) => !value);
+                          setPeopleOpen(false);
+                        }
+                      }}
                       className="rounded p-1 text-ctiks-maroon focus-visible:outline focus-visible:outline-2"
                     >
                       <img
                         src={ASSETS.chevronDown}
                         alt=""
                         aria-hidden="true"
-                        className={`h-[20px] w-[20px] opacity-70 transition-transform ${activitiesOpen ? 'rotate-180' : ''}`}
+                        className={`h-[20px] w-[20px] opacity-70 transition-transform ${(isPeople ? peopleOpen : activitiesOpen) ? 'rotate-180' : ''}`}
                       />
                     </button>
                   )}
                 </div>
+                {isPeople && <PeopleNavMenu open={peopleOpen} onNavigate={() => { setOpen(false); setPeopleOpen(false); }} />}
                 {item.children && activitiesOpen && (
                   <ul
                     id="activities-submenu"
-                    className="w-full min-w-[190px] border-l border-ctiks-maroon/20 bg-ctiks-sand px-2 py-2 md:absolute md:left-0 md:top-full md:mt-2 md:rounded-md md:border md:shadow-lg"
+                    className="z-50 w-full min-w-[220px] rounded-xl border border-[#e5cfb2] bg-[#fffaf2] p-2 shadow-xl md:absolute md:left-0 md:top-full md:shadow-2xl"
                   >
                     {item.children.map((child) => (
                       <li key={child.href}>
@@ -134,7 +170,7 @@ function NavigationMenu({ current }: { current: string }) {
                             setActivitiesOpen(false);
                           }}
                           aria-current={child.href === current ? 'page' : undefined}
-                          className="block rounded px-4 py-3 text-sm font-medium text-ctiks-maroon hover:bg-white/60 focus:bg-white/60"
+                          className={`flex min-h-12 items-center rounded-lg px-3 py-2 font-body text-sm font-semibold leading-snug transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-ctiks-red ${child.href === current ? 'bg-[#f7e7d2] text-[#8c201b]' : 'text-ctiks-maroon hover:bg-[#f9efe2]'}`}
                         >
                           {child.label}
                         </Link>

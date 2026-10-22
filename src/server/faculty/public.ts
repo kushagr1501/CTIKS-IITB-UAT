@@ -93,3 +93,11 @@ export function getVisibleFaculty() {
     },
   });
 }
+
+export function getPublicPeopleMenu() {
+  return getDatabase().facultyProfile.findMany({
+    where: { visible: true },
+    orderBy: [{ category: 'asc' }, { displayOrder: 'asc' }, { name: 'asc' }],
+    select: { name: true, slug: true, category: true, websiteUrl: true },
+  });
+}
