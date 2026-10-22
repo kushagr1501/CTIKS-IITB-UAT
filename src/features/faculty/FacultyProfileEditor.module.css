@@ -55,6 +55,82 @@
   line-height: 1.5;
 }
 
+.visibilityNotice {
+  justify-self: center;
+  max-width: 100%;
+  margin: 0;
+  border: 1px solid #f0c15b;
+  border-radius: 8px;
+  background: #fff7e9;
+  padding: 10px 16px;
+  color: #6d1111;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.publishNotice {
+  position: fixed;
+  z-index: 80;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  width: min(580px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  transform: translate(-50%, -50%);
+  border: 1px solid #d6ab61;
+  border-radius: 18px;
+  background: #fffaf2;
+  padding: 38px 48px;
+  color: #771414;
+  text-align: center;
+  box-shadow: 0 18px 60px rgb(70 0 0 / 25%);
+}
+
+.publishNotice p {
+  margin: 0;
+  font-size: clamp(20px, 2.5vw, 26px);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.publishNoticeIcon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 50%;
+  background: #881716;
+  color: #fffaf2;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.publishNoticeDismiss {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: 0;
+  background: transparent;
+  color: #771414;
+  cursor: pointer;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.publishNoticeDismiss:focus-visible {
+  outline: 2px solid #881716;
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .publishNotice { padding: 32px 24px; }
+}
+
 .publishButton,
 .saveButton,
 .viewButton {
@@ -161,7 +237,81 @@
 }
 
 .portrait {
+  position: relative;
+  overflow: hidden;
   background: #e9dac9;
+}
+
+.portrait :global(.profile-picture-upload) {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.portrait :global(.profile-picture-upload__button) {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid #f4ce85;
+  border-radius: 50%;
+  background: #881716;
+  color: #fffaf1;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: auto;
+  transform: translateY(5px);
+  transition: opacity 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+
+.portrait :global(.profile-picture-upload__button svg) {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.portrait:hover :global(.profile-picture-upload__button),
+.portrait:focus-within :global(.profile-picture-upload__button),
+.emptyPortrait :global(.profile-picture-upload__button) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.portrait :global(.profile-picture-upload__button:hover) {
+  background: #a3201b;
+}
+
+.portrait :global(.profile-picture-upload__button:focus-within) {
+  outline: 3px solid #f4ce85;
+  outline-offset: 3px;
+}
+
+.portrait :global(.profile-picture-upload__status) {
+  position: absolute;
+  bottom: 18px;
+  left: 18px;
+  max-width: calc(100% - 88px);
+  padding: 7px 10px;
+  border: 1px solid #e4cbb1;
+  background: rgb(255 253 248 / 95%);
+  color: #54221d;
+  font-size: 12px;
+  line-height: 1.4;
+  pointer-events: auto;
+}
+
+@media (hover: none) {
+  .portrait :global(.profile-picture-upload__button) {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .portrait img,
@@ -174,6 +324,12 @@
   object-fit: cover;
   object-position: center 28%;
   box-shadow: none;
+}
+
+.portrait > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .photoField {
@@ -401,7 +557,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .control {
+  .control,
+  .portrait :global(.profile-picture-upload__button) {
     transition: none;
   }
 }

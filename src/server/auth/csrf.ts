@@ -10,7 +10,7 @@ export function csrfCookieName() {
 
 export function verifyCsrf(request: Request) {
   const environment = getEnvironment();
-  if (request.headers.get('origin') !== environment.origin)
+  if (!environment.trustedOrigins.includes(request.headers.get('origin') ?? ''))
     throw new HttpError(403, 'This request origin is not allowed.');
   const supplied = request.headers.get('x-csrf-token') ?? '';
   const cookie =

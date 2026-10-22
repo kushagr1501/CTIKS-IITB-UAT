@@ -18,7 +18,7 @@ function createAuth() {
     logger: { disabled: true },
     baseURL: environment.origin,
     secret: environment.BETTER_AUTH_SECRET,
-    trustedOrigins: [environment.origin],
+    trustedOrigins: environment.trustedOrigins,
     database: credentialAdapter(database),
     secondaryStorage: createAuthStorage(getRedis(), redisPrefix()),
     verification: { storeInDatabase: false },

@@ -16,6 +16,24 @@ import { hashPassword, verifyPassword } from '../src/server/auth/passwords';
 import { authRequestSchemas, isAuthPath } from '../src/server/auth/request-schema';
 import { credentialAccountWhere } from '../src/server/auth/credential-fields';
 import { presentAuditEvent } from '../src/features/admin/audit-presentation';
+import { trustedOriginsFor } from '../src/server/auth/trusted-origins';
+
+test('development trusts both loopback names while production stays exact', () => {
+  assert.deepEqual(trustedOriginsFor('http://127.0.0.1:3000', false), [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+  ]);
+  assert.deepEqual(trustedOriginsFor('http://localhost:3002', false), [
+    'http://localhost:3002',
+    'http://127.0.0.1:3002',
+  ]);
+  assert.deepEqual(trustedOriginsFor('https://uat.ctiks.iitb.ac.in', false), [
+    'https://uat.ctiks.iitb.ac.in',
+  ]);
+  assert.deepEqual(trustedOriginsFor('https://ctiks.iitb.ac.in', true), [
+    'https://ctiks.iitb.ac.in',
+  ]);
+});
 
 test('credential identity rejects disjunctions and unsupported provider comparisons', () => {
   assert.equal(credentialAccountWhere([{ field: 'providerId', value: 'google' }]), null);

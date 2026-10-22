@@ -278,12 +278,43 @@
   gap: 14px;
 }
 
+.entryHeading.entryHeadingWithAction {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  column-gap: 14px;
+}
+
 .entryHeading h3 {
+  min-width: 0;
+  flex: 1;
   color: #4a4235;
   font-size: 17px;
   font-weight: 600;
   line-height: 1.6;
   overflow-wrap: anywhere;
+}
+
+.entry .pdfAction {
+  display: inline-flex;
+  justify-self: end;
+  align-self: start;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  color: #95501f;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.entry .pdfAction:hover {
+  color: #8c1818;
+}
+
+.entry .pdfAction svg {
+  width: 16px;
+  height: 16px;
 }
 
 .entryMeta {
@@ -568,6 +599,11 @@
   .entryHeading {
     flex-direction: column;
     gap: 3px;
+  }
+
+  .section[id='publications'] .entryHeading {
+    flex-direction: row;
+    align-items: flex-start;
   }
 
   .entryMeta {

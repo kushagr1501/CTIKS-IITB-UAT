@@ -25,6 +25,14 @@ export const publicationTypes = {
 } as const;
 
 function safeLink(value: string) {
+  if (
+    process.env.NODE_ENV === 'development' &&
+    /^\/api\/local-media\/(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?:\.(?:jpg|png|webp|pdf))?|[a-z0-9][a-z0-9-]{0,79}\.(?:jpg|png|webp|pdf))$/i.test(
+      value,
+    )
+  ) {
+    return value;
+  }
   try {
     const url = new URL(value);
     return url.protocol === 'https:' && !url.username && !url.password ? url.href : undefined;
@@ -44,21 +52,66 @@ function ExternalLink({ url, children }: { url: string; children: ReactNode }) {
   ) : null;
 }
 
+function isPdfLink(value: string) {
+  try {
+    const pathname = new URL(value, 'https://ctiks.local').pathname.toLowerCase();
+    return (
+      pathname.endsWith('.pdf') ||
+      /^\/api\/local-media\/[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        pathname,
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
+function PdfAction({ href, title }: { href: string; title: string }) {
+  return (
+    <a
+      className={styles.pdfAction}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Open PDF for ${title}`}
+      title="Open PDF"
+    >
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M6.75 3.75h7.5l4.5 4.5v12h-12zM14.25 3.75v4.5h4.5M9 14.25h6M9 17.25h6"
+        />
+      </svg>
+      <span>PDF</span>
+    </a>
+  );
+}
+
 function AcademicEntry({
   title,
   detail,
   period,
+  action,
   children,
 }: {
   title: string;
   detail?: string;
   period?: string;
+  action?: ReactNode;
   children?: ReactNode;
 }) {
   return (
     <li className={styles.entry}>
-      <div className={styles.entryHeading}>
+      <div className={`${styles.entryHeading} ${action ? styles.entryHeadingWithAction : ''}`}>
         <h3>{title}</h3>
+        {action}
       </div>
       {(detail || period) && (
         <div className={styles.entryMeta}>
@@ -72,34 +125,42 @@ function AcademicEntry({
 }
 
 export function PublicationEntry({ item }: { item: Publication }) {
+  const pdfHref = item.url && isPdfLink(item.url) ? safeLink(item.url) : undefined;
   return (
     <AcademicEntry
       title={item.title}
       detail={[item.authors, item.venue].filter(Boolean).join(' · ')}
       period={item.year?.toString()}
+      action={pdfHref ? <PdfAction href={pdfHref} title={item.title} /> : undefined}
     >
       {item.citation && <p className={styles.prose}>{item.citation}</p>}
-      <div className={styles.entryLinks}>
-        {item.doi && (
-          <ExternalLink url={`https://doi.org/${encodeURIComponent(item.doi.replace(/^https?:\/\/doi\.org\//i, ''))}`}>
-            DOI: {item.doi.replace(/^https?:\/\/doi\.org\//i, '')}
-          </ExternalLink>
-        )}
-        {item.url && <ExternalLink url={item.url}>View publication</ExternalLink>}
-      </div>
+      {(item.doi || (item.url && !pdfHref)) && (
+        <div className={styles.entryLinks}>
+          {item.doi && (
+            <ExternalLink
+              url={`https://doi.org/${encodeURIComponent(item.doi.replace(/^https?:\/\/doi\.org\//i, ''))}`}
+            >
+              DOI: {item.doi.replace(/^https?:\/\/doi\.org\//i, '')}
+            </ExternalLink>
+          )}
+          {item.url && !pdfHref && <ExternalLink url={item.url}>View publication</ExternalLink>}
+        </div>
+      )}
     </AcademicEntry>
   );
 }
 
 export function PatentEntry({ item }: { item: Patent }) {
+  const pdfHref = item.url && isPdfLink(item.url) ? safeLink(item.url) : undefined;
   return (
     <AcademicEntry
       title={item.title}
       detail={[item.inventors, item.identifier, item.status].filter(Boolean).join(' · ')}
       period={item.year?.toString()}
+      action={pdfHref ? <PdfAction href={pdfHref} title={item.title} /> : undefined}
     >
       {item.description && <p className={styles.prose}>{item.description}</p>}
-      {item.url && <ExternalLink url={item.url}>View patent</ExternalLink>}
+      {item.url && !pdfHref && <ExternalLink url={item.url}>View patent</ExternalLink>}
     </AcademicEntry>
   );
 }
@@ -214,19 +275,20 @@ export default function FacultyProfile({ profile, totals }: { profile: Profile; 
         </ul>
       ),
     });
-  sections.push({
-    id: 'teaching',
-    title: 'Teaching',
-    content: (
-      <div className={styles.columns}>
-        {(['CURRENT', 'PREVIOUS'] as const).map((status) => {
-          const courses = academic?.courses.filter((item) => item.status === status) ?? [];
-          return (
-            <div key={status} className={styles.group}>
-              <h3 className={styles.groupTitle}>
-                {status === 'CURRENT' ? 'Currently teaching' : 'Courses taught'}
-              </h3>
-              {courses.length ? (
+  if (academic?.courses.length)
+    sections.push({
+      id: 'teaching',
+      title: 'Teaching',
+      content: (
+        <div className={styles.columns}>
+          {(['CURRENT', 'PREVIOUS'] as const).map((status) => {
+            const courses = academic.courses.filter((item) => item.status === status);
+            if (!courses.length) return null;
+            return (
+              <div key={status} className={styles.group}>
+                <h3 className={styles.groupTitle}>
+                  {status === 'CURRENT' ? 'Currently teaching' : 'Courses taught'}
+                </h3>
                 <ul>
                   {courses.map((item) => (
                     <AcademicEntry
@@ -239,15 +301,12 @@ export default function FacultyProfile({ profile, totals }: { profile: Profile; 
                     </AcademicEntry>
                   ))}
                 </ul>
-              ) : (
-                <p className={styles.empty}>Not added yet.</p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    ),
-  });
+              </div>
+            );
+          })}
+        </div>
+      ),
+    });
   if (academic?.publications.length)
     sections.push({
       id: 'publications',
@@ -356,26 +415,6 @@ export default function FacultyProfile({ profile, totals }: { profile: Profile; 
     'current-students',
     'contact',
   ];
-  const sectionTitles: Record<string, string> = {
-    education: 'Education',
-    teaching: 'Teaching',
-    research: 'Research areas',
-    experience: 'Work experience',
-    publications: 'Publications',
-    patents: 'Patents',
-    'graduated-students': 'Graduated students',
-    'current-students': 'Current students',
-    contact: 'Office & contact',
-  };
-  for (const id of sectionOrder) {
-    if (!sections.some((section) => section.id === id)) {
-      sections.push({
-        id,
-        title: sectionTitles[id],
-        content: <p className={styles.empty}>Not added yet.</p>,
-      });
-    }
-  }
   sections.sort((a, b) => sectionOrder.indexOf(a.id) - sectionOrder.indexOf(b.id));
 
   return (

@@ -1,5 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
+import { trustedOriginsFor } from '@/server/auth/trusted-origins';
 
 const environmentSchema = z.object({
   DATABASE_URL: z.string().min(1),
@@ -19,5 +20,10 @@ export function getEnvironment() {
   if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
     throw new Error('Production authentication requires an HTTPS application URL.');
   }
-  return { ...result.data, origin: url.origin };
+  const production = process.env.NODE_ENV === 'production';
+  return {
+    ...result.data,
+    origin: url.origin,
+    trustedOrigins: trustedOriginsFor(url.origin, production),
+  };
 }

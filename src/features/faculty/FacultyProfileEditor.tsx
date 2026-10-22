@@ -1,23 +1,46 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import FacultyPortrait from '@/features/people/components/FacultyPortrait';
 import profileStyles from '@/features/people/components/FacultyProfile.module.css';
 import AcademicEntries from './AcademicEntries';
+import LocalMediaUpload from './LocalMediaUpload';
 import { collections } from './entry-fields';
 import styles from './FacultyProfileEditor.module.css';
 import { academicContentSchema, type AcademicContent, type FacultyEditorState } from './profile-schema';
 
+function localMediaUrls(value: unknown): string[] {
+  if (typeof value === 'string') return /^\/api\/local-media\/[a-z0-9][a-z0-9-]{0,79}\.(?:jpg|png|webp|pdf)$/i.test(value) ? [value] : [];
+  if (Array.isArray(value)) return value.flatMap(localMediaUrls);
+  if (value && typeof value === 'object') return Object.values(value).flatMap(localMediaUrls);
+  return [];
+}
+
 export default function FacultyProfileEditor({ initialState }: { initialState: FacultyEditorState }) {
   const [state, setState] = useState(initialState);
+  const allowLocalUploads = initialState.identity.slug === 'vijayaraghavan-m-chariar';
   const [content, setContent] = useState(initialState.content);
   const [areaInput, setAreaInput] = useState('');
   const [areaError, setAreaError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [autosaving, setAutosaving] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const dirty = JSON.stringify(content) !== JSON.stringify(state.content) || areaInput.trim().length > 0;
+  const [publishNotice, setPublishNotice] = useState('');
+  const uploadedMedia = useRef(new Set<string>());
+  const saving = useRef(false);
+  const lastAutosaveAttempt = useRef('');
+  const saveRef = useRef<(action: 'save' | 'publish' | 'discard', automatic?: boolean) => Promise<void>>(
+    async () => {},
+  );
+  const contentKey = JSON.stringify(content);
+  const dirty = contentKey !== JSON.stringify(state.content) || areaInput.trim().length > 0;
+  useEffect(() => {
+    if (!publishNotice) return;
+    const timer = window.setTimeout(() => setPublishNotice(''), 6000);
+    return () => window.clearTimeout(timer);
+  }, [publishNotice]);
   useEffect(() => {
     if (!dirty) return;
     const warn = (event: BeforeUnloadEvent) => {
@@ -30,6 +53,10 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
   function setField<K extends keyof AcademicContent>(key: K, value: AcademicContent[K]) {
     setContent((current) => ({ ...current, [key]: value }));
     setMessage('');
+    setPublishNotice('');
+  }
+  function rememberUploadedMedia(url: string) {
+    uploadedMedia.current.add(url);
   }
   function addResearchArea() {
     const area = areaInput.trim();
@@ -43,8 +70,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
     setAreaInput('');
     setAreaError('');
   }
-  async function save(action: 'save' | 'publish' | 'discard') {
-    if (busy) return;
+  async function save(action: 'save' | 'publish' | 'discard', automatic = false) {
+    if (saving.current) return;
     if (
       action === 'discard' &&
       !window.confirm(
@@ -54,6 +81,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
       return;
     setError('');
     setMessage('');
+    setPublishNotice('');
     const parsed = academicContentSchema.safeParse({
       ...content,
       researchTags: areaInput.trim() ? [...content.researchTags, areaInput.trim()] : content.researchTags,
@@ -65,12 +93,17 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
         .join(' → ');
       setError(`${path}: ${issue.message}`);
       if (issue.path[0] === 'researchTags') setAreaError(issue.message);
-      document
-        .getElementById(`editor-${String(issue.path[0])}`)
-        ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      if (!automatic) {
+        document
+          .getElementById(`editor-${String(issue.path[0])}`)
+          ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }
       return;
     }
+    saving.current = true;
     setBusy(true);
+    setAutosaving(automatic);
+    let cleanupFailed = false;
     try {
       const csrfResponse = await fetch('/api/auth/csrf', { cache: 'no-store' });
       if (!csrfResponse.ok) throw new Error('Your session could not be verified. Sign in again.');
@@ -94,27 +127,66 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
         throw new Error(`${result.error || 'The profile could not be saved. Please try again.'}${diagnostic}`);
       }
       const next = result.faculty as FacultyEditorState;
+      const retainedMedia = new Set(localMediaUrls(next.content));
+      const obsoleteMedia = [...new Set([...localMediaUrls(state.content), ...uploadedMedia.current])]
+        .filter((url) => !retainedMedia.has(url));
+      for (let index = 0; index < obsoleteMedia.length; index += 100) {
+        try {
+          const cleanupResponse = await fetch('/api/faculty/profile/media', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrf.token },
+            body: JSON.stringify({ urls: obsoleteMedia.slice(index, index + 100) }),
+          });
+          if (!cleanupResponse.ok) cleanupFailed = true;
+        } catch {
+          cleanupFailed = true;
+        }
+      }
+      for (const url of retainedMedia) uploadedMedia.current.delete(url);
+      if (!cleanupFailed) for (const url of obsoleteMedia) uploadedMedia.current.delete(url);
       setState(next);
       setContent(next.content);
       setAreaInput('');
       setAreaError('');
-      setMessage(
+      const successMessage =
         action === 'save'
-          ? 'Draft saved. Your public profile has not changed.'
+          ? automatic
+            ? 'Draft saved automatically. Your public profile has not changed.'
+            : 'Draft saved. Your public profile has not changed.'
           : action === 'discard'
             ? 'Draft discarded. The current profile is loaded.'
             : next.identity.visible
               ? 'Published. Your changes are live on the website.'
-              : 'Content updated. This profile remains hidden until the administrator makes it visible.',
-      );
+              : 'Content updated. This profile remains hidden until the administrator makes it visible.';
+      setMessage(action === 'publish' ? '' : successMessage);
+      if (action === 'publish') setPublishNotice(successMessage);
+      if (cleanupFailed) setMessage('Some unused local files could not be cleaned up.');
     } catch (cause) {
       setError(
         cause instanceof Error ? cause.message : 'The profile could not be saved. Your edits are still here.',
       );
     } finally {
+      saving.current = false;
       setBusy(false);
+      setAutosaving(false);
     }
   }
+  saveRef.current = save;
+  useEffect(() => {
+    if (
+      !dirty ||
+      busy ||
+      areaInput.trim() ||
+      lastAutosaveAttempt.current === contentKey
+    ) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      lastAutosaveAttempt.current = contentKey;
+      void saveRef.current('save', true);
+    }, 1500);
+    return () => window.clearTimeout(timer);
+  }, [areaInput, busy, contentKey, dirty]);
   function textField(
     key:
       | 'name'
@@ -181,9 +253,18 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
         <div className={styles.actionRail}>
           <div className={`${profileStyles.shell} ${styles.editorShell} ${styles.actionInner}`}>
             <div className={styles.actionMeta}>
+              {!state.identity.visible && (
+                <p className={styles.visibilityNotice}>
+                  Your profile is hidden from the website. Ask an administrator to make it visible.
+                </p>
+              )}
               <div aria-live="polite" className={styles.status}>
-                {dirty
-                  ? 'You have unsaved changes.'
+                {autosaving
+                  ? 'Saving draft automatically…'
+                  : dirty && areaInput.trim()
+                    ? 'Add your research area to include it in the saved draft.'
+                    : dirty
+                      ? 'Unsaved changes · draft will save automatically.'
                   : state.hasDraft
                     ? 'You are editing a saved draft.'
                     : 'You are editing your current profile.'}
@@ -192,7 +273,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
               {message && <p role="status" className="text-sm text-white">{message}</p>}
               <div className={styles.actionButtons}>
                 <button type="submit" className={styles.publishButton} disabled={busy}>
-                  {busy ? 'Saving…' : 'Submit & publish'}
+                  {busy && !autosaving ? 'Saving…' : 'Submit & publish'}
                 </button>
                 <button
                   type="button"
@@ -200,7 +281,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                   disabled={busy}
                   onClick={() => void save('save')}
                 >
-                  Save draft
+                  {autosaving ? 'Autosaving…' : 'Save draft'}
                 </button>
                 {state.hasDraft && (
                   <button
@@ -233,13 +314,39 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
             )}
           </div>
         </div>
+        {publishNotice && (
+          <div className={styles.publishNotice} role="status" aria-live="polite">
+            <span className={styles.publishNoticeIcon} aria-hidden="true">✓</span>
+            <p>{publishNotice}</p>
+            <button
+              type="button"
+              className={styles.publishNoticeDismiss}
+              aria-label="Dismiss confirmation"
+              onClick={() => setPublishNotice('')}
+            >
+              ×
+            </button>
+          </div>
+        )}
         <fieldset disabled={busy} className={`${profileStyles.page} ${styles.page} min-w-0 border-0 p-0`}>
           <div className={profileStyles.content}>
             <div className={`${profileStyles.shell} ${styles.editorShell}`}>
               <section className={styles.profileHeader} aria-label="Edit your profile introduction">
                 <div className={styles.profileAside}>
-                  <div className={styles.portrait}>
+                  <div className={`${styles.portrait} ${!content.imageUrl ? styles.emptyPortrait : ''}`}>
                     <FacultyPortrait name={content.name} image={content.imageUrl || undefined} />
+                    {process.env.NODE_ENV === 'development' && (
+                      <LocalMediaUpload
+                        accept="image/jpeg,image/png,image/webp"
+                        storageName={`${content.name}-profile-picture`}
+                        value={content.imageUrl}
+                        onUploaded={(url) => {
+                          rememberUploadedMedia(url);
+                          setField('imageUrl', url);
+                        }}
+                        variant="profile-picture"
+                      />
+                    )}
                   </div>
                   <div className={styles.photoField}>
                     {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048, undefined, 'url')}
@@ -383,6 +490,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                     name="publications"
                     rows={content.publications}
                     {...collections.publications}
+                    allowLocalUploads={allowLocalUploads}
+                    onLocalMediaUploaded={rememberUploadedMedia}
                     onChange={(rows) => setField('publications', rows)}
                   />
                 </div>
@@ -391,6 +500,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                     name="patents"
                     rows={content.patents}
                     {...collections.patents}
+                    allowLocalUploads={allowLocalUploads}
+                    onLocalMediaUploaded={rememberUploadedMedia}
                     onChange={(rows) => setField('patents', rows)}
                   />
                 </div>
@@ -402,6 +513,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                       <AcademicEntries
                         name="students"
                         {...collections.students}
+                        allowLocalUploads={allowLocalUploads}
+                        onLocalMediaUploaded={rememberUploadedMedia}
                         sectionId={`editor-${status === 'GRADUATED' ? 'graduated' : 'current'}-students`}
                         label={label}
                         rows={rows}

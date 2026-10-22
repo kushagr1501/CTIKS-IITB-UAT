@@ -6,6 +6,7 @@ import { assertPermission, type Actor } from '@/server/auth/session';
 import { HttpError } from '@/server/http/errors';
 import { auditData } from '@/server/audit/write';
 import { readStudentSocialLinks } from '@/features/faculty/student-schema';
+import { profilePictureStem } from '@/server/local-media';
 import {
   facultyContentRequestSchema,
   type AcademicContent,
@@ -313,6 +314,17 @@ export async function writeOwnFacultyContent(tx: Prisma.TransactionClient, actor
   assertPermission(actor, 'faculty.self.update');
   const request = facultyContentRequestSchema.parse(input);
   const profile = await ownProfile(tx, actor);
+  const localMediaImage = request.content.imageUrl.startsWith('/api/local-media/');
+  const otherLocalMedia = JSON.stringify({ ...request.content, imageUrl: '' }).includes('/api/local-media/');
+  if ((localMediaImage || otherLocalMedia) && process.env.NODE_ENV !== 'development') {
+    throw new HttpError(400, 'Local media links are available only in local development.');
+  }
+  if (profile.slug !== 'vijayaraghavan-m-chariar') {
+    const ownPhoto = new RegExp(`^/api/local-media/${profilePictureStem(profile.slug)}(?:-[0-9]+)?\\.(?:jpg|png|webp)$`, 'i');
+    if (otherLocalMedia || (localMediaImage && !ownPhoto.test(request.content.imageUrl))) {
+      throw new HttpError(400, 'Only your own profile picture can use local media.');
+    }
+  }
   if (profile.version !== request.profileVersion)
     throw new HttpError(
       409,

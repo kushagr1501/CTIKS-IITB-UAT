@@ -123,7 +123,7 @@ export const collections: { [K in Collection]: Definition<K> } = {
     fields: [
       { key: 'name', label: 'Name', required: true, max: 200 },
       { key: 'programme', label: 'Programme', max: 200 },
-      { key: 'imageUrl', label: 'Student photo URL', kind: 'image', max: 2048 },
+      { key: 'imageUrl', label: 'Student photo', kind: 'image', max: 2048 },
       { key: 'biography', label: 'Student biography', kind: 'textarea', max: 5000 },
       {
         key: 'status',

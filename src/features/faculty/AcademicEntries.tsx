@@ -1,20 +1,27 @@
 import { useState } from 'react';
 import AcademicEntryFields, { type EntryField, type EntryValue } from './AcademicEntryFields';
 import AcademicEntryDialog, { type AcademicCollection } from './AcademicEntryDialog';
+import AcademicCsvImport from './AcademicCsvImport';
 export type { EntryField } from './AcademicEntryFields';
 
 function Entry<T extends Record<string, EntryValue>>({
+  name,
   row,
   fields,
   id,
   title,
   onChange,
+  onLocalMediaUploaded,
+  allowLocalUploads,
 }: {
+  name: AcademicCollection;
   row: T;
   fields: EntryField<T>[];
   id: string;
   title: string;
   onChange: (row: T) => void;
+  onLocalMediaUploaded?: (url: string) => void;
+  allowLocalUploads: boolean;
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -28,7 +35,15 @@ function Entry<T extends Record<string, EntryValue>>({
       </summary>
       {open && (
         <div className="border-t border-stone-100 p-4">
-          <AcademicEntryFields row={row} fields={fields} id={id} onChange={onChange} />
+          <AcademicEntryFields
+            row={row}
+            fields={fields}
+            id={id}
+            collection={name}
+            onChange={onChange}
+            onLocalMediaUploaded={onLocalMediaUploaded}
+            allowLocalUploads={allowLocalUploads}
+          />
         </div>
       )}
     </details>
@@ -46,7 +61,9 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
   fields,
   create,
   onChange,
+  onLocalMediaUploaded,
   limit,
+  allowLocalUploads = false,
 }: {
   name: AcademicCollection;
   sectionId?: string;
@@ -55,7 +72,9 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
   fields: EntryField<T>[];
   create: () => T;
   onChange: (rows: T[]) => void;
+  onLocalMediaUploaded?: (url: string) => void;
   limit: number;
+  allowLocalUploads?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   function move(index: number, direction: -1 | 1) {
@@ -65,28 +84,41 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
   }
   return (
     <section id={sectionId ?? `editor-${name}`} className="admin-panel scroll-mt-6">
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-5 grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
         <h2 className="font-display text-2xl text-ctiks-maroon">
           {label} <span className="text-base font-normal text-stone-500">({rows.length})</span>
         </h2>
-        <button
-          type="button"
-          className="admin-secondary"
-          disabled={rows.length >= limit}
-          onClick={() => setAdding(true)}
-        >
-          Add entry
-        </button>
+        <div className="flex flex-wrap items-center gap-2 md:justify-end">
+          {(name === 'publications' || name === 'patents') && (
+            <AcademicCsvImport
+              collection={name}
+              currentCount={rows.length}
+              limit={limit}
+              onImport={(entries) => onChange([...rows, ...entries] as unknown as T[])}
+            />
+          )}
+          <button
+            type="button"
+            className="admin-secondary"
+            disabled={rows.length >= limit}
+            onClick={() => setAdding(true)}
+          >
+            Add entry
+          </button>
+        </div>
       </div>
       {!rows.length && <p className="text-base text-stone-600">No entries added.</p>}
       <ol className="space-y-4">
         {rows.map((row, index) => (
           <li key={index} className="min-w-0">
             <Entry
+              name={name}
               row={row}
               fields={fields}
               id={`${name}-${index}`}
               title={`${index + 1}. ${String(row.title || row.name || 'New entry')}`}
+              onLocalMediaUploaded={onLocalMediaUploaded}
+              allowLocalUploads={allowLocalUploads}
               onChange={(value) =>
                 onChange(rows.map((entry, position) => (position === index ? value : entry)))
               }
@@ -144,6 +176,7 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
           name={name}
           label={label}
           fields={fields}
+          allowLocalUploads={allowLocalUploads}
           create={create}
           onAdd={(row) => {
             if (rows.length < limit) onChange([...rows, row]);
