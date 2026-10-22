@@ -25,7 +25,7 @@ export default function LocalMediaUpload({
   value?: string;
   onRemove?: () => void;
   onUploaded: (url: string) => void;
-  variant?: 'inline' | 'profile-picture' | 'photo-choice';
+  variant?: 'inline' | 'photo-choice';
 }) {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
@@ -93,7 +93,6 @@ export default function LocalMediaUpload({
       const form = new FormData();
       form.set('file', file);
       form.set('storageName', storageName);
-      if (variant === 'profile-picture') form.set('kind', 'profile-picture');
       const response = await fetch('/api/faculty/profile/media', {
         method: 'POST',
         headers: { 'x-csrf-token': csrf.token },
@@ -192,32 +191,6 @@ export default function LocalMediaUpload({
           The PDF uploads now; save or publish the profile to keep the change. You can also paste an external link above.
         </p>
       </div>
-    );
-  }
-
-  if (variant === 'profile-picture') {
-    return (
-      <span className="profile-picture-upload">
-        <label className="profile-picture-upload__button" title={value ? 'Change profile picture' : 'Add profile picture'}>
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-            <path d="m14.5 5.5 4 4M4 20l4.2-.8L19.2 8.2a2.12 2.12 0 0 0-3-3L5.2 16.2 4 20Z" />
-          </svg>
-          <span className="sr-only">{busy ? 'Uploading profile picture' : value ? 'Change profile picture' : 'Add profile picture'}</span>
-          <input
-            type="file"
-            accept={accept}
-            className="sr-only"
-            aria-label={value ? 'Change profile picture' : 'Add profile picture'}
-            disabled={busy}
-            onChange={(event) => {
-              void upload(event.currentTarget.files?.[0]);
-              event.currentTarget.value = '';
-            }}
-          />
-        </label>
-        {message && <span className="profile-picture-upload__status" role="status">{message}</span>}
-        {error && <span className="profile-picture-upload__status" role="alert">{error}</span>}
-      </span>
     );
   }
 

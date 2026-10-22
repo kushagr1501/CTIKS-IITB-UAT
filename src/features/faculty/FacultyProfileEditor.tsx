@@ -5,7 +5,6 @@ import Link from 'next/link';
 import FacultyPortrait from '@/features/people/components/FacultyPortrait';
 import profileStyles from '@/features/people/components/FacultyProfile.module.css';
 import AcademicEntries from './AcademicEntries';
-import LocalMediaUpload from './LocalMediaUpload';
 import { collections } from './entry-fields';
 import styles from './FacultyProfileEditor.module.css';
 import { academicContentSchema, type AcademicContent, type FacultyEditorState } from './profile-schema';
@@ -333,20 +332,8 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
             <div className={`${profileStyles.shell} ${styles.editorShell}`}>
               <section className={styles.profileHeader} aria-label="Edit your profile introduction">
                 <div className={styles.profileAside}>
-                  <div className={`${styles.portrait} ${!content.imageUrl ? styles.emptyPortrait : ''}`}>
+                  <div className={styles.portrait}>
                     <FacultyPortrait name={content.name} image={content.imageUrl || undefined} />
-                    {process.env.NODE_ENV === 'development' && (
-                      <LocalMediaUpload
-                        accept="image/jpeg,image/png,image/webp"
-                        storageName={`${content.name}-profile-picture`}
-                        value={content.imageUrl}
-                        onUploaded={(url) => {
-                          rememberUploadedMedia(url);
-                          setField('imageUrl', url);
-                        }}
-                        variant="profile-picture"
-                      />
-                    )}
                   </div>
                   <div className={styles.photoField}>
                     {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048, undefined, 'url')}

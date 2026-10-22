@@ -65,26 +65,22 @@ export function POST(request: Request) {
   return authorizedRequest(request, 'faculty.self.update', async (actor) => {
     requireLocalMediaDevelopment();
     const faculty = await getOwnFacultyEditor(actor);
+    if (faculty.identity.slug !== 'vijayaraghavan-m-chariar') {
+      throw new HttpError(403, 'Local uploads are currently enabled only for Prof. VJ.');
+    }
     const contentLength = Number(request.headers.get('content-length') ?? 0);
     if (contentLength > MAX_PDF_BYTES + 128 * 1024) throw new HttpError(413, 'The selected file is too large.');
     const form = await request.formData();
-    const isProfilePicture = form.get('kind') === 'profile-picture';
-    if (!isProfilePicture && faculty.identity.slug !== 'vijayaraghavan-m-chariar') {
-      throw new HttpError(403, 'Other local uploads are currently enabled only for Prof. VJ.');
-    }
     const file = form.get('file');
     if (!(file instanceof File)) throw new HttpError(400, 'Choose a photo or PDF to upload.');
-    const requestedStorageName = form.get('storageName');
-    if (!isProfilePicture && (typeof requestedStorageName !== 'string' || !requestedStorageName.trim())) {
+    const storageName = form.get('storageName');
+    if (typeof storageName !== 'string' || !storageName.trim()) {
       throw new HttpError(400, 'The profile section name is required for this upload.');
     }
     if (file.size > MAX_PDF_BYTES) throw new HttpError(413, 'The selected file exceeds the 25 MB limit.');
     const bytes = new Uint8Array(await file.arrayBuffer());
     const detected = detectFile(bytes);
     if (!detected) throw new HttpError(400, 'Use a JPEG, PNG, WebP, or PDF file.');
-    if (isProfilePicture && detected.extension === 'pdf') {
-      throw new HttpError(400, 'Choose a JPEG, PNG, or WebP profile picture.');
-    }
     const maxBytes = detected.extension === 'pdf' ? MAX_PDF_BYTES : MAX_IMAGE_BYTES;
     if (bytes.byteLength > maxBytes) {
       throw new HttpError(
@@ -93,9 +89,6 @@ export function POST(request: Request) {
       );
     }
     const directory = await ensureLocalMediaDirectory();
-    const storageName = isProfilePicture
-      ? profilePictureStem(faculty.identity.slug)
-      : requestedStorageName as string;
     const savedName = await saveWithReadableName(directory, storageName, detected.extension, bytes);
     return Response.json({ url: `/api/local-media/${savedName}`, mimeType: detected.mime });
   });
