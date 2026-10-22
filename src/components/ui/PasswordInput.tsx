@@ -17,6 +17,7 @@ export default function PasswordInput({
       <div className="relative">
         <input {...props} id={inputId} type={visible ? 'text' : 'password'} className="admin-input pr-12" />
         <button
+          suppressHydrationWarning
           type="button"
           aria-label={`${visible ? 'Hide' : 'Show'} ${label.toLowerCase()}`}
           aria-controls={inputId}

@@ -3,8 +3,10 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import PasswordInput from '@/components/ui/PasswordInput';
 import { MAX_PASSWORD_LENGTH } from '@/config/password-policy';
+import { ASSETS } from '@/config/assets';
 import { apiJson } from '../api-client';
 
 export default function LoginForm() {
@@ -37,17 +39,31 @@ export default function LoginForm() {
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-ctiks-red/15 bg-white p-7 shadow-sm sm:p-10">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-ctiks-red">
-        CTIKS · IIT Bombay
-      </p>
-      <h1 className="font-display text-3xl text-ctiks-maroon">Account login</h1>
+      <div className="mb-3 flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-ctiks-red">
+            CTIKS · IIT Bombay
+          </p>
+          <h1 className="font-display text-3xl text-ctiks-maroon">Account login</h1>
+        </div>
+        <Image
+          src={ASSETS.ctiksLogo}
+          alt="CTIKS logo"
+          width={72}
+          height={72}
+          priority
+          className="h-14 w-14 shrink-0 object-contain sm:h-16 sm:w-16"
+        />
+      </div>
       <p className="mt-3 text-sm leading-6 text-stone-600">
         Sign in with your administrator or core faculty account.
       </p>
       <form onSubmit={submit} className="mt-7 space-y-5">
+        {/* Password managers and browser extensions may add fdprocessedid before hydration. */}
         <label className="admin-label">
           Email
           <input
+            suppressHydrationWarning
             name="email"
             type="email"
             className="admin-input"
@@ -58,6 +74,7 @@ export default function LoginForm() {
         </label>
         <PasswordInput
           label="Password"
+          suppressHydrationWarning
           name="password"
           autoComplete="current-password"
           required
@@ -68,7 +85,7 @@ export default function LoginForm() {
             {error}
           </p>
         )}
-        <button disabled={busy} className="admin-primary w-full">
+        <button suppressHydrationWarning disabled={busy} className="admin-primary w-full">
           {busy ? 'Signing in…' : 'Sign in'}
         </button>
       </form>
