@@ -500,7 +500,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                       <AcademicEntries
                         name="students"
                         {...collections.students}
-                        allowLocalUploads={allowLocalUploads}
+                        allowLocalUploads={process.env.NODE_ENV === 'development'}
                         onLocalMediaUploaded={rememberUploadedMedia}
                         sectionId={`editor-${status === 'GRADUATED' ? 'graduated' : 'current'}-students`}
                         label={label}

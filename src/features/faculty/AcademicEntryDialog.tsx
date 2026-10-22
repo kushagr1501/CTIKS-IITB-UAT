@@ -14,6 +14,7 @@ export default function AcademicEntryDialog<T extends Record<string, EntryValue>
   onAdd,
   onClose,
   allowLocalUploads = false,
+  onLocalMediaUploaded,
 }: {
   name: AcademicCollection;
   label: string;
@@ -22,6 +23,7 @@ export default function AcademicEntryDialog<T extends Record<string, EntryValue>
   onAdd: (row: T) => void;
   onClose: () => void;
   allowLocalUploads?: boolean;
+  onLocalMediaUploaded?: (url: string) => void;
 }) {
   const [row, setRow] = useState(create);
   const [error, setError] = useState('');
@@ -112,6 +114,7 @@ export default function AcademicEntryDialog<T extends Record<string, EntryValue>
             id={formId}
             collection={name}
             allowLocalUploads={allowLocalUploads}
+            onLocalMediaUploaded={onLocalMediaUploaded}
             onChange={(value) => {
               setRow(value);
               setError('');

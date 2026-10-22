@@ -93,6 +93,7 @@ export default function LocalMediaUpload({
       const form = new FormData();
       form.set('file', file);
       form.set('storageName', storageName);
+      if (variant === 'photo-choice') form.set('kind', 'student-photo');
       const response = await fetch('/api/faculty/profile/media', {
         method: 'POST',
         headers: { 'x-csrf-token': csrf.token },

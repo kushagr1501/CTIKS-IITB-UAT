@@ -10,6 +10,8 @@ import {
   localMediaDirectory,
   localMediaNamePattern,
   profilePictureStem,
+  studentPhotoStem,
+  isOwnedStudentPhotoUrl,
   requireLocalMediaDevelopment,
 } from '@/server/local-media';
 import { HttpError } from '@/server/http/errors';
@@ -65,12 +67,13 @@ export function POST(request: Request) {
   return authorizedRequest(request, 'faculty.self.update', async (actor) => {
     requireLocalMediaDevelopment();
     const faculty = await getOwnFacultyEditor(actor);
-    if (faculty.identity.slug !== 'vijayaraghavan-m-chariar') {
-      throw new HttpError(403, 'Local uploads are currently enabled only for Prof. VJ.');
-    }
     const contentLength = Number(request.headers.get('content-length') ?? 0);
     if (contentLength > MAX_PDF_BYTES + 128 * 1024) throw new HttpError(413, 'The selected file is too large.');
     const form = await request.formData();
+    const isStudentPhoto = form.get('kind') === 'student-photo';
+    if (!isStudentPhoto && faculty.identity.slug !== 'vijayaraghavan-m-chariar') {
+      throw new HttpError(403, 'PDF and other local uploads are currently enabled only for Prof. VJ.');
+    }
     const file = form.get('file');
     if (!(file instanceof File)) throw new HttpError(400, 'Choose a photo or PDF to upload.');
     const storageName = form.get('storageName');
@@ -81,6 +84,9 @@ export function POST(request: Request) {
     const bytes = new Uint8Array(await file.arrayBuffer());
     const detected = detectFile(bytes);
     if (!detected) throw new HttpError(400, 'Use a JPEG, PNG, WebP, or PDF file.');
+    if (isStudentPhoto && detected.extension === 'pdf') {
+      throw new HttpError(400, 'Choose a JPEG, PNG, or WebP student photo.');
+    }
     const maxBytes = detected.extension === 'pdf' ? MAX_PDF_BYTES : MAX_IMAGE_BYTES;
     if (bytes.byteLength > maxBytes) {
       throw new HttpError(
@@ -89,7 +95,12 @@ export function POST(request: Request) {
       );
     }
     const directory = await ensureLocalMediaDirectory();
-    const savedName = await saveWithReadableName(directory, storageName, detected.extension, bytes);
+    const savedName = await saveWithReadableName(
+      directory,
+      isStudentPhoto ? studentPhotoStem(faculty.identity.slug, storageName) : storageName,
+      detected.extension,
+      bytes,
+    );
     return Response.json({ url: `/api/local-media/${savedName}`, mimeType: detected.mime });
   });
 }
@@ -121,9 +132,10 @@ export function DELETE(request: Request) {
       if (
         faculty.identity.slug !== 'vijayaraghavan-m-chariar' &&
         (match[2].toLowerCase() === 'pdf' ||
-          !new RegExp(`^${profilePictureStem(faculty.identity.slug)}(?:-[0-9]+)?$`, 'i').test(stem))
+          (!new RegExp(`^${profilePictureStem(faculty.identity.slug)}(?:-[0-9]+)?$`, 'i').test(stem) &&
+            !isOwnedStudentPhotoUrl(faculty.identity.slug, url)))
       ) {
-        throw new HttpError(403, 'You can only clean up your own profile pictures.');
+        throw new HttpError(403, 'You can only clean up your own photos.');
       }
       const referenced = await database.$queryRaw<{ used: boolean }[]>(Prisma.sql`
         SELECT EXISTS (

@@ -16,6 +16,32 @@ export function profilePictureStem(slug: string) {
   return `prof-${slug.slice(0, 40).replace(/-+$/g, '')}-${digest}-profile-picture`;
 }
 
+function studentPhotoPrefix(slug: string) {
+  const digest = createHash('sha256').update(slug).digest('hex').slice(0, 8);
+  return `prof-${slug.slice(0, 24).replace(/-+$/g, '')}-${digest}-student-`;
+}
+
+export function studentPhotoStem(slug: string, storageName: string) {
+  const prefix = studentPhotoPrefix(slug);
+  const name = storageName
+    .replace(/^student-/i, '')
+    .replace(/-photo$/i, '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  const available = 74 - prefix.length - '-photo'.length;
+  return `${prefix}${name.slice(0, available).replace(/-+$/g, '') || 'unnamed'}-photo`;
+}
+
+export function isOwnedStudentPhotoUrl(slug: string, url: string) {
+  return new RegExp(
+    `^/api/local-media/${studentPhotoPrefix(slug)}[a-z0-9][a-z0-9-]*-photo(?:-[0-9]+)?\\.(?:jpg|png|webp)$`,
+    'i',
+  ).test(url);
+}
+
 export function requireLocalMediaDevelopment() {
   if (process.env.NODE_ENV !== 'development') throw new HttpError(404, 'Not found.');
   let databaseUrl: URL;

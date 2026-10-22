@@ -177,6 +177,7 @@ export default function AcademicEntries<T extends Record<string, EntryValue>>({
           label={label}
           fields={fields}
           allowLocalUploads={allowLocalUploads}
+          onLocalMediaUploaded={onLocalMediaUploaded}
           create={create}
           onAdd={(row) => {
             if (rows.length < limit) onChange([...rows, row]);
