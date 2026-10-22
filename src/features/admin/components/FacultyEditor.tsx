@@ -105,7 +105,7 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
       <div className="flex max-h-[calc(100dvh-2rem)] flex-col">
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-stone-200 bg-stone-50 px-5 py-4 sm:px-8">
           <h2 id="faculty-editor-title" className="min-w-0 text-xl font-semibold [overflow-wrap:anywhere]">
-            {profile ? `Edit ${profile.name}` : 'Add faculty member'}
+            {profile ? `Edit ${profile.name}` : 'Add person'}
           </h2>
           <button
             type="button"
@@ -171,7 +171,7 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
             </span>
           </label>
           <label className="admin-label">
-            Faculty category
+            Profile category
             <select
               name="category"
               className="admin-input"
@@ -302,7 +302,7 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
               Cancel
             </button>
             <button className="admin-primary" disabled={busy}>
-              {busy ? 'Saving…' : 'Save faculty profile'}
+              {busy ? 'Saving…' : 'Save profile'}
             </button>
           </div>
         </form>

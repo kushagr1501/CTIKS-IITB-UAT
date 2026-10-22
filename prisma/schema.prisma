@@ -17,6 +17,8 @@ enum FacultyCategory {
   ADJUNCT
   ASSOCIATE
   VISITING
+  POST_DOCTORAL
+  DOCTORAL_STUDENT
 }
 
 model User {

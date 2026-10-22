@@ -34,7 +34,7 @@ export const facultySchema = z
       .min(2)
       .max(180)
       .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use lowercase words separated by hyphens.'),
-    category: z.enum(['CORE', 'ADJUNCT', 'ASSOCIATE', 'VISITING']),
+    category: z.enum(['CORE', 'ADJUNCT', 'ASSOCIATE', 'VISITING', 'POST_DOCTORAL', 'DOCTORAL_STUDENT']),
     designation: plainText(160),
     department: plainText(300).min(2),
     interests: plainText(1500),

@@ -6,6 +6,8 @@ const otherCategories = [
   { category: 'ADJUNCT', title: 'Adjunct Faculty' },
   { category: 'ASSOCIATE', title: 'Associate Faculty' },
   { category: 'VISITING', title: 'Visiting Faculty' },
+  { category: 'POST_DOCTORAL', title: 'Postdoctoral Researchers / Scholars' },
+  { category: 'DOCTORAL_STUDENT', title: 'Doctoral Students' },
 ] as const;
 
 function cardProps(person: PublicFaculty) {
@@ -24,7 +26,7 @@ function cardProps(person: PublicFaculty) {
 export default function FacultyDirectory({ faculty }: { faculty: PublicFaculty[] }) {
   const core = faculty.filter((person) => person.category === 'CORE');
   if (!faculty.length)
-    return <p className="px-6 py-20 text-center">Faculty profiles will be available soon.</p>;
+    return <p className="px-6 py-20 text-center">People profiles will be available soon.</p>;
   return (
     <>
       {core.length > 0 && (

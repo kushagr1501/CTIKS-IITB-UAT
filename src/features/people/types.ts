@@ -14,7 +14,7 @@ export type PublicFaculty = {
   id: string;
   slug: string;
   name: string;
-  category: 'CORE' | 'ADJUNCT' | 'ASSOCIATE' | 'VISITING';
+  category: 'CORE' | 'ADJUNCT' | 'ASSOCIATE' | 'VISITING' | 'POST_DOCTORAL' | 'DOCTORAL_STUDENT';
   designation: string;
   department: string;
   interests: string;

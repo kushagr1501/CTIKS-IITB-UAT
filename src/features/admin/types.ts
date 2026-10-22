@@ -3,6 +3,8 @@ export const FACULTY_CATEGORIES = {
   ADJUNCT: 'Adjunct Faculty',
   ASSOCIATE: 'Associate Faculty',
   VISITING: 'Visiting Faculty',
+  POST_DOCTORAL: 'Postdoctoral Researchers / Scholars',
+  DOCTORAL_STUDENT: 'Doctoral Students',
 } as const;
 
 export type FacultyCategory = keyof typeof FACULTY_CATEGORIES;

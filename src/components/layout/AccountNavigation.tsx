@@ -7,7 +7,7 @@ import { apiJson } from '@/features/admin/api-client';
 import AdminNotice from '@/features/admin/components/AdminNotice';
 
 const adminLinks = [
-  { href: '/admin/people', label: 'Faculty directory' },
+  { href: '/admin/people', label: 'People directory' },
   { href: '/admin/activities', label: 'Activities' },
   { href: '/admin/audit-logs', label: 'Audit logs' },
   { href: '/admin/security', label: 'Change password' },

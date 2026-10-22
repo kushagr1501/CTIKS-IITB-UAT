@@ -5,7 +5,7 @@ import { getVisibleFaculty } from '@/server/faculty/public';
 
 export const metadata: Metadata = {
   title: 'People',
-  description: 'Meet the core, adjunct, associate, and visiting faculty of CTIKS, IIT Bombay.',
+  description: 'Meet the faculty, postdoctoral researchers and scholars, and doctoral students of CTIKS, IIT Bombay.',
 };
 
 export const dynamic = 'force-dynamic';

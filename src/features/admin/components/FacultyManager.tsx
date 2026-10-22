@@ -38,9 +38,9 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
   async function save(values: FacultySubmission) {
     if (
       !(await confirm({
-        title: selected ? 'Save profile changes?' : 'Add this faculty member?',
-        description: `The profile for ${values.name} will be ${selected ? 'updated' : 'added'} in the faculty directory.`,
-        label: selected ? 'Save changes' : 'Add faculty',
+        title: selected ? 'Save profile changes?' : 'Add this person?',
+        description: `The profile for ${values.name} will be ${selected ? 'updated' : 'added'} in the People directory.`,
+        label: selected ? 'Save changes' : 'Add person',
       }))
     )
       return;
@@ -124,7 +124,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
   );
   const filtered = matchingSearch.filter((person) => !category || person.category === category);
   const categoryFilters = [
-    { value: '' as const, label: 'All faculty', count: matchingSearch.length },
+    { value: '' as const, label: 'All people', count: matchingSearch.length },
     ...Object.entries(FACULTY_CATEGORIES).map(([value, label]) => ({
       value: value as FacultyCategory,
       label,
@@ -158,9 +158,9 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
       )}
       <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl text-ctiks-maroon">Faculty directory</h1>
+          <h1 className="font-display text-3xl text-ctiks-maroon">People directory</h1>
           <p className="mt-2 max-w-xl text-base leading-7 text-stone-600">
-            Manage profiles, faculty categories, and what appears on the People page.
+            Manage profiles, categories, and what appears on the People page.
           </p>
         </div>
         <button
@@ -183,7 +183,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
           >
             <path d="M12 5v14M5 12h14" strokeLinecap="round" />
           </svg>
-          Add faculty member
+          Add person
         </button>
       </div>
       <AdminNotice
@@ -216,14 +216,14 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
           <div className={filterStyles.heading}>
             <div>
               <h2 id="faculty-list-heading" className="text-lg font-semibold text-stone-900">
-                Browse faculty
+                Browse people
               </h2>
               <p className="mt-1 text-sm leading-6 text-stone-600">
-                Find a profile or choose a faculty group.
+                Find a profile or choose a category.
               </p>
             </div>
             <label className={filterStyles.search}>
-              <span className="sr-only">Search faculty by name or department</span>
+              <span className="sr-only">Search people by name or department</span>
               <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"
@@ -243,7 +243,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
               />
             </label>
           </div>
-          <div role="group" aria-label="Filter faculty by category" className={filterStyles.tabs}>
+          <div role="group" aria-label="Filter people by category" className={filterStyles.tabs}>
             {categoryFilters.map((filter) => (
               <button
                 key={filter.value}
@@ -261,7 +261,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
         <div className="flex min-h-14 flex-wrap items-center justify-between gap-2 border-t border-stone-100 px-5 py-3 sm:px-6">
           <p role="status" aria-live="polite" aria-atomic="true" className="text-sm text-stone-600">
             <span className="font-semibold text-stone-900">{filtered.length}</span>
-            {hasFilters ? ` of ${faculty.length}` : ''} faculty{' '}
+            {hasFilters ? ` of ${faculty.length}` : ''}{' '}
             {filtered.length === 1 ? 'profile' : 'profiles'}
           </p>
           {hasFilters ? (
@@ -279,12 +279,12 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
         <div className="overflow-x-auto">
           <table data-faculty-table className="w-full min-w-[920px] text-left text-sm text-stone-700">
             <caption className="sr-only">
-              Faculty profiles and controls to edit, show, hide, or delete each profile.
+              People profiles and controls to edit, show, hide, or delete each profile.
             </caption>
             <thead>
               <tr className="border-y border-stone-200 bg-stone-50 text-stone-600">
                 <th scope="col" className="px-5 py-3.5 font-semibold sm:pl-6">
-                  Faculty member
+                  Name
                 </th>
                 <th scope="col" className="w-44 px-4 py-3.5 font-semibold">
                   Category
@@ -395,12 +395,12 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
         {!filtered.length && (
           <div className="border-t border-stone-100 px-6 py-14 text-center">
             <p className="text-lg font-semibold text-stone-900">
-              {faculty.length ? 'No matching faculty' : 'No faculty added yet'}
+              {faculty.length ? 'No matching profiles' : 'No profiles added yet'}
             </p>
             <p className="mt-2 text-sm leading-6 text-stone-600">
               {faculty.length
                 ? 'Try a different name, department, or category.'
-                : 'Add your first faculty member to start the directory.'}
+                : 'Add your first person to start the directory.'}
             </p>
             {hasFilters && (
               <button type="button" onClick={clearFilters} className="admin-secondary mt-5">
