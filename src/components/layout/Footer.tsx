@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ASSETS } from '@/config/assets';
 import { FOOTER_COLUMNS, type FooterColumn } from '@/config/navigation';
 import styles from './Footer.module.css';
 
@@ -33,21 +34,21 @@ export default function Footer() {
                 aria-label="Indian Institute of Technology Bombay"
                 className={styles.iitbLogo}
               >
-                <img src="/assets/figma/footer-iitb.svg" alt="IIT Bombay" />
+                <img src={ASSETS.iitbLogo} alt="IIT Bombay" width={150} height={150} />
               </a>
               <Link
                 href="/"
                 aria-label="Centre for Traditional Indian Knowledge and Skills"
                 className={styles.ctiksLogo}
               >
-                <img src="/assets/figma/footer-ctiks.png" alt="CTIKS" />
+                <img src={ASSETS.ctiksLogo} alt="CTIKS" width={150} height={150} />
               </Link>
             </div>
             <div className={styles.brandText}>
               <p className={styles.brandName}>
-                Centre for Traditional{' '}
+                Centre for Traditional Indian
                 <br />
-                Indian Knowledge and Skills
+                Knowledge and Skills
               </p>
               <p className={styles.affiliation}>IIT Bombay</p>
               <div className={styles.brandRule} aria-hidden="true" />

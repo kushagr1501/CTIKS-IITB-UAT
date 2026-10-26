@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import viewport from '@/components/ui/ViewportBanner.module.css';
+import SectionHero from '@/components/ui/SectionHero';
+import MscAdmissionsBanner from '@/features/academics/components/MscAdmissionsBanner';
+import ProgrammeAction from '@/features/academics/components/ProgrammeAction';
 import {
   MSC_APPLICANT_INFORMATION,
   MSC_APPLICATION_STEPS,
@@ -18,69 +20,11 @@ export const metadata: Metadata = {
 export default function MscPage() {
   return (
     <div className={styles.paper}>
-      <header className={`${styles.hero} ${msc.hero} ${viewport.banner}`}>
-        <div className={styles.heroInner}>
-          <h1>
-            Master of Science (<span className={msc.degree}>M.Sc.</span>) Program
-          </h1>
-          <p>M.Sc. programs at CTIKS, IITB will be offered from the academic year 2027-28.</p>
-        </div>
-      </header>
+      <SectionHero title={<>Master of Science (<span className={msc.degree}>M.Sc.</span>) Program</>}>
+        M.Sc. programs at CTIKS, IITB will be offered from the academic year 2027-28.
+      </SectionHero>
       <div className={styles.content}>
-        <section className={styles.banner} aria-label="M.Sc. admissions academic year 2027–28">
-          <div className={styles.admissionsPanel}>
-            <div className={styles.templeCrop}>
-              <img src="/assets/figma/phd-temple.png" alt="" aria-hidden="true" />
-            </div>
-            <div className={styles.admissionsCopy}>
-              <p className={styles.admissionsEyebrow}>Forthcoming admissions</p>
-              <h2>
-                M.Sc. Admissions
-                <br />
-                Academic Year 2027-28
-              </h2>
-              <p>Admission notification will be issued in January 2027.</p>
-              <div className={styles.admissionsActions}>
-                <span className={msc.comingSoon}>
-                  <img src="/assets/figma/msc-coming-soon.svg" alt="" aria-hidden="true" />
-                  <span>Coming soon</span>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className={styles.schedule}>
-            <div className={styles.milestone}>
-              <img src="/assets/figma/msc-calendar.svg" alt="" aria-hidden="true" />
-              <div>
-                <strong>JAN 2027</strong>
-                <b>Admission notification</b>
-                <span>Details to be announced</span>
-              </div>
-            </div>
-            <div className={styles.milestone}>
-              <span className={styles.scheduleMedallion}>
-                <img src="/assets/figma/admissions-people.svg" alt="" aria-hidden="true" />
-              </span>
-              <div>
-                <strong>2027–28</strong>
-                <b>Academic year</b>
-                <span>Programmes begin</span>
-              </div>
-            </div>
-            <img
-              src="/assets/figma/lotus-large.svg"
-              alt=""
-              aria-hidden="true"
-              className={styles.lotusLarge}
-            />
-            <img
-              src="/assets/figma/msc-lotus-small.svg"
-              alt=""
-              aria-hidden="true"
-              className={styles.lotusSmall}
-            />
-          </div>
-        </section>
+        <MscAdmissionsBanner />
         <section className={styles.intro}>
           <p className={styles.eyebrow}>Master of Science Programme</p>
           <h2>M.Sc. Programme</h2>
@@ -108,34 +52,10 @@ export default function MscPage() {
           <h2 id="msc-disciplines">M.Sc. Disciplines</h2>
           <div className={msc.disciplines}>
             {MSC_DISCIPLINES.map((discipline) => (
-              <article className={`${styles.whitePanel} ${msc.discipline}`} key={discipline.title}>
-                <h3>{discipline.title}</h3>
-                <div className={msc.disciplineBody}>
-                  <div>
-                    <h4>About this discipline</h4>
-                    <p>{discipline.about}</p>
-                  </div>
-                  <div>
-                    <h4>Indicative study themes</h4>
-                    <ul>
-                      {discipline.themes.map((theme) => (
-                        <li key={theme}>{theme}</li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h4>Possible learning experiences</h4>
-                    <p>{discipline.experiences}</p>
-                  </div>
-                  <div>
-                    <h4>Potential pathways</h4>
-                    <p>{discipline.pathways}</p>
-                  </div>
-                  <p>
-                    Study themes are indicative and subject to the official curriculum. Admission eligibility
-                    will be announced separately.
-                  </p>
-                </div>
+              <article className={`${styles.whitePanel} ${msc.discipline}`} key={discipline.slug}>
+                <h3>M.Sc. in {discipline.title}</h3>
+                <p className="mb-6 leading-relaxed text-[#4a4235]">{discipline.about}</p>
+                <ProgrammeAction href={`/academics/msc/${discipline.slug}`} />
               </article>
             ))}
           </div>

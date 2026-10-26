@@ -24,7 +24,7 @@ export default function ConnectWithUs() {
         }}
       />
 
-      <div className="relative z-10 mx-auto max-w-shell px-6">
+      <div className="relative z-10 mx-auto max-w-[1168px] px-6">
         <div className="flex flex-col items-center text-center gap-12 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-start lg:text-left">
 
           {/* Left: Text */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, type ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
 import styles from './FontSwitcher.module.css';
 
 const FONT_OPTIONS = [
@@ -16,10 +15,9 @@ const FONT_OPTIONS = [
 type FontChoice = (typeof FONT_OPTIONS)[number]['id'];
 
 export default function FontSwitcher({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
   const [choice, setChoice] = useState<FontChoice | null>(null);
   const [open, setOpen] = useState(false);
-  const active = choice ?? (pathname === '/research' ? 'source' : 'current');
+  const active = choice ?? 'current';
 
   function select(next: FontChoice) {
     setChoice(next);

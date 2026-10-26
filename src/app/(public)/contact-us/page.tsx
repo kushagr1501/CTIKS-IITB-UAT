@@ -35,9 +35,8 @@ function PanelHeading({ children }: { children: ReactNode }) {
 export default function ContactPage() {
   return (
     <>
-      <InteriorHero title="Contact us" image="/assets/figma/contact-hero.png" contact>
-        <p>CTIKS welcomes collaborations with like-minded organisations and individuals.</p>
-        <p className="mt-2">Kindly get in touch with us to explore opportunities to work together.</p>
+      <InteriorHero title="Contact us">
+        CTIKS welcomes collaborations with like-minded organisations and individuals. Kindly get in touch with us to explore opportunities to work together.
       </InteriorHero>
       <div className="mx-auto flex max-w-[1168px] flex-col gap-7 px-4 py-8 sm:gap-8 sm:px-6 sm:py-12">
         <div className="grid items-stretch gap-6 md:grid-cols-2">
@@ -95,7 +94,7 @@ export default function ContactPage() {
             className="absolute left-1/2 top-1/2 h-[111.33%] w-auto max-w-none -translate-x-1/2 -translate-y-1/2 opacity-80"
           />
         </a>
-        <nav aria-label="Explore CTIKS" className="grid gap-6 md:grid-cols-2 lg:gap-8">
+        <nav aria-label="Explore CTIKS" className="grid gap-4 md:grid-cols-2">
           {[
             { eyebrow: 'Meet our', title: 'People', icon: 'people', href: '/people' },
             { eyebrow: 'Explore our', title: 'Research', icon: 'book', href: '/research' },
@@ -103,22 +102,24 @@ export default function ContactPage() {
             <Link
               key={item.title}
               href={item.href}
-              className="flex items-center justify-between gap-4 border border-ctiks-maroon/40 p-5 shadow-[0_4px_16px_rgba(130,13,13,.04)] transition-colors hover:bg-ctiks-sand/40 lg:gap-8 lg:p-6"
+              className="group flex items-center gap-4 rounded-lg border border-[#e7cda9] bg-[#f7e3c7] px-4 py-4 transition-colors hover:border-ctiks-maroon/40 hover:bg-[#f3d8b2] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ctiks-red sm:px-5"
             >
-              <div className="flex items-center gap-5">
-                <span className="flex h-[70px] w-[70px] shrink-0 items-center justify-center rounded-full bg-[#faecd9] lg:h-[70px] lg:w-[70px]">
-                  <img src={`/assets/figma/${item.icon}.svg`} alt="" aria-hidden="true" />
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-ctiks-red/25 bg-[#fff2df]">
+                <img src={`/assets/figma/${item.icon}.svg`} width={29} height={29} alt="" aria-hidden="true" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block font-body text-[10px] font-semibold uppercase tracking-[0.12em] text-[#866048]">
+                  {item.eyebrow}
                 </span>
-                <span>
-                  <span className="block text-[12px] font-bold uppercase leading-[1.4] lg:text-[14px]">
-                    {item.eyebrow}
-                  </span>
-                  <span className="block text-[24px] font-semibold leading-[1.4] lg:text-[28px]">
-                    {item.title}
-                  </span>
+                <span className="block font-display text-[26px] font-semibold leading-tight text-ctiks-maroon">
+                  {item.title}
                 </span>
-              </div>
-              <img src="/assets/figma/chevron.svg" width={48} height={48} alt="" aria-hidden="true" />
+              </span>
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ctiks-maroon text-white transition-transform group-hover:translate-x-0.5" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" className="h-3.5 w-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m9 5 7 7-7 7" />
+                </svg>
+              </span>
             </Link>
           ))}
         </nav>

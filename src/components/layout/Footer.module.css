@@ -3,262 +3,276 @@
   isolation: isolate;
   flex-shrink: 0;
   overflow: hidden;
-  padding: 24px 16px;
-  background: red;
-  color: white;
+  padding: 40px 24px 34px;
+  background: #990e05;
+  color: #292421;
 }
+
 .background {
   position: absolute;
   z-index: -1;
-  left: 50%;
-  top: 50%;
-  width: 1440px;
-  min-width: 100%;
-  height: 484px;
-  min-height: 100%;
-  max-width: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  opacity: 0.8;
-  transform: translate(-50%, -50%);
   pointer-events: none;
 }
+
 .surface {
   position: relative;
   width: 100%;
   max-width: 1120px;
   margin-inline: auto;
-  padding: 28px 24px 0;
-  background: #aa1313;
+  padding: 52px 40px 0;
+  border-radius: 10px;
+  background: #fff8f0;
+  box-shadow: 0 12px 32px rgba(55, 9, 4, 0.08);
 }
+
 .top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
-  padding-bottom: 24px;
+  grid-template-columns: 385px 1px minmax(0, 1fr);
+  gap: 48px;
+  padding-bottom: 30px;
 }
+
 .brand {
   display: flex;
+  min-width: 0;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
-  min-width: 0;
+  gap: 40px;
 }
+
 .logos {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 28px;
 }
-.iitbLogo {
-  display: block;
-  width: 80px;
-  flex-shrink: 0;
-}
-.iitbLogo img {
-  width: 100%;
-  height: auto;
-}
+
+.iitbLogo,
 .ctiksLogo {
   display: block;
-  position: relative;
-  width: 80px;
-  aspect-ratio: 171.779 / 169.031;
-  overflow: hidden;
+  width: 150px;
+  height: 150px;
   flex-shrink: 0;
 }
+
+.iitbLogo img,
 .ctiksLogo img {
-  position: absolute;
-  width: 112%;
-  height: 112.38%;
-  left: -5.6%;
-  top: -4.97%;
-  max-width: none;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
+
 .brandText {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 176px;
+  width: 328px;
   max-width: 100%;
-  gap: 10px;
-  text-align: center;
-}
-.brandText p {
-  font-family: Inter, sans-serif;
-}
-.brandName {
-  font-size: 13px;
-  line-height: 1.55;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
   font-weight: 500;
+  line-height: 1.38;
+  text-align: center;
+  color: #211f1d;
 }
+
+.brandName,
 .affiliation {
-  font-size: 11px;
-  line-height: 1.5;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
 }
+
 .brandRule {
+  width: 41px;
   height: 3px;
-  width: 49px;
-  background: #f8c846;
+  margin: 14px auto 0;
+  background: #f4c844;
 }
+
 .divider {
-  background: #c16542;
-  height: 1px;
+  width: 1px;
+  height: 100%;
+  background: #ead9c8;
 }
+
 .navigation {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 24px;
   min-width: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 32px;
+  padding-left: 48px;
 }
+
 .column {
   min-width: 0;
 }
+
 .heading {
-  font-family: 'Red Rose', serif;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
   font-size: 12px;
   font-weight: 700;
   line-height: 1.5;
-  letter-spacing: 2px;
+  letter-spacing: 2.2px;
   text-transform: uppercase;
-  color: #ffcb65;
+  color: #971918;
 }
+
 .headingRule {
-  display: flex;
-  align-items: center;
-  margin-top: 8px;
+  width: 72px;
   height: 2px;
-  background: #c22825;
+  margin-top: 7px;
+  background: #efdfc9;
 }
+
 .headingRule span {
+  display: block;
+  width: 41px;
   height: 2px;
-  width: 49px;
-  background: #f8c846;
+  background: #f4c844;
 }
+
 .links {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 11px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
 }
+
 .links a {
   display: inline-block;
-  font-size: 14px;
-  line-height: 1.5;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
   font-weight: 400;
-  color: white;
+  line-height: 1.5;
+  color: #292421;
+  text-decoration: none;
 }
+
 .links a:hover {
-  color: #ffcb65;
+  color: #971918;
   text-decoration: underline;
   text-underline-offset: 4px;
 }
+
+.links a:focus-visible,
+.iitbLogo:focus-visible,
+.ctiksLogo:focus-visible {
+  outline: 2px solid #971918;
+  outline-offset: 4px;
+}
+
 .copyright {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 16px 0 20px;
+  border-top: 1px solid #e9d9c8;
+  padding: 20px 0 24px;
   text-align: center;
 }
+
 .copyright p {
-  font-size: 12px;
-  line-height: 1.4;
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
   font-weight: 400;
+  line-height: 1.5;
+  color: #69615b;
 }
-@media (min-width: 360px) {
-  .navigation {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (min-width: 640px) {
-  .footer {
-    padding: 32px 24px;
-  }
+
+@media (max-width: 1150px) {
   .surface {
-    padding: 36px 36px 0;
+    padding: 40px 36px 0;
   }
+
+  .top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+
   .brand {
-    gap: 24px;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
   }
-  .logos {
-    gap: 20px;
-  }
+
   .iitbLogo,
   .ctiksLogo {
-    width: 112px;
+    width: 118px;
+    height: 118px;
   }
-  .brandText {
-    width: 244px;
-  }
-  .brandName {
-    font-size: 14px;
-  }
-  .affiliation {
-    font-size: 12px;
-  }
-  .navigation {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 32px;
-  }
-}
-@media (min-width: 1024px) {
-  .top {
-    grid-template-columns: 280px 1px minmax(0, 1fr);
-    gap: 32px;
-  }
+
   .divider {
-    height: 100%;
-    width: 1px;
+    width: 100%;
+    height: 1px;
   }
-}
-@media (min-width: 1440px) {
-  .top {
-    grid-template-columns: 280px 1px minmax(0, 1fr);
-    gap: 48px;
-  }
+
   .navigation {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: 48px;
+    column-gap: 32px;
+    padding-left: 0;
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 760px) {
+  .footer {
+    padding: 24px 18px;
+  }
+
+  .surface {
+    padding: 32px 24px 0;
+  }
+
+  .top {
+    gap: 28px;
+  }
+
   .brand {
-    display: grid;
-    grid-template-columns: clamp(44px, 12vw, 96px) minmax(0, 1fr) clamp(44px, 12vw, 96px);
-    align-items: center;
-    gap: clamp(8px, 2vw, 20px);
-    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
   }
+
   .logos {
-    display: contents;
+    gap: 20px;
   }
-  .iitbLogo {
-    grid-column: 1;
-    grid-row: 1;
-    width: 100%;
-  }
+
+  .iitbLogo,
   .ctiksLogo {
-    grid-column: 3;
-    grid-row: 1;
-    width: 100%;
+    width: 108px;
+    height: 108px;
   }
+
   .brandText {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: center;
-    width: 100%;
-    max-width: 300px;
-    gap: 8px;
+    width: 236px;
+    font-size: 16px;
   }
-  .brandName {
-    font-size: clamp(11px, 3vw, 14px);
-    line-height: 1.5;
-    text-wrap: balance;
+
+  .navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
   }
-  .brandName br {
-    display: none;
+}
+
+@media (max-width: 420px) {
+  .surface {
+    padding-inline: 20px;
   }
-  .brandRule {
-    width: 36px;
-    height: 2px;
+
+  .iitbLogo,
+  .ctiksLogo {
+    width: 96px;
+    height: 96px;
+  }
+
+  .brandText {
+    width: 212px;
+  }
+
+  .links a {
+    font-size: 14px;
+  }
+
+  .heading {
+    font-size: 11px;
+    letter-spacing: 1.5px;
   }
 }

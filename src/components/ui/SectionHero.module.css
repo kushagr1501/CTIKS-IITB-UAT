@@ -1,0 +1,36 @@
+.hero {
+  background: #aa1313 url('/assets/figma/footer-pattern.png') center / cover;
+  color: #fff7ed;
+  padding: 36px 0;
+  text-align: center;
+}
+
+.shell {
+  width: min(1120px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.hero h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-top: 12px;
+}
+
+@media (max-width: 639px) {
+  .hero {
+    padding: 28px 0;
+  }
+
+  .hero h1 {
+    font-size: 24px;
+    letter-spacing: 2px;
+  }
+}

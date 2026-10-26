@@ -6,7 +6,7 @@ export const ASSETS = {
   programmePhd: '/assets/programme-phd.png',
   programmeOutreach: '/assets/programme-outreach.png',
   programmeAreas: '/assets/programme-areas.png',
-  eventsBackdrop: '/assets/events-backdrop.png',
+  eventsBackdrop: '/assets/upcoming-events-campus.png',
   aboutHeroBackdrop: '/assets/about-hero-backdrop.png',
   aboutLogoEmblem: '/assets/about-logo-emblem.png',
   iitbPill: '/assets/iitb-pill.svg',

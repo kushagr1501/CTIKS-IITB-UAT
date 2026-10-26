@@ -11,10 +11,10 @@ export type FooterColumn = {
 
 export const NAV_ITEMS: NavigationLink[] = [
   { label: 'Home', href: '/' },
-  { label: 'About us', href: '/about-us' },
   { label: 'People', href: '/people' },
   { label: 'Research', href: '/research' },
   { label: 'Academics', href: '/academics' },
+  { label: 'Projects', href: '/projects' },
   {
     label: 'Activities',
     href: '/activities',
@@ -24,6 +24,7 @@ export const NAV_ITEMS: NavigationLink[] = [
       { label: 'Events', href: '/events' },
     ],
   },
+  { label: 'Resources', href: '/resources' },
   { label: 'Contact us', href: '/contact-us' },
 ];
 

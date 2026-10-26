@@ -23,7 +23,10 @@ export const MSC_HIGHLIGHTS = [
 
 export const MSC_DISCIPLINES = [
   {
+    slug: 'indian-mathematics-astronomy',
     title: 'Indian Mathematics & Astronomy',
+    cardImage: '/assets/research/mathematics.webp',
+    cardImageAlt: 'A student studying Indian mathematical and astronomical diagrams',
     about:
       'Explore the ideas, methods and historical development of mathematics and astronomy in India, connecting the study of classical sources with analytical and computational perspectives.',
     themes: [
@@ -38,7 +41,10 @@ export const MSC_DISCIPLINES = [
       'This area may support further academic study and interests in education, history of science, science communication and knowledge heritage. These are possible directions, not guaranteed career outcomes.',
   },
   {
+    slug: 'yoga-wellness-science',
     title: 'Yoga & Wellness Science',
+    cardImage: '/assets/research/yoga.webp',
+    cardImageAlt: 'An illustration of yoga and wellbeing',
     about:
       'Study yoga traditions and the foundations of wellbeing through reflective inquiry and evidence-informed perspectives, bringing historical knowledge into dialogue with contemporary wellness research.',
     themes: [
@@ -53,6 +59,12 @@ export const MSC_DISCIPLINES = [
       'This area may support further study and interests in wellness education, research support, community wellbeing and science communication. It does not imply clinical qualification, professional accreditation or guaranteed employment.',
   },
 ];
+
+export function getMscDiscipline(slug: string) {
+  const discipline = MSC_DISCIPLINES.find((item) => item.slug === slug);
+  if (!discipline) throw new Error(`Unknown M.Sc. discipline: ${slug}`);
+  return discipline;
+}
 
 export const MSC_APPLICATION_STEPS = [
   'Watch the CTIKS and IIT Bombay admissions pages for the M.Sc. notification in January 2027.',

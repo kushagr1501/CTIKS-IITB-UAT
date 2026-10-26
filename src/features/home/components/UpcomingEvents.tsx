@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import SectionHeading from '@/components/ui/SectionHeading';
 import { ASSETS } from '@/config/assets';
 import type { PublicActivity } from '@/features/activities/types';
@@ -124,25 +125,22 @@ export default function UpcomingEvents({ events }: { events: PublicActivity[] })
   return (
     <section
       aria-labelledby="upcoming-events"
-      className="relative isolate overflow-hidden pb-32 pt-16 sm:pb-44"
+      className={`relative isolate overflow-hidden bg-[#fffaf2] pt-14 sm:pt-16 ${
+        events.length ? 'pb-24 sm:pb-32' : 'min-h-[500px] pb-20 sm:min-h-[580px] lg:min-h-[680px]'
+      }`}
     >
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 -z-20 opacity-30 mix-blend-multiply"
-        style={{
-          backgroundImage: `url(${ASSETS.paperTexture})`,
-          backgroundSize: 'cover',
-          backgroundRepeat: 'repeat-y',
-        }}
-      />
-      <img
-        src={ASSETS.eventsBackdrop}
-        alt=""
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[370px] w-full object-cover object-bottom"
-      />
+      <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+        <Image
+          src={ASSETS.eventsBackdrop}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover object-bottom"
+        />
+      </div>
+      {events.length > 0 && <div className="pointer-events-none absolute inset-0 z-0 bg-[#fffaf2]/30" />}
 
-      <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
         <SectionHeading icon="iconEvents" iconSize={{ width: 80, height: 48 }} rule>
           <span id="upcoming-events">Upcoming events</span>
         </SectionHeading>
@@ -166,9 +164,9 @@ export default function UpcomingEvents({ events }: { events: PublicActivity[] })
             ))}
           </div>
         ) : (
-          <div className="mt-10 bg-[#ffe8c8] px-6 py-16 text-center font-body text-[20px] font-semibold text-ctiks-maroon">
+          <p className="mx-auto mt-11 max-w-md px-4 text-center font-body text-[16px] font-medium leading-relaxed text-[#8b322d] sm:mt-14 sm:text-[18px]">
             Upcoming events will be announced here.
-          </div>
+          </p>
         )}
         {canViewMore && (
           <div className="mt-3 flex justify-center">

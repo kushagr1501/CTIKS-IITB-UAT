@@ -1,0 +1,84 @@
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #705c4c;
+}
+
+.breadcrumb a,
+.admissionsNote a {
+  color: #aa1313;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  align-items: center;
+  gap: 36px;
+}
+
+.intro > div > p:last-child {
+  margin-top: 20px;
+  color: #787776;
+  line-height: 1.6;
+}
+
+.intro img {
+  width: 100%;
+  aspect-ratio: 636 / 419;
+  object-fit: cover;
+  border: 1px solid #e9c9ae;
+}
+
+.panel {
+  height: 100%;
+  line-height: 1.65;
+}
+
+.panel ul {
+  list-style: disc;
+  padding-left: 22px;
+}
+
+.panel li + li {
+  margin-top: 8px;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.admissionsNote {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 1.6;
+}
+
+.admissionsNote h2 {
+  color: #aa1313;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.otherDiscipline {
+  align-self: flex-start;
+  color: #aa1313;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+@media (max-width: 767px) {
+  .intro,
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}

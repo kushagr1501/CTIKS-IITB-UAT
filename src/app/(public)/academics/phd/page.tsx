@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
+import SectionHero from '@/components/ui/SectionHero';
 import AdmissionsBanner from '@/features/academics/components/AdmissionsBanner';
-import viewport from '@/components/ui/ViewportBanner.module.css';
 import { PHD_ADMISSIONS, PHD_AREAS, PHD_BROCHURE, PHD_HIGHLIGHTS } from '@/features/academics/content';
 import styles from '@/features/academics/phd.module.css';
 
@@ -13,12 +13,9 @@ export const metadata: Metadata = {
 export default function PhdPage() {
   return (
     <div className={styles.paper}>
-      <header className={`${styles.hero} ${viewport.banner}`}>
-        <div className={styles.heroInner}>
-          <h1>Doctor of Philosophy (<span className={styles.degree}>Ph.D</span>) Program</h1>
-          <p>Ph.D. program at CTIKS, IITB has been introduced from Academic Year 2026-27</p>
-        </div>
-      </header>
+      <SectionHero title={<>Doctor of Philosophy (<span className={styles.degree}>Ph.D</span>) Program</>}>
+        Ph.D. program at CTIKS, IITB has been introduced from Academic Year 2026-27
+      </SectionHero>
       <div className={styles.content}>
         <AdmissionsBanner />
         <section className={styles.intro}>

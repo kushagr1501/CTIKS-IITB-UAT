@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import InteriorHero from '@/components/ui/InteriorHero';
 import Reveal from '@/components/ui/Reveal';
 import ProgrammeAction from '@/features/academics/components/ProgrammeAction';
+import { MSC_DISCIPLINES } from '@/features/academics/msc-content';
 import { ASSETS } from '@/config/assets';
 
 export const metadata: Metadata = {
@@ -9,7 +10,16 @@ export const metadata: Metadata = {
   description: 'Explore the doctoral and master’s programmes at CTIKS, IIT Bombay.',
 };
 
-const programmes = [
+type ProgrammeCard = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  image: string;
+  alt: string;
+  href?: string;
+};
+
+const programmes: ProgrammeCard[] = [
   {
     eyebrow: 'Doctoral Programme',
     title: 'Ph.D. Programme',
@@ -19,23 +29,29 @@ const programmes = [
     alt: 'Research notebooks and a laptop on a desk',
     href: '/academics/phd',
   },
-  {
+  ...MSC_DISCIPLINES.map((discipline) => ({
     eyebrow: 'Master’s Programme',
-    title: 'M.Sc. Programme',
-    description:
-      'A multidisciplinary master’s programme offering two specialisations—Indian Mathematics & Astronomy and Yoga & Wellness Science.',
+    title: `M.Sc. in ${discipline.title}`,
+    description: discipline.about,
+    image: discipline.cardImage,
+    alt: discipline.cardImageAlt,
+    href: `/academics/msc/${discipline.slug}`,
+  })),
+  {
+    eyebrow: 'Undergraduate Programme',
+    title: 'UG Minor',
+    description: 'Details of the UG Minor will be announced here when available.',
     image: ASSETS.programmeOutreach,
     alt: 'Students studying and collaborating in a classroom',
-    href: '/academics/msc',
   },
 ];
 
 export default function AcademicsPage() {
   return (
     <>
-      <InteriorHero title="Academics Programmes" image={ASSETS.heroBackdrop}>
+      <InteriorHero title="Academics Programmes">
         Nurturing deep knowledge through rigorous research, interdisciplinary
-        <br className="hidden sm:block" /> learning, and the living traditions of India.
+        learning, and the living traditions of India.
       </InteriorHero>
       <section aria-label="Academic programmes" className="relative isolate px-4 py-8 sm:px-6 sm:py-12">
         <div
@@ -52,7 +68,7 @@ export default function AcademicsPage() {
             >
               <div
                 data-reveal-content
-                className={`flex min-w-0 flex-col items-start justify-center gap-6 px-5 py-7 sm:px-8 lg:py-8 ${index === 1 ? 'md:order-2' : ''}`}
+                className={`flex min-w-0 flex-col items-start justify-center gap-6 px-5 py-7 sm:px-8 lg:py-8 ${index % 2 === 1 ? 'md:order-2' : ''}`}
               >
                 <div className="flex flex-col gap-4">
                   <div>
@@ -67,10 +83,16 @@ export default function AcademicsPage() {
                     {programme.description}
                   </p>
                 </div>
-                <ProgrammeAction href={programme.href} />
+                {programme.href ? (
+                  <ProgrammeAction href={programme.href} />
+                ) : (
+                  <span className="rounded-full border border-ctiks-red/30 bg-[#f9ebd7] px-4 py-2 font-body text-sm font-semibold text-ctiks-maroon">
+                    Coming soon
+                  </span>
+                )}
               </div>
               <div
-                className={`flex items-center justify-center border-t border-ctiks-red p-4 sm:p-6 md:min-h-[340px] md:border-t-0 ${index === 1 ? 'md:order-1 md:border-r' : 'md:border-l'}`}
+                className={`flex items-center justify-center border-t border-ctiks-red p-4 sm:p-6 md:min-h-[340px] md:border-t-0 ${index % 2 === 1 ? 'md:order-1 md:border-r' : 'md:border-l'}`}
               >
                 <div data-reveal-media className="w-full">
                   <img

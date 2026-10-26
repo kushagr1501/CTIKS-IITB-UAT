@@ -37,7 +37,7 @@ export default function Announcements({ announcements }: { announcements: Public
     <section aria-labelledby="recent-announcements">
       <div className="h-[30px] w-full bg-ctiks-gold" />
 
-      <div className="mx-auto flex max-w-shell flex-col items-center gap-[42px] px-6 py-[60px]">
+      <div className="mx-auto flex max-w-[1168px] flex-col items-center gap-[42px] px-[18px] py-[60px] md:px-6">
         <SectionHeading icon="iconAnnouncements" iconSize={{ width: 42, height: 38 }}>
           <span id="recent-announcements">Recent announcements</span>
         </SectionHeading>

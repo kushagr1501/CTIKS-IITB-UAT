@@ -11,48 +11,12 @@
   opacity: 0.3;
   pointer-events: none;
 }
-.hero {
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  align-items: center;
-  background: #aa1313;
-  color: white;
-  overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: url('/assets/figma/phd-pattern.png') center / cover;
-  opacity: 0.8;
-}
-.heroInner,
 .content {
   width: min(1120px, calc(100% - 48px));
   margin-inline: auto;
 }
-.heroInner {
-  width: min(1400px, calc(100% - 48px));
-  padding-block: 64px;
-}
-.hero h1 {
-  font-family: 'Red Rose', serif;
-  font-size: 36px;
-  line-height: 1.25;
-  font-weight: 700;
-  letter-spacing: 3.6px;
-  text-transform: uppercase;
-}
 .degree {
   text-transform: none;
-}
-.hero p {
-  margin-top: 20px;
-  font-size: 20px;
-  line-height: 1.5;
-  font-weight: 500;
 }
 .content {
   display: flex;
@@ -451,16 +415,8 @@
   }
 }
 @media (max-width: 767px) {
-  .heroInner,
   .content {
     width: calc(100% - 32px);
-  }
-  .hero h1 {
-    font-size: 27px;
-    letter-spacing: 2px;
-  }
-  .hero p {
-    font-size: 17px;
   }
   .content {
     gap: 40px;

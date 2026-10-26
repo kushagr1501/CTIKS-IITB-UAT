@@ -15,8 +15,8 @@ const MISSION_ITEMS = [
 export default function VisionMissionSection() {
   return (
     <section className="bg-ctiks-cream px-6 py-8 sm:px-12 md:px-16 lg:py-16 flex justify-center">
-      <div className="mx-auto w-full max-w-shell">
-        <div className="relative isolate px-6 py-10 sm:p-16 md:p-20">
+      <div className="mx-auto flex w-full max-w-[1120px] flex-col gap-8 lg:gap-10">
+        <div className="relative isolate px-6 py-10 sm:px-16 sm:py-12 md:px-20">
           <img
             src={ASSETS.eventsPanel}
             alt=""
@@ -31,8 +31,16 @@ export default function VisionMissionSection() {
               {VISION_BODY}
             </p>
           </div>
+        </div>
 
-          <div className="mt-12 flex flex-col gap-6">
+        <div className="relative isolate px-6 py-10 sm:px-16 sm:py-12 md:px-20">
+          <img
+            src={ASSETS.eventsPanel}
+            alt=""
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 -z-10 h-full w-full drop-shadow-sm"
+          />
+          <div className="flex flex-col gap-6">
             <h2 className="font-display text-[28px] font-semibold text-ctiks-maroon sm:text-[36px] text-center">
               Our Mission
             </h2>

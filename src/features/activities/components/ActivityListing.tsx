@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import SectionHero from '@/components/ui/SectionHero';
 import { ASSETS } from '@/config/assets';
 import { getPublicActivities, getPublicActivityCounts } from '@/server/activities/public';
 import { ACTIVITY_PATHS, ACTIVITY_SECTIONS, type ActivitySection } from '../types';
@@ -39,12 +40,7 @@ export default async function ActivityListing({
 
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.shell}>
-          <h1>{title}</h1>
-          <p>Explore news, announcements, and events from CTIKS</p>
-        </div>
-      </section>
+      <SectionHero title={title}>Explore news, announcements, and events from CTIKS</SectionHero>
       <section id="activity-list" aria-label={title} className={`${styles.shell} ${styles.listSection}`}>
         <div className={styles.toolbar}>
           <nav aria-label="Activity sections" className={styles.tabs}>
