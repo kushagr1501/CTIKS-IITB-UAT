@@ -1,41 +1,10 @@
-.breadcrumb {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  font-size: 14px;
-  color: #705c4c;
-}
-
-.breadcrumb a,
 .admissionsNote a {
   color: #aa1313;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-.intro {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
-  align-items: center;
-  gap: 36px;
-}
-
-.intro > div > p:last-child {
-  margin-top: 20px;
-  color: #787776;
-  line-height: 1.6;
-}
-
-.intro img {
-  width: 100%;
-  aspect-ratio: 636 / 419;
-  object-fit: cover;
-  border: 1px solid #e9c9ae;
-}
-
 .panel {
-  height: 100%;
   line-height: 1.65;
 }
 
@@ -52,6 +21,15 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
+}
+
+.columns > section {
+  display: flex;
+  flex-direction: column;
+}
+
+.columns .panel {
+  flex: 1;
 }
 
 .admissionsNote {
@@ -77,7 +55,6 @@
 }
 
 @media (max-width: 767px) {
-  .intro,
   .columns {
     grid-template-columns: 1fr;
   }

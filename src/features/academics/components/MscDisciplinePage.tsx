@@ -16,24 +16,7 @@ export default function MscDisciplinePage({ discipline }: { discipline: Discipli
         Explore {discipline.title} at CTIKS, IIT Bombay.
       </SectionHero>
       <div className={styles.content}>
-        <nav aria-label="M.Sc. pages" className={detail.breadcrumb}>
-          <Link href="/academics">Academics</Link>
-          <span aria-hidden="true">›</span>
-          <Link href="/academics/msc">M.Sc. Programme</Link>
-          <span aria-hidden="true">›</span>
-          <span aria-current="page">{discipline.title}</span>
-        </nav>
-
         <MscAdmissionsBanner />
-
-        <section className={`${styles.intro} ${detail.intro}`}>
-          <div>
-            <p className={styles.eyebrow}>Master of Science Programme</p>
-            <h2>M.Sc. in {discipline.title}</h2>
-            <p>{discipline.about}</p>
-          </div>
-          <img src={discipline.cardImage} alt={discipline.cardImageAlt} width={636} height={419} />
-        </section>
 
         <section className={styles.section} aria-labelledby="study-themes">
           <h2 id="study-themes">Indicative study themes</h2>

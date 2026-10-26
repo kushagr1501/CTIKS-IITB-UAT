@@ -3,6 +3,7 @@ import InteriorHero from '@/components/ui/InteriorHero';
 import Reveal from '@/components/ui/Reveal';
 import ProgrammeAction from '@/features/academics/components/ProgrammeAction';
 import { MSC_DISCIPLINES } from '@/features/academics/msc-content';
+import mscStyles from '@/features/academics/msc.module.css';
 import { ASSETS } from '@/config/assets';
 
 export const metadata: Metadata = {
@@ -86,8 +87,9 @@ export default function AcademicsPage() {
                 {programme.href ? (
                   <ProgrammeAction href={programme.href} />
                 ) : (
-                  <span className="rounded-full border border-ctiks-red/30 bg-[#f9ebd7] px-4 py-2 font-body text-sm font-semibold text-ctiks-maroon">
-                    Coming soon
+                  <span className={mscStyles.comingSoon}>
+                    <img src="/assets/figma/msc-coming-soon.svg" alt="" aria-hidden="true" />
+                    <span className="text-ctiks-maroon">Coming soon</span>
                   </span>
                 )}
               </div>
