@@ -37,22 +37,42 @@ export function activityTimeWhere(filter: ActivityTimeFilter, now = new Date()):
   const dayAgo = new Date(now.getTime() - 86400000);
   return {
     eventStartAt: { not: null },
-    OR: filter === 'past'
-      ? [{ eventEndAt: { lte: now } }, { eventEndAt: null, eventHasTime: true, eventStartAt: { lt: now } }, { eventEndAt: null, eventHasTime: false, eventStartAt: { lte: dayAgo } }]
-      : [{ eventEndAt: { gt: now } }, { eventEndAt: null, eventHasTime: true, eventStartAt: { gte: now } }, { eventEndAt: null, eventHasTime: false, eventStartAt: { gt: dayAgo } }],
+    OR:
+      filter === 'past'
+        ? [
+            { eventEndAt: { lte: now } },
+            { eventEndAt: null, eventHasTime: true, eventStartAt: { lt: now } },
+            { eventEndAt: null, eventHasTime: false, eventStartAt: { lte: dayAgo } },
+          ]
+        : [
+            { eventEndAt: { gt: now } },
+            { eventEndAt: null, eventHasTime: true, eventStartAt: { gte: now } },
+            { eventEndAt: null, eventHasTime: false, eventStartAt: { gt: dayAgo } },
+          ],
   };
 }
 
-export async function getPublicActivities(section?: ActivitySection, query = '', requestedPage = 1, time: ActivityTimeFilter = 'all') {
+export async function getPublicActivities(
+  section?: ActivitySection,
+  query = '',
+  requestedPage = 1,
+  time: ActivityTimeFilter = 'all',
+) {
   const where: Prisma.ActivityWhereInput = {
     visible: true,
     ...(section ? { sections: { has: section } } : {}),
     AND: [
       activityTimeWhere(time),
-      ...(query ? [{ OR: [
-        { title: { contains: query, mode: 'insensitive' as const } },
-        { description: { contains: query, mode: 'insensitive' as const } },
-      ] }] : []),
+      ...(query
+        ? [
+            {
+              OR: [
+                { title: { contains: query, mode: 'insensitive' as const } },
+                { description: { contains: query, mode: 'insensitive' as const } },
+              ],
+            },
+          ]
+        : []),
     ],
   };
   const db = getDatabase();
@@ -68,18 +88,31 @@ export const getPublicActivityCounts = cache(async (query = '', time: ActivityTi
     by: ['sections'],
     where: {
       visible: true,
-      AND: [activityTimeWhere(time), ...(query ? [{ OR: [
-        { title: { contains: query, mode: 'insensitive' as const } },
-        { description: { contains: query, mode: 'insensitive' as const } },
-      ] }] : [])],
+      AND: [
+        activityTimeWhere(time),
+        ...(query
+          ? [
+              {
+                OR: [
+                  { title: { contains: query, mode: 'insensitive' as const } },
+                  { description: { contains: query, mode: 'insensitive' as const } },
+                ],
+              },
+            ]
+          : []),
+      ],
     },
     _count: { _all: true },
   });
-  const sections = Object.fromEntries(Object.keys(ACTIVITY_SECTIONS).map((key) => [key, 0])) as Record<ActivitySection, number>;
+  const sections = Object.fromEntries(Object.keys(ACTIVITY_SECTIONS).map((key) => [key, 0])) as Record<
+    ActivitySection,
+    number
+  >;
   let total = 0;
   for (const group of groups) {
     total += group._count._all;
-    for (const section of group.sections) if (isActivitySection(section)) sections[section] += group._count._all;
+    for (const section of group.sections)
+      if (isActivitySection(section)) sections[section] += group._count._all;
   }
   return { total, sections };
 });
@@ -92,7 +125,15 @@ export async function getHomepageActivities(now = new Date()) {
         visible: true,
         sections: { has: 'EVENT' },
         eventStartAt: { not: null },
-        OR: [{ eventEndAt: { gt: now } }, { eventEndAt: null, eventHasTime: true, eventStartAt: { gte: now } }, { eventEndAt: null, eventHasTime: false, eventStartAt: { gte: new Date(now.getTime() - 86400000) } }],
+        OR: [
+          { eventEndAt: { gt: now } },
+          { eventEndAt: null, eventHasTime: true, eventStartAt: { gte: now } },
+          {
+            eventEndAt: null,
+            eventHasTime: false,
+            eventStartAt: { gte: new Date(now.getTime() - 86400000) },
+          },
+        ],
       },
       select,
       orderBy: [{ eventStartAt: 'asc' }, { id: 'asc' }],

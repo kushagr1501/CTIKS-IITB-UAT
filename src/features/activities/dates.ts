@@ -21,7 +21,9 @@ export function eventSchedule(start: string | null, end: string | null, hasTime 
   const endDate = end ? formatActivityDate(end) : null;
   return {
     date: endDate && endDate !== date ? `${date} – ${endDate}` : date,
-    time: hasTime ? `${timeFormat.format(new Date(start))}${end ? ` – ${timeFormat.format(new Date(end))}` : ''} IST`.toUpperCase() : '',
+    time: hasTime
+      ? `${timeFormat.format(new Date(start))}${end ? ` – ${timeFormat.format(new Date(end))}` : ''} IST`.toUpperCase()
+      : '',
   };
 }
 
@@ -35,5 +37,7 @@ export function toIndiaInputs(value: string | null, hasTime = true) {
 export function fromIndiaInputs(date: string, time: string, endOfDay = false): string | null {
   if (!date && !time) return null;
   if (!date) throw new Error('Enter a date for the time provided.');
-  return new Date(`${date}T${time ? `${time}:00` : endOfDay ? '23:59:59.999' : '00:00:00'}+05:30`).toISOString();
+  return new Date(
+    `${date}T${time ? `${time}:00` : endOfDay ? '23:59:59.999' : '00:00:00'}+05:30`,
+  ).toISOString();
 }
