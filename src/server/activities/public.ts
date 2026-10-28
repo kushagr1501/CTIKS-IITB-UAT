@@ -4,6 +4,11 @@ import type { Prisma } from '@/generated/prisma/client';
 import { getDatabase } from '@/server/database/client';
 import { ACTIVITY_SECTIONS, isActivitySection, type ActivitySection } from '@/features/activities/types';
 
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+const ACTIVITY_PAGE_SIZE = 12;
+const HOMEPAGE_EVENT_LIMIT = 12;
+const HOMEPAGE_ANNOUNCEMENT_LIMIT = 2;
+
 const select = {
   id: true,
   title: true,
@@ -34,7 +39,7 @@ export type ActivityTimeFilter = 'all' | 'upcoming' | 'past';
 
 export function activityTimeWhere(filter: ActivityTimeFilter, now = new Date()): Prisma.ActivityWhereInput {
   if (filter === 'all') return {};
-  const dayAgo = new Date(now.getTime() - 86400000);
+  const dayAgo = new Date(now.getTime() - MILLISECONDS_PER_DAY);
   return {
     eventStartAt: { not: null },
     OR:
@@ -77,9 +82,15 @@ export async function getPublicActivities(
   };
   const db = getDatabase();
   const total = await db.activity.count({ where });
-  const pageCount = Math.max(1, Math.ceil(total / 12));
+  const pageCount = Math.max(1, Math.ceil(total / ACTIVITY_PAGE_SIZE));
   const page = Math.min(Math.max(1, requestedPage), pageCount);
-  const items = await db.activity.findMany({ where, select, orderBy, take: 12, skip: (page - 1) * 12 });
+  const items = await db.activity.findMany({
+    where,
+    select,
+    orderBy,
+    take: ACTIVITY_PAGE_SIZE,
+    skip: (page - 1) * ACTIVITY_PAGE_SIZE,
+  });
   return { items: items.map(serialize), total, page, pageCount };
 }
 
@@ -131,19 +142,19 @@ export async function getHomepageActivities(now = new Date()) {
           {
             eventEndAt: null,
             eventHasTime: false,
-            eventStartAt: { gte: new Date(now.getTime() - 86400000) },
+            eventStartAt: { gte: new Date(now.getTime() - MILLISECONDS_PER_DAY) },
           },
         ],
       },
       select,
       orderBy: [{ eventStartAt: 'asc' }, { id: 'asc' }],
-      take: 12,
+      take: HOMEPAGE_EVENT_LIMIT,
     }),
     db.activity.findMany({
       where: { visible: true, sections: { has: 'ANNOUNCEMENT' } },
       select,
       orderBy,
-      take: 2,
+      take: HOMEPAGE_ANNOUNCEMENT_LIMIT,
     }),
   ]);
   return { events: events.map(serialize), announcements: announcements.map(serialize) };

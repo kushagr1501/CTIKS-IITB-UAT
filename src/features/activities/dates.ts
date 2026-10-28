@@ -1,3 +1,6 @@
+const INDIA_UTC_OFFSET_MINUTES = 330;
+const MILLISECONDS_PER_MINUTE = 60_000;
+
 const dateFormat = new Intl.DateTimeFormat('en-IN', {
   day: 'numeric',
   month: 'short',
@@ -30,8 +33,10 @@ export function eventSchedule(start: string | null, end: string | null, hasTime 
 // Form values always represent India time, regardless of the administrator's browser timezone.
 export function toIndiaInputs(value: string | null, hasTime = true) {
   if (!value) return { date: '', time: '' };
-  const local = new Date(new Date(value).getTime() + 330 * 60_000).toISOString();
-  return { date: local.slice(0, 10), time: hasTime ? local.slice(11, 16) : '' };
+  const indiaDate = new Date(
+    new Date(value).getTime() + INDIA_UTC_OFFSET_MINUTES * MILLISECONDS_PER_MINUTE,
+  ).toISOString();
+  return { date: indiaDate.slice(0, 10), time: hasTime ? indiaDate.slice(11, 16) : '' };
 }
 
 export function fromIndiaInputs(date: string, time: string, endOfDay = false): string | null {
