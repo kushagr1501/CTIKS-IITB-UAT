@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
+import FacultyEditorActions from './FacultyEditorActions';
+import { createFacultyTextField } from './faculty-text-field';
 import FacultyPortrait from '@/features/people/components/FacultyPortrait';
 import profileStyles from '@/features/people/components/FacultyProfile.module.css';
 import AcademicEntries from './AcademicEntries';
@@ -9,6 +10,10 @@ import LocalMediaUpload from './LocalMediaUpload';
 import { collections } from './entry-fields';
 import styles from './FacultyProfileEditor.module.css';
 import { academicContentSchema, type AcademicContent, type FacultyEditorState } from './profile-schema';
+
+const AUTOSAVE_DELAY_MS = 1500;
+const PUBLISH_NOTICE_DURATION_MS = 6000;
+const MEDIA_CLEANUP_BATCH_SIZE = 100;
 
 function localMediaUrls(value: unknown): string[] {
   if (typeof value === 'string')
@@ -39,7 +44,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
   const dirty = contentKey !== JSON.stringify(state.content) || areaInput.trim().length > 0;
   useEffect(() => {
     if (!publishNotice) return;
-    const timer = window.setTimeout(() => setPublishNotice(''), 6000);
+    const timer = window.setTimeout(() => setPublishNotice(''), PUBLISH_NOTICE_DURATION_MS);
     return () => window.clearTimeout(timer);
   }, [publishNotice]);
   useEffect(() => {
@@ -134,12 +139,12 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
       const obsoleteMedia = [...new Set([...localMediaUrls(state.content), ...uploadedMedia.current])].filter(
         (url) => !retainedMedia.has(url),
       );
-      for (let index = 0; index < obsoleteMedia.length; index += 100) {
+      for (let index = 0; index < obsoleteMedia.length; index += MEDIA_CLEANUP_BATCH_SIZE) {
         try {
           const cleanupResponse = await fetch('/api/faculty/profile/media', {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json', 'x-csrf-token': csrf.token },
-            body: JSON.stringify({ urls: obsoleteMedia.slice(index, index + 100) }),
+            body: JSON.stringify({ urls: obsoleteMedia.slice(index, index + MEDIA_CLEANUP_BATCH_SIZE) }),
           });
           if (!cleanupResponse.ok) cleanupFailed = true;
         } catch {
@@ -185,71 +190,10 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
     const timer = window.setTimeout(() => {
       lastAutosaveAttempt.current = contentKey;
       void saveRef.current('save', true);
-    }, 1500);
+    }, AUTOSAVE_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, [areaInput, busy, contentKey, dirty]);
-  function textField(
-    key:
-      | 'name'
-      | 'designation'
-      | 'department'
-      | 'biography'
-      | 'imageUrl'
-      | 'websiteUrl'
-      | 'publicEmail'
-      | 'interests'
-      | 'researchOverview'
-      | 'officeAddress'
-      | 'publicPhone',
-    label: string,
-    max: number,
-    rows?: number,
-    type = 'text',
-    appearance:
-      | 'default'
-      | 'profileName'
-      | 'profileDesignation'
-      | 'profileDepartment'
-      | 'profileBio'
-      | 'contact' = 'default',
-  ) {
-    const profileText = appearance.startsWith('profile');
-    const inputClass = [
-      styles.control,
-      rows ? styles.textarea : '',
-      appearance === 'profileName' ? styles.profileName : '',
-      appearance === 'profileDesignation' ? styles.profileDesignation : '',
-      appearance === 'profileDepartment' ? styles.profileDepartment : '',
-      appearance === 'profileBio' ? styles.profileBio : '',
-      appearance === 'contact' ? styles.contactControl : '',
-    ]
-      .filter(Boolean)
-      .join(' ');
-    return (
-      <label
-        className={`${styles.field} ${profileText ? styles.profileField : ''} ${rows && !profileText ? 'sm:col-span-2' : ''}`}
-      >
-        <span>{label}</span>
-        {rows ? (
-          <textarea
-            className={inputClass}
-            value={content[key]}
-            maxLength={max}
-            rows={rows}
-            onChange={(event) => setField(key, event.target.value)}
-          />
-        ) : (
-          <input
-            className={inputClass}
-            type={type}
-            value={content[key]}
-            maxLength={max}
-            onChange={(event) => setField(key, event.target.value)}
-          />
-        )}
-      </label>
-    );
-  }
+  const textField = createFacultyTextField(content, setField);
   return (
     <div className={styles.canvas}>
       <form
@@ -259,79 +203,17 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
           void save('publish');
         }}
       >
-        <div className={styles.actionRail}>
-          <div className={`${profileStyles.shell} ${styles.editorShell} ${styles.actionInner}`}>
-            <div className={styles.actionMeta}>
-              {!state.identity.visible && (
-                <p className={styles.visibilityNotice}>
-                  Your profile is hidden from the website. Ask an administrator to make it visible.
-                </p>
-              )}
-              <div aria-live="polite" className={styles.status}>
-                {autosaving
-                  ? 'Saving draft automatically…'
-                  : dirty && areaInput.trim()
-                    ? 'Add your research area to include it in the saved draft.'
-                    : dirty
-                      ? 'Unsaved changes · draft will save automatically.'
-                      : state.hasDraft
-                        ? 'You are editing a saved draft.'
-                        : 'You are editing your current profile.'}
-              </div>
-              {error && (
-                <p role="alert" className="text-sm text-white">
-                  {error}
-                </p>
-              )}
-              {message && (
-                <p role="status" className="text-sm text-white">
-                  {message}
-                </p>
-              )}
-              <div className={styles.actionButtons}>
-                <button type="submit" className={styles.publishButton} disabled={busy}>
-                  {busy && !autosaving ? 'Saving…' : 'Submit & publish'}
-                </button>
-                <button
-                  type="button"
-                  className={styles.saveButton}
-                  disabled={busy}
-                  onClick={() => void save('save')}
-                >
-                  {autosaving ? 'Autosaving…' : 'Save draft'}
-                </button>
-                {state.hasDraft && (
-                  <button
-                    type="button"
-                    className={styles.minorAction}
-                    disabled={busy}
-                    onClick={() => void save('discard')}
-                  >
-                    Discard draft
-                  </button>
-                )}
-                {error && (
-                  <button
-                    type="button"
-                    className={styles.minorAction}
-                    disabled={busy}
-                    onClick={() => {
-                      if (!dirty || window.confirm('Reload and lose unsaved edits?'))
-                        window.location.reload();
-                    }}
-                  >
-                    Reload saved profile
-                  </button>
-                )}
-              </div>
-            </div>
-            {state.identity.visible && (
-              <Link href={`/people/${state.identity.slug}`} target="_blank" className={styles.viewButton}>
-                View public profile ↗
-              </Link>
-            )}
-          </div>
-        </div>
+        <FacultyEditorActions
+          identity={state.identity}
+          hasDraft={state.hasDraft}
+          autosaving={autosaving}
+          dirty={dirty}
+          areaInput={areaInput}
+          busy={busy}
+          error={error}
+          message={message}
+          onSave={save}
+        />
         {publishNotice && (
           <div className={styles.publishNotice} role="status" aria-live="polite">
             <span className={styles.publishNoticeIcon} aria-hidden="true">

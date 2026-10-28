@@ -2,9 +2,8 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import AcademicEntryFields, { type EntryField, type EntryValue } from './AcademicEntryFields';
 import { academicContentSchema } from './profile-schema';
-
-export type AcademicCollection =
-  'education' | 'experience' | 'courses' | 'publications' | 'patents' | 'students';
+import type { AcademicCollection } from './academic-entry-types';
+export type { AcademicCollection } from './academic-entry-types';
 
 export default function AcademicEntryDialog<T extends Record<string, EntryValue>>({
   name,

@@ -25,7 +25,7 @@ export async function checkAdminFacultyUi(session: Session, origin: string) {
   const ui = await openAuthenticatedPage(session, origin);
   const { page, browser } = ui;
   try {
-    await page.goto(`${origin}/admin/people`);
+    await page.goto(`${origin}/admin/people`, { waitUntil: 'networkidle' });
     await uiExpect(page.getByRole('heading', { name: 'People directory' })).toBeVisible();
 
     const name = 'Browser Test Faculty';
@@ -98,7 +98,7 @@ export async function checkAdminResearchUi(session: Session, origin: string) {
       controlledWarnings.push(message.text());
   });
   try {
-    await page.goto(`${origin}/admin/research`);
+    await page.goto(`${origin}/admin/research`, { waitUntil: 'networkidle' });
     await uiExpect(page.getByRole('heading', { name: 'Research areas' })).toBeVisible();
     await page.getByRole('button', { name: 'Add area', exact: true }).click();
     let editor = page.getByRole('dialog', { name: 'Add research area' });
@@ -182,7 +182,7 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
   const ui = await openAuthenticatedPage(session, origin);
   const { page, browser } = ui;
   try {
-    await page.goto(`${origin}/faculty`);
+    await page.goto(`${origin}/faculty`, { waitUntil: 'networkidle' });
     const about = page.getByLabel('About you');
     await uiExpect(about).toBeVisible();
     // Keep autosave from winning the manual-save race on a busy test machine.
@@ -203,10 +203,72 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
     await uiExpect(page.getByRole('status')).toContainText(
       'Draft saved. Your public profile has not changed.',
     );
-    await page.clock.resume();
 
     await page.reload();
     await uiExpect(about).toHaveValue(draftBiography);
+    const automaticRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().endsWith('/api/faculty/profile') && request.method() === 'PUT')
+        automaticRequests.push(request.postData() ?? '');
+    });
+    await about.fill('An edit that will be replaced before autosave.');
+    await page.clock.runFor(1000);
+    const automaticBiography = 'Latest biography saved after the 1.5 second pause.';
+    await about.fill(automaticBiography);
+    await page.clock.runFor(1499);
+    assert.equal(automaticRequests.length, 0, 'typing resets the autosave debounce');
+    const automaticResponse = page.waitForResponse(
+      (response) => response.url().endsWith('/api/faculty/profile') && response.request().method() === 'PUT',
+    );
+    await page.clock.runFor(1);
+    const automaticSave = await automaticResponse;
+    assert.equal(automaticSave.status(), 200);
+    assert.equal((await automaticSave.json()).faculty.content.biography, automaticBiography);
+    await uiExpect(page.getByRole('status')).toContainText('Draft saved automatically.');
+    await page.reload();
+    await uiExpect(about).toHaveValue(automaticBiography);
+
+    const publicationSection = page.locator('#editor-publications');
+    const publicationCsv = [
+      'Title,Type,Authors,Where was it published?,Year,DOI,Publication link (HTTPS),Full citation',
+      '"CSV, quoted publication",Book chapter,Author,Book,2026,,https://example.com/paper,"First line\nSecond line"',
+    ].join('\r\n');
+    const publicationFile = {
+      name: 'publications.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(publicationCsv),
+    };
+    const publicationInput = page.getByLabel('Import publications from CSV', { exact: true });
+    await publicationInput.setInputFiles(publicationFile);
+    let importDialog = page.getByRole('dialog', { name: 'Import publications from CSV' });
+    await uiExpect(importDialog).toContainText('CSV, quoted publication');
+    await importDialog.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await uiExpect(publicationSection.locator('summary')).toHaveCount(0);
+    await publicationInput.setInputFiles(publicationFile);
+    await importDialog.getByRole('button', { name: 'Add 1 publications', exact: true }).click();
+    await uiExpect(publicationSection.locator('summary')).toContainText('CSV, quoted publication');
+    await publicationInput.setInputFiles({
+      name: 'invalid.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from('Wrong header\nBad row'),
+    });
+    importDialog = page.getByRole('dialog', { name: 'Import publications from CSV' });
+    await uiExpect(importDialog.getByRole('alert')).toContainText('columns must match');
+    await importDialog.getByRole('button', { name: 'Close', exact: true }).click();
+    await uiExpect(publicationSection.locator('summary')).toHaveCount(1);
+
+    await page.getByLabel('Import patents from CSV', { exact: true }).setInputFiles({
+      name: 'patents.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(
+        'Title,Inventors,Patent number,Status,Year,Patent link (HTTPS),Description\r\nCSV patent,Inventor,123,Granted,2026,https://example.com/patent,Description',
+      ),
+    });
+    await page
+      .getByRole('dialog', { name: 'Import patents from CSV' })
+      .getByRole('button', { name: 'Add 1 patents', exact: true })
+      .click();
+    await uiExpect(page.locator('#editor-patents summary')).toContainText('CSV patent');
     const area = page.getByLabel('Add a research area');
     await area.fill('Playwright research area');
     await page.getByRole('button', { name: 'Add', exact: true }).click();
@@ -214,12 +276,21 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
     await page.getByRole('button', { name: 'Remove research area Playwright research area' }).click();
     await uiExpect(page.getByLabel('Selected research areas')).toHaveCount(0);
 
+    const publishResponse = page.waitForResponse(
+      (response) => response.url().endsWith('/api/faculty/profile') && response.request().method() === 'PUT',
+    );
     await page.getByRole('button', { name: 'Submit & publish' }).click();
+    const published = await (await publishResponse).json();
+    assert.equal(published.faculty.content.publications[0].type, 'BOOK_CHAPTER');
+    assert.equal(published.faculty.content.publications[0].citation, 'First line\nSecond line');
+    assert.equal(published.faculty.content.patents[0].identifier, '123');
     await uiExpect(page.getByRole('status')).toContainText(
       'Content updated. This profile remains hidden until the administrator makes it visible.',
     );
     ui.assertNoPageErrors();
-    console.log('PASS Playwright professor UI: save draft, reload, add/remove research area, and publish');
+    console.log(
+      'PASS Playwright professor UI: manual save, autosave debounce/reload, CSV preview/cancel/import/errors, research areas, and publish',
+    );
   } finally {
     await browser.close();
   }

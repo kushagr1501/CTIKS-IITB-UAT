@@ -1,7 +1,7 @@
 import LocalMediaUpload from './LocalMediaUpload';
 import StudentSocialLinksInput from './StudentSocialLinksInput';
 import type { StudentSocialLink } from './student-schema';
-import type { AcademicCollection } from './AcademicEntryDialog';
+import type { AcademicCollection } from './academic-entry-types';
 
 export type EntryValue = string | number | null | StudentSocialLink[];
 export type EntryField<T> = {
