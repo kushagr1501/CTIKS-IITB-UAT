@@ -49,12 +49,11 @@ export default function AcademicEntryFields<T extends Record<string, EntryValue>
         const props = {
           id: inputId,
           className: 'admin-input !text-base',
-          value:
-            attachedLocalPdf
-              ? ''
-              : typeof rawValue === 'string' || typeof rawValue === 'number'
-                ? rawValue
-                : '',
+          value: attachedLocalPdf
+            ? ''
+            : typeof rawValue === 'string' || typeof rawValue === 'number'
+              ? rawValue
+              : '',
           required: field.required,
           placeholder:
             field.kind === 'image'
@@ -102,18 +101,15 @@ export default function AcademicEntryFields<T extends Record<string, EntryValue>
                     maxLength={field.max}
                     aria-label="Paste student photo URL"
                   />
-                  <span className="px-1 text-center text-xs font-medium uppercase tracking-wide text-stone-500">or</span>
+                  <span className="px-1 text-center text-xs font-medium uppercase tracking-wide text-stone-500">
+                    or
+                  </span>
                   {photoUpload}
                 </div>
               ) : (
                 <label htmlFor={inputId} className="admin-label">
                   Photo URL
-                  <input
-                    {...props}
-                    type="url"
-                    placeholder="https://…"
-                    maxLength={field.max}
-                  />
+                  <input {...props} type="url" placeholder="https://…" maxLength={field.max} />
                 </label>
               )}
             </div>
