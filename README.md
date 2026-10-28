@@ -62,8 +62,10 @@ Docker volume. Do not use `docker compose down -v` unless you intend to delete
 local database data.
 
 Development generates the Prisma client when missing, after schema changes, or
-after a Prisma version change. Production builds always regenerate it. Generated
-administrator credentials are stored locally in `.private/admin-credentials.txt`.
+after a Prisma version change. Production builds always regenerate it. Use
+`.private/local-admin-credentials.txt` to sign in to the local database. A manual
+`npm run db:seed` writes `.private/admin-credentials.txt` by default for the
+database configured for that command; its password may differ from the local one.
 Environment files, generated credential files, generated clients, build output, and temporary
 previews are excluded from Git. Only the placeholder `.env.example` and
 `.env.uat.example` templates belong in the repository.

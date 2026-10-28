@@ -4,9 +4,12 @@ export function normalizeActivityQuery(value: string) {
   return value.trim().slice(0, 200);
 }
 
-export function activitySearchUrl(path: string, value: string) {
+export function activitySearchUrl(path: string, value: string, time?: string) {
   const query = normalizeActivityQuery(value);
-  return query ? `${path}?${new URLSearchParams({ q: query })}` : path;
+  const params = new URLSearchParams();
+  if (query) params.set('q', query);
+  if (time) params.set('time', time);
+  return params.size ? `${path}?${params}` : path;
 }
 
 export function createActivitySearchDebouncer(search: (value: string) => void) {

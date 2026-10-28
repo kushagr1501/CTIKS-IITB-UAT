@@ -12,7 +12,8 @@ import { Redis } from 'ioredis';
 import { createAuthStorage, authKeys, touchSession } from '../src/server/auth/redis-storage';
 import { credentialAdapter } from '../src/server/auth/credential-adapter';
 import { checkActivities } from './integration/activities';
-import { checkAdminFacultyUi, checkProfessorEditorUi } from './integration/browser-ui';
+import { checkResearch } from './integration/research';
+import { checkAdminFacultyUi, checkAdminResearchUi, checkProfessorEditorUi } from './integration/browser-ui';
 import { checkFacultyEditor } from './integration/faculty-editor';
 
 config({ path: ['.env.migrations.local', '.env.local'], quiet: true });
@@ -660,6 +661,7 @@ try {
   const facultyLoginBody = await facultyLogin.json();
   assert.equal(facultyLoginBody.user.role, 'CORE_FACULTY');
   await checkActivities(database, browser, new BrowserSession(), facultyBrowser);
+  await checkResearch(database, browser, new BrowserSession(), facultyBrowser);
   assert.equal('token' in facultyLoginBody, false);
   const ownResponse = await expectStatus(
     await facultyBrowser.request(`/api/faculty/profile?id=${profile.id}`),
@@ -1040,6 +1042,7 @@ try {
     'admin login for browser UI checks',
   );
   await checkAdminFacultyUi(browser, origin);
+  await checkAdminResearchUi(browser, origin);
 
   for (let attempt = 0; attempt < 12; attempt++) {
     const response = await browser.request('/api/auth/sign-in/email', {

@@ -280,6 +280,8 @@ model Activity {
   description     String
   sections        ActivitySection[]
   imageUrl        String            @default("")
+  supportingDocumentUrl String       @default("")
+  eventHasTime    Boolean           @default(true)
   eventStartAt    DateTime?         @db.Timestamptz(3)
   eventEndAt      DateTime?         @db.Timestamptz(3)
   venue           String            @default("")
@@ -293,4 +295,20 @@ model Activity {
   @@index([visible, createdAt, id])
   @@index([sections], type: Gin)
   @@map("activities")
+}
+
+model ResearchArea {
+  id             String   @id @default(uuid())
+  title          String
+  description    String   @default("")
+  imageUrl       String   @default("")
+  professorNames String[] @default([])
+  displayOrder   Int      @default(0)
+  visible        Boolean  @default(true)
+  version        Int      @default(1)
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(3)
+
+  @@index([visible, displayOrder, id])
+  @@map("research_areas")
 }

@@ -15,7 +15,7 @@ export const CORE_FACULTY: CoreFaculty[] = [
   {
     name: 'Prof. K. Ramasubramanian',
     role: 'Professor In-charge of CTIKS',
-    department: 'Department of Humanities and Social Sciences, IIT Bombay',
+    department: 'Centre for Traditional Indian Knowledge and Skills, IIT Bombay',
     tags: 'Indian Mathematics and Astronomy, Yoga and Wellness Science, Advaita Vedanta',
     image: ASSETS.facultyRamasubramanian,
     website: 'https://www.kramasubramanian.com/',

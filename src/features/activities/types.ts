@@ -19,6 +19,8 @@ export type ActivityValues = {
   description: string;
   sections: ActivitySection[];
   imageUrl: string;
+  supportingDocumentUrl: string;
+  eventHasTime: boolean;
   eventStartAt: string | null;
   eventEndAt: string | null;
   venue: string;

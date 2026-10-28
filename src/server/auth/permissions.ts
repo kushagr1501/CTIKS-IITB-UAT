@@ -9,6 +9,10 @@ export const PERMISSIONS = [
   'activity.create',
   'activity.update',
   'activity.delete',
+  'research.read',
+  'research.create',
+  'research.update',
+  'research.delete',
   'audit.read',
   'audit.export',
 ] as const;

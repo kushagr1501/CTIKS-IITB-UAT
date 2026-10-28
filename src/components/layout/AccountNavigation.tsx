@@ -9,6 +9,7 @@ import AdminNotice from '@/features/admin/components/AdminNotice';
 const adminLinks = [
   { href: '/admin/people', label: 'People directory' },
   { href: '/admin/activities', label: 'Activities' },
+  { href: '/admin/research', label: 'Research' },
   { href: '/admin/audit-logs', label: 'Audit logs' },
   { href: '/admin/security', label: 'Change password' },
 ];

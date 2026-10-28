@@ -9,10 +9,12 @@ export default function ActivitySearchForm({
   path,
   title,
   query,
+  time,
 }: {
   path: string;
   title: string;
   query: string;
+  time?: string;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -23,7 +25,7 @@ export default function ActivitySearchForm({
 
   const navigate = useCallback(
     (value: string) => {
-      const nextUrl = activitySearchUrl(path, value);
+      const nextUrl = activitySearchUrl(path, value, time);
       if (requestedUrlRef.current === nextUrl) return;
       // A return to the current URL must still supersede a different pending search.
       if (
@@ -34,7 +36,7 @@ export default function ActivitySearchForm({
       requestedUrlRef.current = nextUrl;
       startTransition(() => router.replace(nextUrl, { scroll: false }));
     },
-    [path, router],
+    [path, router, time],
   );
   const debouncerRef = useRef<ReturnType<typeof createActivitySearchDebouncer> | null>(null);
   useEffect(() => {
@@ -52,8 +54,8 @@ export default function ActivitySearchForm({
       inputRef.current.value = query;
     }
     committedQueryRef.current = query;
-    if (requestedUrlRef.current === activitySearchUrl(path, query)) requestedUrlRef.current = null;
-  }, [path, query]);
+    if (requestedUrlRef.current === activitySearchUrl(path, query, time)) requestedUrlRef.current = null;
+  }, [path, query, time]);
 
   useEffect(() => {
     function cancelForNavigation(event: MouseEvent) {

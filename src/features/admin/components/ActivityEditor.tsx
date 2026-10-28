@@ -21,11 +21,14 @@ export default function ActivityEditor({
   activity: ActivityRecord | null;
   busy: boolean;
   error: string;
-  onSave: (values: ActivityValues) => Promise<void>;
+  onSave: (values: ActivityValues, files: { poster: File | null; document: File | null }) => Promise<void>;
   onCancel: () => void;
 }) {
   const [sections, setSections] = useState<ActivitySection[]>(activity?.sections ?? ['NEWS']);
   const [formError, setFormError] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [posterFile, setPosterFile] = useState<File | null>(null);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const dirty = useRef(false);
@@ -44,11 +47,11 @@ export default function ActivityEditor({
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
   }, []);
-  const start = toIndiaInputs(activity?.eventStartAt ?? null);
-  const end = toIndiaInputs(activity?.eventEndAt ?? null);
+  const start = toIndiaInputs(activity?.eventStartAt ?? null, activity?.eventHasTime ?? false);
+  const end = toIndiaInputs(activity?.eventEndAt ?? null, activity?.eventHasTime ?? false);
 
   async function closeEditor() {
-    if (busy) return;
+    if (busy || uploading) return;
     if (
       dirty.current &&
       !(await confirm({
@@ -68,26 +71,32 @@ export default function ActivityEditor({
     const value = (name: string) => String(data.get(name) ?? '').trim();
     try {
       if (!sections.length) throw new Error('Choose at least one section.');
-      const eventStartAt = fromIndiaInputs(value('startDate'), value('startTime'));
-      const eventEndAt = fromIndiaInputs(value('endDate'), value('endTime'));
+      const startTime = value('startTime');
+      const endTime = value('endTime');
+      if (Boolean(startTime) !== Boolean(endTime)) throw new Error('Enter both start and end times, or leave both empty.');
+      const eventStartAt = fromIndiaInputs(value('startDate'), startTime);
+      const eventEndAt = fromIndiaInputs(value('endDate'), endTime, !endTime);
       if (eventEndAt && (!eventStartAt || Date.parse(eventEndAt) <= Date.parse(eventStartAt))) {
         throw new Error('End date and time must be after the start.');
       }
+      setUploading(true);
       await onSave({
         title: value('title'),
         description: value('description'),
         sections,
         imageUrl: value('imageUrl'),
+        supportingDocumentUrl: value('supportingDocumentUrl'),
         registrationUrl: value('registrationUrl'),
         linkLabel: value('linkLabel'),
         venue: value('venue'),
+        eventHasTime: Boolean(startTime),
         eventStartAt,
         eventEndAt,
         visible: data.get('visible') === 'true',
-      });
+      }, { poster: posterFile, document: documentFile });
     } catch (failure) {
       setFormError(failure instanceof Error ? failure.message : 'Check the dates and try again.');
-    }
+    } finally { setUploading(false); }
   }
 
   return (
@@ -124,7 +133,7 @@ export default function ActivityEditor({
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#714b33] hover:bg-[#f2dfc2] disabled:opacity-50"
             aria-label="Close activity editor"
             type="button"
-            disabled={busy}
+            disabled={busy || uploading}
             onClick={closeEditor}
           >
             <svg
@@ -153,7 +162,7 @@ export default function ActivityEditor({
             className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
           >
             <fieldset
-              disabled={busy}
+              disabled={busy || uploading}
               className="grid min-w-0 items-start gap-x-5 gap-y-6 p-5 sm:grid-cols-2 sm:p-7"
             >
               <label className="admin-label sm:col-span-2">
@@ -215,6 +224,17 @@ export default function ActivityEditor({
                   An HTTPS image URL or an existing /assets/ image.
                 </span>
               </label>
+              {process.env.NODE_ENV === 'development' && <label className="admin-label sm:col-span-2">Upload image (local development)
+                <input className="block w-full text-sm text-stone-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ctiks-maroon file:px-4 file:py-2.5 file:font-semibold file:text-white hover:file:bg-ctiks-red" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setPosterFile(event.target.files?.[0] ?? null)} />
+                <span className="text-xs font-normal text-stone-500">A selected file replaces the image URL when saved. Maximum 8 MB.</span>
+              </label>}
+              <label className="admin-label sm:col-span-2">Supporting PDF URL (optional)
+                <input className="admin-input" name="supportingDocumentUrl" maxLength={2048} placeholder="https://" defaultValue={activity?.supportingDocumentUrl ?? ''} />
+              </label>
+              {process.env.NODE_ENV === 'development' && <label className="admin-label sm:col-span-2">Upload supporting PDF (local development)
+                <input className="block w-full text-sm text-stone-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ctiks-maroon file:px-4 file:py-2.5 file:font-semibold file:text-white hover:file:bg-ctiks-red" type="file" accept="application/pdf" onChange={(event) => setDocumentFile(event.target.files?.[0] ?? null)} />
+                <span className="text-xs font-normal text-stone-500">A selected PDF replaces the document URL when saved. Maximum 25 MB.</span>
+              </label>}
               <fieldset className="min-w-0 rounded-xl border border-stone-200 p-4 sm:col-span-2">
                 <legend className="px-2 text-sm font-semibold">Date and time (IST · optional)</legend>
                 <div className="grid items-start gap-4 sm:grid-cols-2">
@@ -254,8 +274,7 @@ export default function ActivityEditor({
                   />
                 </div>
                 <p className="mt-3 text-xs leading-5 text-stone-500">
-                  Enter a date with its time. Events need a start date and time to appear in Upcoming events
-                  on the homepage. With no end time, they leave that section when they start.
+                  Times are optional. If you enter a start time, also enter an end date and time. Date-only events remain upcoming through their final day.
                 </p>
               </fieldset>
               <label className="admin-label sm:col-span-2">
@@ -318,11 +337,11 @@ export default function ActivityEditor({
             </fieldset>
           </div>
           <footer className="flex shrink-0 flex-wrap justify-end gap-3 border-t border-[#e7d4b8] bg-[#fffaf2] px-5 py-4 sm:px-7">
-            <button className="admin-secondary" type="button" disabled={busy} onClick={closeEditor}>
+            <button className="admin-secondary" type="button" disabled={busy || uploading} onClick={closeEditor}>
               Cancel
             </button>
-            <button className="admin-primary" type="submit" disabled={busy}>
-              {busy ? 'Saving…' : 'Save activity'}
+            <button className="admin-primary" type="submit" disabled={busy || uploading}>
+              {busy || uploading ? 'Saving…' : 'Save activity'}
             </button>
           </footer>
         </form>

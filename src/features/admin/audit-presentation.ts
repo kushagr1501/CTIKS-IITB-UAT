@@ -17,6 +17,7 @@ const fieldLabels: Record<string, string> = {
   interests: 'Research interests',
   biography: 'Biography',
   imageUrl: 'Photo',
+  professorNames: 'Related professors',
   websiteUrl: 'Website',
   publicEmail: 'Public email',
   displayOrder: 'Display order',
@@ -40,6 +41,11 @@ const fieldLabels: Record<string, string> = {
 };
 
 const activityMessages: Record<string, string> = {
+  RESEARCH_CREATED: 'Research area created.',
+  RESEARCH_UPDATED: 'Research area updated.',
+  RESEARCH_SHOWN: 'Research area made visible.',
+  RESEARCH_HIDDEN: 'Research area hidden.',
+  RESEARCH_DELETED: 'Research area deleted.',
   ACTIVITY_CREATED: 'Website activity created.',
   ACTIVITY_UPDATED: 'Website activity updated.',
   ACTIVITY_SHOWN: 'Website activity made visible.',

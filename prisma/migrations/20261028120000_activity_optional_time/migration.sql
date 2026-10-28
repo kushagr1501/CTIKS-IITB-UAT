@@ -1,0 +1,1 @@
+ALTER TABLE "activities" ADD COLUMN "eventHasTime" BOOLEAN NOT NULL DEFAULT true;

@@ -270,7 +270,7 @@ export async function checkFacultyEditor(
     'SUPERSEDED',
   );
 
-  // A later admin change blocks publication of an out-of-date draft; discard recovers safely.
+  // A later admin change blocks the stale request; reloading then discarding recovers safely.
   state = (await result(faculty, 200, { method: 'PUT', body: input() })).faculty;
   await database.facultyProfile.update({
     where: { id },
@@ -278,7 +278,6 @@ export async function checkFacultyEditor(
   });
   await result(faculty, 409, { method: 'PUT', body: input('publish') });
   state = (await result(faculty, 200)).faculty;
-  await result(faculty, 409, { method: 'PUT', body: input('publish') });
   state = (await result(faculty, 200, { method: 'PUT', body: input('discard') })).faculty;
   assert.equal(state.content.biography, 'Administrator update');
   assert.equal(state.hasDraft, false);

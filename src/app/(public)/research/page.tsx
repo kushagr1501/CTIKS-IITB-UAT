@@ -1,18 +1,21 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import PageHero from '@/components/ui/PageHero';
-import Button from '@/components/ui/Button';
-import Reveal from '@/components/ui/Reveal';
-import { RESEARCH_AREAS } from '@/features/research/content';
+import ResearchCard from '@/features/research/ResearchCard';
+import { listPublicResearchAreas } from '@/server/research/service';
 import styles from '@/features/research/research.module.css';
+import { getPublicPeopleMenu } from '@/server/faculty/public';
 
 export const metadata: Metadata = {
   title: 'Research',
   description:
-    'Explore eight areas of research at CTIKS, IIT Bombay, spanning Indian knowledge, science, technology, and living traditions.',
+    'Explore areas of research at CTIKS, IIT Bombay, spanning Indian knowledge, science, technology, and living traditions.',
 };
 
-export default function ResearchPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function ResearchPage() {
+  const [visiblePeople, areas] = await Promise.all([getPublicPeopleMenu(), listPublicResearchAreas()]);
+
   return (
     <div className={styles.page}>
       <PageHero title="Research">
@@ -24,37 +27,29 @@ export default function ResearchPage() {
             <h2 id="research-areas">Areas of research</h2>
           </div>
           <div className={styles.gallery}>
-            {RESEARCH_AREAS.map((area, index) => (
-              <Reveal className={styles.card} variant="arch" delay={(index % 2) * 80} key={area.title}>
-                <div data-reveal-media className={styles.imageWrap}>
-                  <Image
-                    src={`/assets/research/${area.image}`}
-                    alt={area.title}
-                    fill
-                    sizes="(max-width: 767px) calc(100vw - 56px), 530px"
-                  />
-                </div>
-                <div data-reveal-content className={styles.cardBody}>
-                  <div className={styles.cardHeading}>
-                    <h3>{area.href ? <a href={area.href}>{area.title}</a> : area.title}</h3>
-                  </div>
-                  <div className={styles.cardActions}>
-                    {area.href ? (
-                      <Button
-                        href={area.href}
-                        className={styles.cardButton}
-                        aria-label={`Know more about ${area.title}`}
-                      >
-                        Know more
-                      </Button>
-                    ) : (
-                      <p className={styles.comingSoon}>Details coming soon</p>
-                    )}
-                    <span className={styles.actionRule} aria-hidden="true" />
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+            {areas.map((area, index) => {
+              const professors = area.professorNames.map((name) => {
+                const person = visiblePeople.find((member) => member.name === name);
+                return {
+                  name,
+                  href:
+                    person?.category === 'CORE'
+                      ? `/people/${person.slug}`
+                      : person?.websiteUrl?.startsWith('https://')
+                        ? person.websiteUrl
+                        : null,
+                };
+              });
+
+              return (
+                <ResearchCard
+                  area={{ title: area.title, imageUrl: area.imageUrl, summary: area.description }}
+                  professors={professors}
+                  index={index}
+                  key={area.id}
+                />
+              );
+            })}
           </div>
         </div>
       </section>

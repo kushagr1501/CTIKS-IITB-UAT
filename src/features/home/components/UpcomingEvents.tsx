@@ -8,7 +8,7 @@ import styles from './UpcomingEvents.module.css';
 
 type TicketEvent = Pick<
   PublicActivity,
-  'id' | 'title' | 'description' | 'eventStartAt' | 'eventEndAt' | 'registrationUrl' | 'linkLabel'
+  'id' | 'title' | 'description' | 'eventHasTime' | 'eventStartAt' | 'eventEndAt' | 'registrationUrl' | 'linkLabel'
 >;
 
 const ticketDateFormat = new Intl.DateTimeFormat('en-IN', {
@@ -19,7 +19,7 @@ const ticketDateFormat = new Intl.DateTimeFormat('en-IN', {
 });
 
 function EventTicket({ event }: { event: TicketEvent }) {
-  const schedule = eventSchedule(event.eventStartAt, event.eventEndAt);
+  const schedule = eventSchedule(event.eventStartAt, event.eventEndAt, event.eventHasTime);
   const dateParts = event.eventStartAt
     ? Object.fromEntries(
         ticketDateFormat.formatToParts(new Date(event.eventStartAt)).map(({ type, value }) => [type, value]),
@@ -59,7 +59,7 @@ function EventTicket({ event }: { event: TicketEvent }) {
           <span aria-hidden="true" className="h-12 w-px shrink-0 bg-[#d8b68f]" />
           <div className="flex min-w-0 flex-1 flex-col justify-center font-body text-ctiks-maroon">
             <span className="text-center text-[10px] font-bold uppercase tracking-[0.12em] text-[#91684f]">
-              Time (IST)
+              {schedule?.time ? 'Time (IST)' : 'Time'}
             </span>
             {timeParts[1] ? (
               <p className="mt-1.5 whitespace-nowrap text-center text-[11px] font-semibold leading-tight sm:text-[12px]">
