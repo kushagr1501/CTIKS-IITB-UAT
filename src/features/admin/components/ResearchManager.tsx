@@ -7,17 +7,11 @@ import { apiJson } from '../api-client';
 import AdminNotice from './AdminNotice';
 import { useActionConfirmation } from './ActionConfirmation';
 
-type Area = {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  professorNames: string[];
-  displayOrder: number;
-  visible: boolean;
-  version: number;
-  createdAt: string;
-};
+import type { ResearchAreaRecord as Area } from '../research-types';
+import ResearchPhotoField from './ResearchPhotoField';
+import ResearchProfessorField from './ResearchProfessorField';
+import ResearchAreaList from './ResearchAreaList';
+
 type Values = Pick<Area, 'title' | 'description' | 'imageUrl' | 'displayOrder' | 'visible'>;
 const blank: Values = {
   title: '',
@@ -349,156 +343,25 @@ export default function ResearchManager({
                   onChange={(event) => setValues({ ...values, description: event.target.value })}
                 />
               </label>
-              <fieldset className="sm:col-span-2">
-                <legend className="admin-label mb-2">Research card photo *</legend>
-                <div
-                  className="inline-flex rounded-lg border border-[#dec7a7] bg-[#f7ead8] p-1"
-                  aria-label="Choose photo source"
-                >
-                  <button
-                    type="button"
-                    aria-pressed={imageMode === 'url'}
-                    onClick={() => chooseImageMode('url')}
-                    className={`rounded-md px-4 py-2 text-sm font-semibold transition-colors ${imageMode === 'url' ? 'bg-[#820d0d] text-white shadow-sm' : 'text-[#714b33] hover:bg-white/70'}`}
-                  >
-                    Paste URL
-                  </button>
-                  {process.env.NODE_ENV === 'development' && (
-                    <button
-                      type="button"
-                      aria-pressed={imageMode === 'upload'}
-                      onClick={() => chooseImageMode('upload')}
-                      className={`rounded-md px-4 py-2 text-sm font-semibold transition-colors ${imageMode === 'upload' ? 'bg-[#820d0d] text-white shadow-sm' : 'text-[#714b33] hover:bg-white/70'}`}
-                    >
-                      Upload photo
-                    </button>
-                  )}
-                </div>
-                {imageMode === 'url' ? (
-                  <label key="photo-url" className="admin-label mt-3 block">
-                    Photo URL
-                    <input
-                      className="admin-input"
-                      type="text"
-                      placeholder="https://… or /assets/…"
-                      maxLength={2048}
-                      required
-                      value={values.imageUrl ?? ''}
-                      onChange={(event) =>
-                        setValues((current) => ({ ...current, imageUrl: event.target.value }))
-                      }
-                    />
-                    <span className="mt-1 block text-xs text-stone-500">
-                      Paste an HTTPS image URL or an existing site image path.
-                    </span>
-                  </label>
-                ) : (
-                  <label key="photo-upload" className="admin-label mt-3 block">
-                    Choose a photo
-                    <input
-                      className="admin-input mt-1 block w-full cursor-pointer p-2 file:mr-3 file:rounded-md file:border-0 file:bg-[#820d0d] file:px-3 file:py-2 file:text-white"
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={(event) => chooseFile(event.target.files?.[0] ?? null)}
-                    />
-                    <span className="mt-1 block text-xs text-stone-500">
-                      JPEG, PNG, or WebP up to 8 MB. Local development only.
-                    </span>
-                  </label>
-                )}
-                {(filePreview || values.imageUrl) && (
-                  <div className="mt-4 flex items-center gap-4 rounded-lg border border-[#ead7bd] bg-[#fffaf2] p-3">
-                    <img
-                      className="h-28 w-36 rounded-md object-cover"
-                      src={filePreview || values.imageUrl}
-                      alt={filePreview ? 'Selected photo preview' : 'Current research area photo'}
-                    />
-                    <span className="text-sm text-[#65533e]">
-                      {filePreview ? 'Selected photo' : 'Current photo'}
-                    </span>
-                  </div>
-                )}
-              </fieldset>
-              <fieldset className="sm:col-span-2">
-                <legend className="admin-label mb-2">Related professors</legend>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="admin-label">
-                    Choose an existing teacher
-                    <select
-                      className="admin-input"
-                      value=""
-                      onChange={(event) => {
-                        const name = event.target.value;
-                        if (name) addProfessor(name);
-                      }}
-                    >
-                      <option value="">Select a teacher…</option>
-                      {teacherNames
-                        .filter((name) => !names.includes(name))
-                        .map((name) => (
-                          <option key={name} value={name}>
-                            {name}
-                          </option>
-                        ))}
-                    </select>
-                  </label>
-                  <div className="admin-label">
-                    Or add a new name
-                    <div className="mt-1 flex gap-2">
-                      <input
-                        className="admin-input min-w-0 flex-1"
-                        value={newProfessor}
-                        maxLength={160}
-                        placeholder="Professor's name"
-                        onChange={(event) => setNewProfessor(event.target.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter') {
-                            event.preventDefault();
-                            addProfessor(newProfessor);
-                          }
-                        }}
-                      />
-                      <button
-                        type="button"
-                        className="admin-secondary shrink-0"
-                        disabled={!newProfessor.trim()}
-                        onClick={() => addProfessor(newProfessor)}
-                      >
-                        Add
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                {names.length > 0 ? (
-                  <ul className="mt-4 flex flex-wrap gap-2" aria-label="Selected professors">
-                    {names.map((name) => (
-                      <li
-                        key={name}
-                        className="flex items-center gap-2 rounded-full border border-[#e7d4b8] bg-[#faecd9] py-1 pl-3 pr-1 text-sm text-[#714b33]"
-                      >
-                        {name}
-                        <button
-                          type="button"
-                          className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-[#e7d4b8]"
-                          aria-label={`Remove ${name}`}
-                          onClick={() => {
-                            setNames((current) => current.filter((item) => item !== name));
-                            dirty.current = true;
-                          }}
-                        >
-                          ×
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-3 text-xs text-stone-500">No professors selected yet.</p>
-                )}
-                <p className="mt-2 text-xs text-stone-500">
-                  Existing teachers link to their People page or website. A new name appears as text until a
-                  matching People entry exists.
-                </p>
-              </fieldset>
+              <ResearchPhotoField
+                imageUrl={values.imageUrl}
+                imageMode={imageMode}
+                filePreview={filePreview}
+                onModeChange={chooseImageMode}
+                onFileChange={chooseFile}
+                onUrlChange={(imageUrl) => setValues((current) => ({ ...current, imageUrl }))}
+              />
+              <ResearchProfessorField
+                teacherNames={teacherNames}
+                names={names}
+                newProfessor={newProfessor}
+                onNewProfessorChange={setNewProfessor}
+                onAdd={addProfessor}
+                onRemove={(name) => {
+                  setNames((current) => current.filter((item) => item !== name));
+                  dirty.current = true;
+                }}
+              />
               <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-[#ead7bd] bg-[#fffaf2] px-4 py-3 sm:col-span-2">
                 <span>
                   <span className="block text-sm font-semibold text-[#714b33]">Visible on website</span>
@@ -532,69 +395,13 @@ export default function ResearchManager({
           </div>
         </dialog>
       )}
-      <section className="admin-panel">
-        <p className="mb-3 text-sm text-stone-500">{areas.length} research areas</p>
-        <ul className="divide-y divide-stone-200">
-          {areas.map((area) => (
-            <li
-              key={area.id}
-              className="flex flex-col gap-4 py-5 lg:flex-row lg:items-center lg:justify-between"
-            >
-              <div className="flex min-w-0 items-start gap-4">
-                <img
-                  src={area.imageUrl}
-                  alt=""
-                  className="h-20 w-24 shrink-0 rounded-md border border-[#e7d4b8] object-cover"
-                />
-                <div className="min-w-0">
-                  <div className="mb-1 text-xs text-stone-500">{area.visible ? 'Visible' : 'Hidden'}</div>
-                  <h2 className="font-semibold text-[#820d0d]">{area.title}</h2>
-                  <p className="mt-1 line-clamp-2 text-sm text-stone-600">
-                    {area.description || 'Details coming soon'}
-                  </p>
-                  <p className="mt-1 text-xs text-stone-500">
-                    {area.professorNames.length} related professors
-                  </p>
-                </div>
-              </div>
-              <div className="flex shrink-0 gap-2">
-                <button
-                  type="button"
-                  className="admin-secondary"
-                  data-admin-action="edit"
-                  disabled={busy || !!editing}
-                  onClick={() => open(area)}
-                >
-                  Edit
-                </button>
-                <button
-                  type="button"
-                  className="admin-secondary"
-                  data-admin-action={area.visible ? 'hide' : 'show'}
-                  disabled={busy || !!editing}
-                  onClick={() => toggle(area)}
-                >
-                  {area.visible ? 'Hide' : 'Show'}
-                </button>
-                <button
-                  type="button"
-                  className="admin-secondary"
-                  data-admin-action="delete"
-                  disabled={busy || !!editing}
-                  onClick={() => remove(area)}
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-        {!areas.length && (
-          <p className="py-10 text-center text-sm text-stone-500">
-            No research areas yet. Add one to get started.
-          </p>
-        )}
-      </section>
+      <ResearchAreaList
+        areas={areas}
+        disabled={busy || !!editing}
+        onEdit={open}
+        onToggle={toggle}
+        onDelete={remove}
+      />
     </>
   );
 }

@@ -185,6 +185,9 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
     await page.goto(`${origin}/faculty`);
     const about = page.getByLabel('About you');
     await uiExpect(about).toBeVisible();
+    // Keep autosave from winning the manual-save race on a busy test machine.
+    await page.clock.install();
+    await page.clock.pauseAt(new Date());
     const draftBiography = 'Playwright draft biography for the faculty portal.';
     await about.fill('');
     await uiExpect(about).toHaveValue('');
@@ -200,6 +203,7 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
     await uiExpect(page.getByRole('status')).toContainText(
       'Draft saved. Your public profile has not changed.',
     );
+    await page.clock.resume();
 
     await page.reload();
     await uiExpect(about).toHaveValue(draftBiography);
