@@ -191,8 +191,8 @@ content was updated. No source or documentation file was removed. Suspected orph
 - The install's dependency advisories were not remediated in this documentation task.
 - Database-role maintenance tools were read, not run. Their forced TLS and current Research grants need review
   before deployment; they are not the local setup path.
-- **HIGH: Credentials in Git history require owner action to identify affected accounts and rotate credentials.**
-  Editing the current guide does not revoke them or erase history.
+- **Low — Credentials in Git history:** UAT admin password in history, repo private, single owner; rotate before adding collaborators.
+  Editing the current guide does not revoke the password or erase history.
 - No fresh Windows/Linux installation, IITB server deployment, reverse proxy, certificate setup, SMTP
   delivery, campus/VPN access policy, production upload storage, backup restoration, or production load
   measurement was tested.

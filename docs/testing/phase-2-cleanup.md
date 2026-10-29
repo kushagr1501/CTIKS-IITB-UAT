@@ -67,13 +67,9 @@ Its count and preview queries were left unchanged. Combining them would need
 query profiling and result-equivalence tests. Development startup uses synchronous
 filesystem checks, but these are startup checks rather than request handlers.
 
-## Additional high-priority finding
+## Additional low-priority finding
 
-**HIGH — Credentials committed in Git history:** the current guide no longer contains
-them, but removing a value from the latest file does not remove it from history or
-revoke access. The environment owner should identify affected accounts and rotate
-the credentials through an approved private process. Do not copy values into issues,
-logs, or chat. Repository-history remediation requires an owner decision.
+**Low — Credentials in Git history:** UAT admin password in history, repo private, single owner; rotate before adding collaborators.
 
 ## Deferred documentation work
 
