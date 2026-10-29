@@ -39,7 +39,7 @@ export async function requireActor(requestHeaders: Headers, permission?: Permiss
   if (permission) assertPermission(actor, permission);
   if (!canSignIn(user.role, user.facultyProfile?.category))
     throw new HttpError(401, 'This account no longer has access. Please contact the administrator.');
-  const valid = await redisOperation(() =>
+  const valid = await redisOperation('touch session', () =>
     touchSession(getRedis(), redisPrefix(), result.session.token, result.session.expiresAt),
   );
   if (!valid) throw new HttpError(401, 'Your session has ended. Please log in again.');

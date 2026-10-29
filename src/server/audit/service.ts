@@ -54,7 +54,7 @@ function filtersFrom(search: URLSearchParams) {
 }
 
 async function recordExpiredSessions() {
-  const expired = await redisOperation(() => pendingSessionExpiries(getRedis(), redisPrefix()));
+  const expired = await redisOperation('read session expiries', () => pendingSessionExpiries(getRedis(), redisPrefix()));
   for (const { id, raw, record } of expired) {
     await writeAudit({
       actor: record.actor,
@@ -67,7 +67,7 @@ async function recordExpiredSessions() {
       },
     });
     // A failed Neon write leaves this queued; retries cannot duplicate its event.
-    await redisOperation(() => acknowledgeSessionExpiry(getRedis(), redisPrefix(), id, raw));
+    await redisOperation('acknowledge session expiry', () => acknowledgeSessionExpiry(getRedis(), redisPrefix(), id, raw));
   }
 }
 
