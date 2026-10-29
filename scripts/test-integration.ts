@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdir, writeFile, open } from 'node:fs/promises';
+import type { FileHandle } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { config } from 'dotenv';
 import pg from 'pg';
@@ -39,6 +40,7 @@ const port = 3002;
 const origin = `http://127.0.0.1:${port}`;
 let server: ChildProcess | undefined;
 let database: PrismaClient | undefined;
+let logFile: FileHandle | undefined;
 
 async function stopServer() {
   if (!server || server.exitCode !== null) return;
@@ -124,7 +126,9 @@ try {
 
   connection.searchParams.set('schema', schema);
   await mkdir(resolve('.private'), { recursive: true });
-  const logFile = await open(resolve('.private/integration-server.log'), 'w');
+  const logPath = `.private/integration-server-${schema}.log`;
+  logFile = await open(resolve(logPath), 'wx');
+  console.log(`Integration server log: ${logPath}`);
   server = spawn(
     process.execPath,
     [
@@ -154,7 +158,7 @@ try {
   let ready = false;
   for (let attempt = 0; attempt < 120; attempt++) {
     if (server.exitCode !== null)
-      throw new Error('Integration server stopped. See .private/integration-server.log.');
+      throw new Error(`Integration server stopped. See ${logPath}.`);
     try {
       ready = (await fetch(origin + '/login')).ok;
     } catch {
@@ -359,9 +363,9 @@ try {
     JSON.stringify({ passed: true, verifiedAt: new Date().toISOString() }, null, 2),
   );
   console.log('All integration checks passed in an isolated temporary schema.');
-  await logFile.close();
 } finally {
   await stopServer();
+  await logFile?.close();
   await database?.$disconnect();
   // Remove only this run's random namespace, never shared application keys.
   try {

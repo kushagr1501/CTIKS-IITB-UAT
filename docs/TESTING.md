@@ -66,8 +66,8 @@ removes its schema and keys in cleanup. The ordinary application schema is not s
 
 It uses `.next-integration` for generated server output. Do not run another copy of this suite at the same
 time: the port and build directory are shared. Do not run type checking while integration is regenerating
-route types. Run it after. Logs and the success marker are under `.private/integration-server.log` and
-`.private/integration-result.json`. A marker from an old run does not prove a new run passed.
+route types. Run it after. Each run prints its unique `.private/integration-server-ctiks_test_*.log` path.
+The success marker is `.private/integration-result.json`; a marker from an old run does not prove a new run passed.
 
 The standard TypeScript configuration covers application source and generated route types, not all
 scripts/tests. Broader script checking was performed during Phase 2 through a read-only TypeScript API check;
