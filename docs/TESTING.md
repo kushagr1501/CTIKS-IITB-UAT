@@ -6,6 +6,8 @@ A unit test checks a focused piece of code. An integration test checks interacti
 Playwright controls a real browser. A characterization test records existing behavior before refactoring; a
 regression test protects a fixed bug. See the [glossary](GLOSSARY.md) for more terms.
 
+Commands in `bash` blocks also work in PowerShell unless another shell is specified.
+
 ## Choose the check
 
 | Change                                                                        | Checks and success signal                                                                                                                         |
@@ -17,7 +19,7 @@ regression test protects a fixed bug. See the [glossary](GLOSSARY.md) for more t
 | UI text or CSS only                                                           | Lint/type/build as relevant, then inspect the changed screen at desktop and mobile widths. Do not add a test that merely repeats a literal label. |
 | Packaging and route compilation                                               | Production build: route list and exit zero. A successful build does not prove production hosting works.                                           |
 
-```powershell
+```bash
 npm run typecheck
 npm run lint
 npm test
@@ -36,18 +38,21 @@ URL. You do not need Neon.
 
 Install the browser once:
 
-```powershell
+```bash
 npx playwright install chromium
 ```
 
 Success: browser installation completes, or the browser is already available. Then use this one command:
 
-```powershell
+```bash
 npm run test:integration
 ```
 
 Success: `All integration checks passed in an isolated temporary schema.` and exit zero. The runner prints
 PASS lines for its checks; they contain multiple assertions.
+
+After the hydration fix and Redis diagnostics, five consecutive full-suite runs passed in a clean clone.
+The measured runtime for one full run was 163 seconds (2 minutes 43 seconds), measured in Git Bash on Windows with Node 26.12.1. Runtime varies with the machine.
 
 Earlier clean-clone runs exposed a Research save 503, a browser clock error, and a missed Research dialog click.
 The clock and a demonstrated pre-hydration click gap have been addressed. The original 503 and the exact cause
@@ -69,8 +74,25 @@ time: the port and build directory are shared. Do not run type checking while in
 route types. Run it after. Each run prints its unique `.private/integration-server-ctiks_test_*.log` path.
 The success marker is `.private/integration-result.json`; a marker from an old run does not prove a new run passed.
 
+After a failed run, copy the unique server log named in its output before sharing or investigating it.
+Replace the example source with the exact path printed by your run. Inspect it for sensitive data before sharing.
+
+PowerShell:
+
+```powershell
+Copy-Item -LiteralPath '.private/integration-server-ctiks_test_EXAMPLE.log' -Destination '.private/server-failure-copy.log'
+```
+
+Bash:
+
+```bash
+cp -- .private/integration-server-ctiks_test_EXAMPLE.log .private/server-failure-copy.log
+```
+
+Success: the copy exists at the destination. Choose another destination to retain multiple copies.
+
 The standard TypeScript configuration covers application source and generated route types, not all
-scripts/tests. Broader script checking was performed during Phase 2 through a read-only TypeScript API check;
+scripts/tests. A separate read-only TypeScript API check included scripts during the earlier review;
 changing the configuration is still a separate task. Do not interpret normal typecheck as full script
 coverage.
 
@@ -79,7 +101,7 @@ coverage.
 The migration-pool test stubs the query method, so it opens no database connection. It injects a query error,
 checks error identity, and checks the same pool closes once.
 
-```powershell
+```bash
 node --import tsx --test tests/migration-pool.test.ts
 ```
 
@@ -90,7 +112,7 @@ closed pool, actual empty list. That was evidence of a resource leak; the fix pu
 
 If port 3000 is occupied, update the auth origin and start a different web port:
 
-```powershell
+```bash
 node --input-type=module -e "import{readFileSync,writeFileSync}from'node:fs';const p='.env.local';writeFileSync(p,readFileSync(p,'utf8').replace('http://127.0.0.1:3000','http://127.0.0.1:3100'));console.log('Auth URL updated for port 3100.');"
 npm run dev -- --port 3100
 ```
@@ -99,28 +121,37 @@ Success: server on port 3100; open `http://127.0.0.1:3100/login`. The generated 
 print the original 3000 address; use the chosen URL with its email/password. This does not change the
 password.
 
-To skip background page warm-up in a fresh terminal:
+To skip background page warm-up in a fresh terminal, use PowerShell:
 
 ```powershell
 $env:CTIKS_DEV_WARMUP = '0'
 npm run dev -- --port 3100
 ```
 
+Or use Bash:
+
+```bash
+CTIKS_DEV_WARMUP=0 npm run dev -- --port 3100
+```
+
 Success: the server starts without the background warm-up messages. Stop any server already using that port
 before starting this alternative. For a bundler-specific issue, the project also has a Webpack fallback:
 
-```powershell
+```bash
 npm run dev:webpack -- --port 3100
 ```
 
 Success: Next.js reports Webpack and a ready server. Keep the same auth URL. These are alternative starts, not
 three servers to run together.
 
+In a Git Bash check on Windows, Ctrl+C stopped the shell but left the Node server running. If the next start
+reports `EADDRINUSE`, identify the process using the port and stop it only if it belongs to your test server.
+
 ## Stop services without removing data
 
 After Ctrl+C stops your web server, this stops the current Compose project's services:
 
-```powershell
+```bash
 docker compose stop postgres redis
 ```
 
