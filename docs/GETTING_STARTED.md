@@ -8,12 +8,12 @@ the reviewed repository location and source version. Definitions for unfamiliar 
 
 ## 1. Install the tools
 
-| Tool                       | Version guidance                                                                                          | Why                                                                           |
-| -------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Node.js and npm            | Prisma accepts Node 20.19.x, 22.12.x or later within 22, or 24+. Tested with Node 26.12.1 and npm 11.4.1. | Node runs server JavaScript. npm installs packages and runs project commands. |
-| Git                        | Tested with 2.45.2.windows.1.                                                                             | Tracks and copies source changes.                                             |
-| Docker Desktop and Compose | Tested with Docker 29.1.3 and Compose 5.0.1. Start Docker Desktop first.                                  | Runs PostgreSQL and Redis as isolated service processes called containers.    |
-| Playwright Chromium        | Install using [Testing](TESTING.md).                                                                      | Browser used by automated tests; not needed just to view the site.            |
+| Tool                       | Version guidance                                                                                                                                                                                                                                            | Why                                                                           |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Node.js and npm            | Installed Prisma and Next.js require Node 20.19.x, 22.12.x or later within 22, or 24+. The project declares no npm version range; use the npm bundled with Node and consult your mentor if it differs from the tested npm 11.4.1. Tested with Node 26.12.1. | Node runs server JavaScript. npm installs packages and runs project commands. |
+| Git                        | Tested with 2.45.2.windows.1.                                                                                                                                                                                                                               | Tracks and copies source changes.                                             |
+| Docker Desktop and Compose | Tested with Docker 29.1.3 and Compose 5.0.1. Start Docker Desktop first.                                                                                                                                                                                    | Runs PostgreSQL and Redis as isolated service processes called containers.    |
+| Playwright Chromium        | Install using [Testing](TESTING.md).                                                                                                                                                                                                                        | Browser used by automated tests; not needed just to view the site.            |
 
 ```powershell
 node --version
