@@ -7,12 +7,14 @@ import { apiJson } from '../api-client';
 import ActivityEditor from './ActivityEditor';
 import DeleteActivityDialog from './DeleteActivityDialog';
 import AdminNotice from './AdminNotice';
+import { useHydrated } from './use-hydrated';
 import { useActionConfirmation } from './ActionConfirmation';
 import { ACTIVITY_SECTIONS, type ActivityRecord, type ActivityValues } from '@/features/activities/types';
 import { eventSchedule, formatActivityDate } from '@/features/activities/dates';
 
 export default function ActivityManager({ initialActivities }: { initialActivities: ActivityRecord[] }) {
   const router = useRouter();
+  const hydrated = useHydrated();
   const [activities, setActivities] = useState(initialActivities);
   const [editor, setEditor] = useState<ActivityRecord | 'new' | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ActivityRecord | null>(null);
@@ -156,7 +158,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
           </button>
           <button
             className="admin-primary"
-            disabled={busy}
+            disabled={busy || !hydrated}
             onClick={() => {
               setEditor('new');
               setPendingDelete(null);
@@ -278,7 +280,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                 <div className="flex shrink-0 gap-2">
                   <button
                     className="admin-secondary"
-                    disabled={busy || !!editor || !!pendingDelete}
+                    disabled={busy || !!editor || !!pendingDelete || !hydrated}
                     onClick={() => {
                       setEditor(activity);
                       setError('');
@@ -290,7 +292,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                   </button>
                   <button
                     className="admin-secondary"
-                    disabled={busy || !!editor || !!pendingDelete}
+                    disabled={busy || !!editor || !!pendingDelete || !hydrated}
                     onClick={() => toggle(activity)}
                     aria-label={`${activity.visible ? 'Hide' : 'Show'} ${activity.title}`}
                     data-admin-action={activity.visible ? 'hide' : 'show'}
@@ -299,7 +301,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                   </button>
                   <button
                     className="admin-secondary text-red-700"
-                    disabled={busy || !!editor || !!pendingDelete}
+                    disabled={busy || !!editor || !!pendingDelete || !hydrated}
                     onClick={() => {
                       setPendingDelete(activity);
                       setError('');

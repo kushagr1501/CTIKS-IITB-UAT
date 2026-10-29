@@ -5,8 +5,10 @@ import AuditActorEmail from './AuditActorEmail';
 export default function AuditLogRow({
   event,
   onView,
+  disabled,
 }: {
   event: AuditRecord;
+  disabled: boolean;
   onView: (event: AuditRecord) => void;
 }) {
   const presentation = presentAuditEvent(event);
@@ -32,6 +34,7 @@ export default function AuditLogRow({
           <button
             type="button"
             aria-haspopup="dialog"
+            disabled={disabled}
             className="text-left text-ctiks-red underline-offset-4 hover:underline"
             onClick={() => onView(event)}
           >

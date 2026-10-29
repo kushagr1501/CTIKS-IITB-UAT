@@ -399,7 +399,7 @@ export default function ResearchManager({
       )}
       <ResearchAreaList
         areas={areas}
-        disabled={busy || !!editing}
+        disabled={busy || !!editing || !hydrated}
         onEdit={open}
         onToggle={toggle}
         onDelete={remove}
