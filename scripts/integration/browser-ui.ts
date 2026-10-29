@@ -187,7 +187,9 @@ export async function checkProfessorEditorUi(session: Session, origin: string) {
     await uiExpect(about).toBeVisible();
     // Keep autosave from winning the manual-save race on a busy test machine.
     await page.clock.install();
-    await page.clock.pauseAt(new Date());
+    // The browser clock can advance past the Node clock while the command travels.
+    // Pause in the future so Playwright never needs to move time backwards.
+    await page.clock.pauseAt(new Date(Date.now() + 60_000));
     const draftBiography = 'Playwright draft biography for the faculty portal.';
     await about.fill('');
     await uiExpect(about).toHaveValue('');
