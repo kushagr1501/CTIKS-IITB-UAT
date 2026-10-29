@@ -1,132 +1,92 @@
+Read this if you are changing core faculty editing or public academic profiles.
+
 # Faculty academic profiles
 
-Core professors sign in at `/login` with their existing faculty account and edit
-all academic content at `/faculty`. **Submit & publish** makes changes live
-immediately, without administrator review. **Save draft** keeps unfinished edits
-private. Existing accounts and imported content are reused; no password reset or
-new account is required.
+Core faculty sign in at `/login` and edit their own linked profile at `/faculty`. A draft is private working
+content. Submit & publish updates the current profile immediately; there is no required administrator review
+step. Public visibility is separate and remains controlled by the administrator.
 
-## Editable content
+## Ownership and editable content
 
-- Biography, photograph URL, personal website and public email.
-- Short directory research summary, research tags and research overview.
-- Education and work experience, with free-text dates or periods.
-- Current and previous teaching.
-- Journal articles, conference papers, books, book chapters and monographs.
-- Patents, current/graduated students, office address and public phone.
-- Optional student photo URLs and social/academic links, shown on public student cards.
+The server resolves the profile from the signed-in user, not a browser-supplied ID. Faculty can edit their
+displayed name, designation, department, biography, photo, website, public email, research
+summary/tags/overview, office address, and phone. They also edit education, teaching, experience,
+publications, patents, and students.
 
-Repeatable entries can be added, edited, removed and reordered. Empty optional
-fields and empty collections explicitly clear content when submitted. Links use
-HTTPS; photographs also accept existing `/assets/` paths. Student photos use URL
-inputs and load lazily with an initials fallback if an image fails. Uploading
-new files and downloadable attachments are not implemented. Login email is
-separate from public email.
+Slug (URL identifier), faculty category, login provisioning, directory order, and public visibility remain
+administrator-controlled. Login email is different from public contact email. Faculty cannot edit another
+person's profile or access administrator lists/audit history.
 
-Each student can have one link per supported platform: personal website,
-LinkedIn, Google Scholar, ORCID, ResearchGate, GitHub, X and Instagram. The
-editor offers platform choices, editable URL inputs and individual remove
-buttons. Empty optional photos and empty link arrays explicitly clear prior
-values. Photo/link data stays inside revision snapshots, so drafts remain
-private and accepted history retains its own values.
+Hiding a core profile does not remove the owner's access. Moving the linked profile away from Core Faculty
+prevents faculty sign-in/access. Publishing a hidden profile shows a notice and does not make it visible to
+the public.
 
-Name, slug, category, designation, department, account access, directory order
-and visibility remain administrator-controlled. Publishing a hidden profile does
-not make it visible. Every faculty request resolves ownership from the live
-session user and linked CORE profile; clients cannot supply a target profile ID.
-Faculty cannot access another professor's editor or administrative APIs.
+## Draft, autosave, and publishing
 
-## API and persistence
+Autosave waits for a 1.5-second pause in changes. This debounce resets when typing continues. A pending
+research-tag input must first be added to the selected tags. The editor avoids overlapping save operations and
+reports validation or session errors. Refreshing after a successful draft save reloads the saved content. Text
+still waiting for the timer or a failed save has not reached the database.
 
-`GET /api/faculty/profile` returns an explicit editor DTO: public identity,
-profile/draft versions and editable content. It never returns account hashes,
-other faculty records or review metadata. An existing private draft takes
-precedence over published content. A new profile without revisions starts with
-its current basic fields and empty academic collections.
+Save draft performs an explicit private save. Discard draft removes saved working content and reloads the
+current profile after confirmation. Submit & publish makes valid content current immediately and retains the
+previous published snapshot as superseded history. Empty strings/arrays explicitly clear optional content.
 
-`PUT /api/faculty/profile` accepts a strict full-content payload:
+## Persistence and counters
 
-```json
-{
-  "action": "save | publish | discard",
-  "profileVersion": 1,
-  "draftVersion": null,
-  "content": { "...": "all editable content fields" }
-}
-```
+A revision is a stored academic content snapshot. Its child tables contain ordered education, experience,
+course, publication, patent, and student rows. The main `faculty_profiles` record stores directory
+identity/visibility and the live summary.
 
-The shared validation contract is `src/features/faculty/profile-schema.ts`.
-Requests require an authenticated linked core faculty account, the
-`faculty.self.update` permission, a trusted Origin and a signed CSRF token.
-Bodies are bounded to 1 MiB; field lengths and collection sizes are bounded.
-Unknown identity, account, review and child ownership fields are rejected.
+| Value                        | Meaning                                                          |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `revisionNumber`             | Sequence identifying a content revision for one faculty profile. |
+| `draftVersion`               | Counter detecting changes to that working revision.              |
+| `profileVersion` in requests | Main profile counter the browser last loaded.                    |
+| `version` on the profile     | Persisted counter detecting stale profile updates.               |
 
-Saving creates or updates one DRAFT revision and its academic children in a
-serializable transaction. Publishing atomically supersedes the previous
-PUBLISHED revision, publishes the working revision, updates the root directory
-projection, increments its version and records an audit event. Accepted history
-and its child records are retained. Failed writes roll back together.
+There is no current `sourceProfileVersion` column. Do not reintroduce it from an old screenshot. A stale
+request returns HTTP 409 rather than overwriting newer work. Publishing/discarding and revision children are
+tested through the real transaction worker in `src/server/faculty/editor.ts`.
 
-Both root and draft versions prevent stale tabs from overwriting newer edits.
-A draft whose source profile was changed by an administrator must be discarded
-and restarted from current content. Discard also checks both versions and is
-explicitly confirmed in the UI. Submitted legacy review records are blocked for
-administrator handling; this editor does not create review submissions.
+## CSV imports
 
-The database retains the existing revision statuses and partial unique indexes:
-at most one working revision and one PUBLISHED revision per faculty profile.
-Migration `202610190005_student_photo_social_links` adds optional `imageUrl` and
-bounded JSON `socialLinks` fields to student rows, defaulting to an empty URL and
-empty array. It preserves existing students and requires no new permissions.
+CSV means comma-separated text. Publications and patents each offer a downloadable CSV template and import
+control. Keep the template columns in their order. The publication Type header includes Journal article,
+Conference paper, Book, Book chapter, and Research monograph. A simple `Type` header is also accepted.
 
-## Public pages
+The importer checks quoting, column order/count, types, years, URLs, and entry limits. A preview names the
+file and checked entries. Confirmation appends them; cancellation or an invalid file leaves existing rows
+intact. Existing entries are not replaced automatically. Blank publication Type defaults to Journal article. A
+CSV file is limited to 5 MB; resulting collections permit 500 publications or 100 patents, including existing
+rows. Quoted commas and line breaks are supported.
 
-Visible CORE cards open `/people/[slug]`. The directory and profile introduction
-read current basic fields; academic sections select only the PUBLISHED revision.
-Public queries never select drafts, accounts or private revision metadata.
-These reads are dynamic; a new request sees committed submissions. Public links
-from the editor open a fresh tab. Missing sections display `Not added yet.`.
-There is no sample-data substitution on actual pages.
+## Media
 
-All core professors share the existing CTIKS layout. Section navigation appears
-on desktop and is hidden on mobile/tablet. Teaching and students are grouped by
-status, and publications by type. Non-core directory behavior is unchanged.
+HTTPS URLs and existing site images remain supported. The development upload controls require development mode
+and a local database. Profile and student photos are available for core faculty; PDF upload paths for
+publications/patents are currently restricted to the Vijayaraghavan M. Chariar profile. The server checks
+ownership and file signatures; the browser filename is not treated as a trusted path.
 
-## Tables and rollout
+Publishing/saving asks the server to clean up unused local media in batches. Do not turn this into
+unconditional file deletion: a file may still be referenced by a saved draft or published revision.
+Development media is not a production storage service, and a private draft does not make a linked public file
+URL private.
 
-`FacultyProfile` is the existing identity and account link.
-`FacultyProfileRevision` owns the biography, photo, website, public email,
-directory interests, research tags/overview and contact details. Academic rows
-belong to revisions in `faculty_education`, `faculty_experience`,
-`faculty_courses`, `faculty_publications`, `faculty_patents` and
-`faculty_students`.
+Public publication/patent entries show attachment actions when a URL is present. Empty academic sections are
+omitted from the public profile. Student rows distinguish Current and Graduated status; directory categories
+such as Doctoral Students are a separate People-directory concept.
 
-Core faculty can edit their name, designation and department in the same private
-draft as the rest of their profile. Publishing updates those public identity
-fields with the revision; the profile URL, account linkage and visibility remain
-administrator-managed. Migration `202610200001_faculty_editable_identity` adds
-nullable revision values so existing published profiles and drafts keep their
-current identity until edited.
+## Open these files
 
-Migration `202610190004_faculty_academic_profiles` copied existing CORE profiles
-into accepted baseline revisions, including hidden profiles and those without
-accounts. It preserved passwords, identity, visibility and audit history. The
-restricted runtime role already has access to the academic tables. New
-installations use `npm run db:migrate` and `npm run db:restrict`.
+`src/features/faculty/FacultyProfileEditor.tsx` owns state and saves. `FacultyEditorActions.tsx` and
+`faculty-text-field.tsx` render extracted UI pieces. `AcademicCsvImport.tsx` handles templates/preview.
+`profile-schema.ts` uses Zod, a runtime validator. Server requests reach `src/server/faculty/editor.ts`.
+`src/server/faculty/public-profile-query.ts` selects public fields from published content and excludes
+login/draft/audit information.
 
-Legacy directory interests are preserved verbatim; the editor does not infer
-research tags by splitting prose. The editor labels this field “Short description
-on faculty card” and explains where it appears. Detailed research tags remain
-separate so cards can remain brief.
+The full suite covers manual save, autosave timing/reload, CSV preview/cancel/errors, imports, publish,
+ownership, conflicts, explicit clearing, and retained history.
 
-## Verification
-
-`npm test` covers validation and permission boundaries. `npm run test:integration`
-uses an isolated temporary PostgreSQL schema, Redis namespace and local server
-to exercise the actual faculty API, drafts, publishing, ownership, CSRF,
-concurrent edits, explicit clears, accepted history, hidden profiles and audit.
-It does not edit real faculty accounts or profiles.
-
-`npm run test:faculty-schema` additionally verifies migrations and SQL constraints.
-Credential delivery and first-login password enforcement remain separate work;
-this editor neither emails credentials nor forces password changes.
+Next: [Testing](TESTING.md), [Architecture](ARCHITECTURE.md), and
+[module notes](../src/features/faculty/README.md).

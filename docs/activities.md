@@ -1,73 +1,82 @@
-# Activities CMS
+Read this if you are changing the Activities editor, public lists, or homepage panels.
 
-## Workflow
+# Activities
 
-Open **Administration → Activities → Add activity**. Enter a title and one
-description, select News, Announcements and/or Events, then save. Visible is
-selected by default. Hidden entries are editable and never appear publicly.
-The creation date is automatic. There is no separate publication date or expiry.
+An activity is one stored item shown as News, Announcements, Events, or a combination of those types. The
+administrator edits it at `/admin/activities`. A past/upcoming state is a time filter, not a fourth category
+or another stored copy.
 
-Optional fields: image URL, venue, HTTPS link URL, link label, start date
-and time, end date and time. Date/time pairs are entered in IST and converted to
-UTC before saving to PostgreSQL `timestamptz` columns. End must be after start.
-Clear both inputs in a pair to remove that timestamp; clear text inputs to remove
-optional text/links. No detail view is required: public cards show the description.
+## Editor fields
 
-## Public display
+| Field                   | Meaning                                                                                         |
+| ----------------------- | ----------------------------------------------------------------------------------------------- |
+| Title and description   | Required public text. Long descriptions expand in the list.                                     |
+| Sections                | One or more of News, Announcements, Events. Each item is saved once.                            |
+| Image URL               | Optional HTTPS image or existing `/assets/` image.                                              |
+| Supporting PDF URL      | Optional HTTPS document URL. The server does not fetch it to prove the remote content is a PDF. |
+| Start/end date and time | Optional schedule, entered in India time. Dates without times are supported.                    |
+| Venue                   | Optional location text.                                                                         |
+| Link URL and label      | Optional HTTPS action link; blank label means More info.                                        |
+| Visible                 | Whether public pages may select the item. Hidden entries remain editable.                       |
 
-- `/activities` lists all visible entries. `/news`, `/announcements`, `/events`
-  filter the same records by section. Each has search and 12 entries per page.
-- Entries sort by `createdAt DESC, id DESC`; updates preserve creation order.
-- The public list follows the Activities design: paper background, compact patterned
-  banner, category counts, keyword search, and optional thumbnail and metadata.
-  Long descriptions expand in place with Read Full / Read Less. Counts include
-  all matching visible entries across pages; a multi-category entry counts once
-  in All and once in each of its categories. Search is retained when changing tabs.
-- Keyword search waits 350 ms after the last keystroke. Enter searches immediately;
-  composed text waits until composition finishes. Navigation and unmount cancel
-  the pending timer. Matching pending requests are deduplicated, and searches
-  replace the current URL without adding history entries or retaining a page number.
-  Counts are memoized only within the current request and reused for pagination,
-  leaving two database queries per listing request and no persistent result cache.
-- Homepage Upcoming events selects the newest visible Event with a start and
-  either an end after now, or no end and a start at/after now. Ongoing events
-  remain eligible until their end. Undated and completed events remain in the
-  public Events listing, but not in the homepage panel.
-- Homepage Recent announcements selects the two newest visible Announcements.
-- No activity data is duplicated in homepage content. Public pages read the
-  database per request; admin mutations also revalidate affected routes.
-- A supplied link uses its editable label (for example Register, More info,
-  View notification, or Apply now), defaulting to More info when blank. The same
-  label appears on homepage links. Labels are plain text up to 60 characters;
-  clearing the label restores the default, and clearing the URL hides the action.
-  Homepage cards link to their listing when no URL is supplied.
-- Date, Time (IST), and Location appear as separate labelled metadata groups.
-  Undated entries show Posted on with the creation date.
-- Old `/eventspage` links redirect to `/events`.
+Dates are converted from India time to UTC, a shared timestamp reference, before storage in PostgreSQL. The
+`eventHasTime` field preserves whether times were given. If a start time is supplied, an end date/time is
+required. End must follow start. Dates without times are allowed. An end date needs a start date. Clearing
+schedule inputs removes the schedule; clearing optional strings removes their stored values.
 
-## Persistence and access
+In development with a local database, the editor also supports manual image and PDF uploads. Image signatures
+must match JPEG, PNG, or WebP and be at most 8 MB; PDFs must have a PDF signature and be at most 25 MB. A
+selected upload replaces the corresponding URL on save. Image clicks open an enlarged poster view. Files are
+outside the source directory; their returned paths are stored in records. This local facility is not enabled
+for production hosting.
 
-`Activity` is one table, using a PostgreSQL enum array for sections. `version`
-is internal optimistic concurrency control: stale edits/deletions return 409.
-All mutations require admin activity permissions, the existing session and CSRF
-guards, and a transaction that also writes an audit record. Audit history remains
-after deletion. CORE_FACULTY has no activity administration permission.
+## Public lists and time filters
 
-Migration: `202610190001_activities`. It creates the enum, table, indexes and
-constraints, and grants CRUD to `ctiks_app` if that runtime role exists. Fresh
-provisioning also grants access via `db:restrict`. Existing content is untouched.
-Run `npm run db:migrate` and `npm run db:generate`, then restart the app.
+- `/activities` shows all types. `/news`, `/announcements`, and `/events` select a type.
+- Type pills show counts for the selected search and time filter. A multi-type item counts once in All and
+  once in each selected type.
+- Upcoming / Past / All is the separate time filter. It applies to every type. Undated items appear in All,
+  not Upcoming/Past.
+- Events defaults to Upcoming. If no upcoming item matches and the user did not explicitly select a time
+  filter, it falls back to Past when past items exist. The page explains this fallback. News, Announcements,
+  and All activities default to All.
+- An explicit `?time=upcoming` does not trigger that fallback. `/past-events` redirects to
+  `/events?time=past`; `/campus-updates` redirects to `/activities`.
+- Listing order is creation date descending, then ID descending, with 12 entries per page. Editing an item
+  does not make its creation date newer.
+- Search waits for a 350 ms typing pause; Enter flushes it immediately. This is a debounce, meaning delayed
+  work resets while the user is still typing. Search updates the URL, removes an old page number, and
+  preserves an explicit time filter.
 
-Migration `202610190003_activity_link_labels` adds the persisted link label and
-retires Campus Updates from the CMS and website. Any old campus-only entries
-become News; entries with other categories keep those categories. No entries are
-deleted. The database retains the old enum value for migration compatibility,
-but a constraint prevents using it. `/campus-updates` redirects to `/activities`.
+The time filter uses stored timestamps, not a stored Past flag. An end timestamp at or before now is past. A
+timed start without an end is a legacy case: it becomes past after its start. A date-only start without an end
+uses a 24-hour cutoff. The exact date-only boundary is inclusive on the homepage and exclusive in the upcoming
+listing. That known difference is preserved, not silently corrected here.
 
-## Verification
+## Homepage selection
 
-`npm test` covers input/date/time and access policy rules. `npm run test:integration`
-uses an isolated random database schema and Redis namespace to test the API,
-public listings, homepage selection, visibility, clearing fields, ordering,
-concurrency, and audit rollback. It never seeds sample activities into the live
-application schema.
+Upcoming events includes visible eligible events, sorted by start ascending and then ID ascending, with up to
+12 records. Ongoing events with a future end remain eligible. It is not a single newest-created event. Recent
+announcements selects the two newest visible announcements by creation date and ID. Both panels read the same
+database content as the public lists.
+
+## Server boundary and data
+
+Open `ActivityEditor.tsx` and `ActivityManager.tsx` for the UI. UI means the visible interface. Follow their
+requests into `src/app/api/admin/activities`, then `src/server/activities/schema.ts`, `service.ts`, and
+`public.ts`. Zod validates real request values. A transaction commits content and its audit history together.
+The `version` counter rejects a stale edit with HTTP 409. Mutations require a session, permission, and CSRF
+protection; hiding a button is not enough.
+
+The `activities` table contains the sections array, schedule, image/document URLs, link data, visibility, and
+version. Supporting-document and optional-time columns arrived through the two 28 October migrations. The
+retired Campus Updates enum value remains only for migration compatibility; requests cannot select it.
+
+## Verify a change
+
+Use the unit and canonical full-suite commands in [Testing](TESTING.md). The integration suite checks
+permissions, dates/clearing, public lists, homepage selection, search, pagination, stale edits, visibility,
+and audit rollback. A real image's visual quality still needs browser inspection.
+
+Next: [Testing](TESTING.md), [Environment](ENVIRONMENT.md), and
+[module notes](../src/features/activities/README.md).

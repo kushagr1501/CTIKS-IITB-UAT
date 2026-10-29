@@ -1,3 +1,5 @@
+Read this if you need the historical Phase 2 findings and their verified follow-up.
+
 # Phase 2: structure and performance review
 
 Reviewed on 29 October 2026 in the Downloads CTIKS checkout, after Phase 1 and
@@ -71,3 +73,14 @@ The README and architecture/backend guides already exist. The Phase 3 work still
 includes correcting outdated descriptions, adding a contributing guide and a
 complete environment reference, and documenting module ownership. This report
 records the Phase 2 work and does not replace those guides.
+
+## Migration-pool follow-up
+
+The historical pool-leak finding above was reproduced by the failure-path test
+in commit `d169455`. Commit `43a1cbc` added `try/finally`; the same error is retained
+and the pool closes exactly once. Unit tests and the full suite passed in the
+working checkout after the fix. All other Phase 2 findings remain unchanged.
+Later clean-clone verification exposed separate failures recorded in the
+[documentation verification](documentation-verification.md).
+
+Next: [current testing guide](../TESTING.md) and [documentation verification](documentation-verification.md).
