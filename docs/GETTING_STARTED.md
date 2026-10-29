@@ -2,9 +2,9 @@ Read this if you want to run the application on your development machine.
 
 # Your first day
 
-Commands use PowerShell. A repository is the folder Git tracks. A clone is your
-own copy. Ask your mentor for the reviewed repository location and source version.
-Definitions for unfamiliar tools are in the [glossary](GLOSSARY.md).
+Commands use PowerShell. A repository is the folder Git tracks. A clone is your own copy. Ask your mentor for
+the reviewed repository location and source version. Definitions for unfamiliar tools are in the
+[glossary](GLOSSARY.md).
 
 ## 1. Install the tools
 
@@ -23,16 +23,14 @@ docker --version
 docker compose version
 ```
 
-Success: each prints a version. Installing the operating system and these tools
-was not tested on a new Windows installation. The clean-clone check used the
-installed tools listed above.
+Success: each prints a version. Installing the operating system and these tools was not tested on a new
+Windows installation. The clean-clone check used the installed tools listed above.
 
 ## 2. Clone and install
 
-Replace `REPOSITORY_LOCATION` with your mentor's URL or local repository path.
-The published URL is `https://github.com/kushagr1501/CTIKS-IITB-UAT.git`.
-It may be behind local work. A commit is a saved source version; use the version
-your mentor reviewed, rather than guessing from the newest folder.
+Replace `REPOSITORY_LOCATION` with your mentor's URL or local repository path. The published URL is
+`https://github.com/kushagr1501/CTIKS-IITB-UAT.git`. It may be behind local work. A commit is a saved source
+version; use the version your mentor reviewed, rather than guessing from the newest folder.
 
 ```powershell
 $repoSource = 'REPOSITORY_LOCATION'
@@ -41,8 +39,8 @@ Set-Location ctiks-web
 npm ci
 ```
 
-Success: Git creates the folder and npm exits without error. `npm ci` installs the
-versions recorded in `package-lock.json`, the dependency lock file.
+Success: Git creates the folder and npm exits without error. `npm ci` installs the versions recorded in
+`package-lock.json`, the dependency lock file.
 
 ## 3. Create local settings
 
@@ -52,33 +50,30 @@ node --input-type=module -e "import{readFileSync,writeFileSync}from'node:fs';imp
 npm run redis:setup
 ```
 
-Success: `Local auth secret created.` and
-`Local Redis credentials configured. Secrets omitted from logs.`
-The secret signs authentication data. Redis setup creates a password file under
-`.private` and adds its URL to `.env.local`. These files are ignored by Git.
-Do not overwrite an existing environment file or copy production settings.
-[Environment](ENVIRONMENT.md) explains the values.
+Success: `Local auth secret created.` and `Local Redis credentials configured. Secrets omitted from logs.` The
+secret signs authentication data. Redis setup creates a password file under `.private` and adds its URL to
+`.env.local`. These files are ignored by Git. Do not overwrite an existing environment file or copy production
+settings. [Environment](ENVIRONMENT.md) explains the values.
 
 ## 4. Start the services
 
-Defaults are port 15432 for PostgreSQL and 16379 for Redis. A port is the number
-used to connect to a service. If they are occupied, follow the recipe below first.
+Defaults are port 15432 for PostgreSQL and 16379 for Redis. A port is the number used to connect to a service.
+If they are occupied, follow the recipe below first.
 
 ```powershell
 npm run db:local:up
 docker compose ps
 ```
 
-Success: both services show `Up`, then `healthy`. Wait and run the second command
-again if needed. Docker volumes retain their data across restarts. The Redis
-health check confirms password enforcement; signing in later checks actual access.
+Success: both services show `Up`, then `healthy`. Wait and run the second command again if needed. Docker
+volumes retain their data across restarts. The Redis health check confirms password enforcement; signing in
+later checks actual access.
 
 ### When the default service ports are busy
 
-This optional recipe creates separate container names and storage volumes. It was
-used for clean-clone verification so existing developer services could keep running.
-The `!override` syntax was tested with Compose 5.0.1. Ask your mentor if your
-Compose version rejects it.
+This optional recipe creates separate container names and storage volumes. It was used for clean-clone
+verification so existing developer services could keep running. The `!override` syntax was tested with Compose
+5.0.1. Ask your mentor if your Compose version rejects it.
 
 Run this after step 3, then continue with step 4 in the same terminal:
 
@@ -97,13 +92,13 @@ $env:COMPOSE_FILE = 'compose.yaml' + [IO.Path]::PathSeparator + '.private/ports.
 node --input-type=module -e "import{readFileSync,writeFileSync}from'node:fs';const p='.env.local';writeFileSync(p,readFileSync(p,'utf8').replaceAll(':15432/',':15433/').replaceAll(':16379',':16380'));console.log('Alternate service ports configured.');"
 ```
 
-Success: `Alternate service ports configured.` These `COMPOSE_` values affect
-Docker only. If these ports are also occupied, ask before stopping someone else's services.
+Success: `Alternate service ports configured.` These `COMPOSE_` values affect Docker only. If these ports are
+also occupied, ask before stopping someone else's services.
 
 ## 5. Prepare the database
 
-Keep the local URLs created above. A migration is a versioned SQL change to the
-database. A seed creates initial records so you have something to use.
+Keep the local URLs created above. A migration is a versioned SQL change to the database. A seed creates
+initial records so you have something to use.
 
 ```powershell
 npm run db:generate
@@ -115,12 +110,11 @@ Expected signals:
 
 - Generate: `Generated Prisma Client`, the generated database code.
 - Migrate: migrations applied, or `No pending migrations to apply` on later runs.
-- Seed: credentials saved to `.private/admin-credentials.txt` on a fresh database.
-  An existing administrator is preserved rather than given a new password.
+- Seed: credentials saved to `.private/admin-credentials.txt` on a fresh database. An existing administrator
+  is preserved rather than given a new password.
 
-These commands respect your environment URLs. The `db:local:migrate` and
-`db:local:seed` wrappers always force the original port 15432 and database name.
-Do not use those wrappers with the alternate-port recipe.
+These commands respect your environment URLs. The `db:local:migrate` and `db:local:seed` wrappers always force
+the original port 15432 and database name. Do not use those wrappers with the alternate-port recipe.
 
 ## 6. Start and sign in
 
@@ -128,17 +122,16 @@ Do not use those wrappers with the alternate-port recipe.
 npm run dev
 ```
 
-Success: `Ready`, then `Main pages ready`. Warm-up compiles public pages in
-advance; the first run can take longer.
+Success: `Ready`, then `Main pages ready`. Warm-up compiles public pages in advance; the first run can take
+longer.
 
-Open **http://127.0.0.1:3000**. Check the homepage and `/people`.
-Open `.private/admin-credentials.txt` in your editor, then sign in at `/login`.
-You should reach `/admin` and be able to open People directory and Activities.
-Faculty logins are created through the People directory; seed does not generate
-passwords for every teacher. Do not share the credential file.
+Open **http://127.0.0.1:3000**. Check the homepage and `/people`. Open `.private/admin-credentials.txt` in
+your editor, then sign in at `/login`. You should reach `/admin` and be able to open People directory and
+Activities. Faculty logins are created through the People directory; seed does not generate passwords for
+every teacher. Do not share the credential file.
 
-Stop this terminal's web server with Ctrl+C. Service containers keep running.
-See [Testing](TESTING.md) for checks and how to stop services without removing data.
+Stop this terminal's web server with Ctrl+C. Service containers keep running. See [Testing](TESTING.md) for
+checks and how to stop services without removing data.
 
 ## Troubleshooting
 

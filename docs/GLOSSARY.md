@@ -54,4 +54,28 @@ Read this if a word in the setup guide or a code review is unfamiliar.
 | ESLint / Prettier                     | Code rule checker; code formatter. Passing them does not prove a browser flow works.                                                                     |
 | Tracing warning / N+1                 | Warning about files included in server output; an extra database query for every list item.                                                              |
 
+## Additional terms
+
+- **URL / ID / OS:** a web address; an identifier; operating system.
+- **JSON / SQL:** text representing structured values; the language used to query relational databases.
+- **Pagination / alias:** splitting results into pages; another name for the same command or operation.
+- **Git staging:** selecting changes for the next commit. This differs from a staging deployment for review.
+- **Optimistic concurrency:** rejecting an old version counter so a save cannot silently overwrite a newer
+  edit.
+
+- **CRUD:** create, read, update, and delete records.
+- **UTC / India time:** a shared timestamp reference; the editor uses the Asia/Kolkata time zone, UTC plus 5
+  hours 30 minutes.
+- **Better Auth / OAuth:** this project's authentication library; delegated sign-in through another provider,
+  which is disabled here.
+- **HttpOnly:** a cookie flag that prevents browser JavaScript from reading the cookie.
+- **dotenv / precedence:** the environment-file reader used by scripts; the rule deciding which setting wins.
+- **Bundler / Webpack:** a tool combining source modules into runnable output; the alternative development
+  bundler.
+- **Barrel / re-export:** a file exposing imports from other files; forwarding an exported value through
+  another module.
+- **Warm-up / tracing:** compiling pages before they are requested; finding files needed in server output.
+- **Fixture / backfill:** prepared test data; populating existing records after a schema change.
+- **CLI / CI:** command-line interface; automated checks run by a shared integration system.
+
 Next: [Getting started](GETTING_STARTED.md), [Architecture](ARCHITECTURE.md), or [Testing](TESTING.md).

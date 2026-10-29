@@ -2,9 +2,9 @@ Read this if you are opening this repository for the first time.
 
 # CTIKS website
 
-This is the website for the Centre for Traditional Indian Knowledge and Skills
-(CTIKS), IIT Bombay. It includes public pages, an administrator portal for managing
-content, and a faculty portal for editing individual profiles.
+This is the website for the Centre for Traditional Indian Knowledge and Skills (CTIKS), IIT Bombay. It
+includes public pages, an administrator portal for managing content, and a faculty portal for editing
+individual profiles.
 
 ## What runs here?
 
@@ -21,9 +21,8 @@ More terms are defined in the [glossary](docs/GLOSSARY.md).
 ## Quickstart
 
 Use PowerShell, the Windows command shell. Install the prerequisites in
-[Getting started](docs/GETTING_STARTED.md) first. Replace `REPOSITORY_LOCATION`
-with the URL or local path your mentor provides. Use the reviewed version;
-unpublished changes may not exist on GitHub yet.
+[Getting started](docs/GETTING_STARTED.md) first. Replace `REPOSITORY_LOCATION` with the URL or local path
+your mentor provides. Use the reviewed version; unpublished changes may not exist on GitHub yet.
 
 ```powershell
 $repoSource = 'REPOSITORY_LOCATION'
@@ -40,20 +39,17 @@ npm run db:seed
 npm run dev
 ```
 
-Expected signals: npm finishes, Redis setup confirms credentials, Docker starts
-two services, Prisma reports a generated client and applied migrations, and seed
-reports the administrator credential file. The app prints `Ready` and eventually
-`Main pages ready`.
+Expected signals: npm finishes, Redis setup confirms credentials, Docker starts two services, Prisma reports a
+generated client and applied migrations, and seed reports the administrator credential file. The app prints
+`Ready` and eventually `Main pages ready`.
 
-Open **http://127.0.0.1:3000**. Open the generated
-`.private/admin-credentials.txt` locally, then sign in at `/login`.
-Never paste that password into a commit, issue, screenshot, or chat.
+Open **http://127.0.0.1:3000**. Open the generated `.private/admin-credentials.txt` locally, then sign in at
+`/login`. Never paste that password into a commit, issue, screenshot, or chat.
 
-The example environment uses loopback addresses: services on this computer.
-The migration and seed commands read the configured database URLs. Keep the
-walkthrough on local settings. If service ports are occupied, use the
-[alternate-port recipe](docs/GETTING_STARTED.md#when-the-default-service-ports-are-busy)
-before starting Docker.
+The example environment uses loopback addresses: services on this computer. The migration and seed commands
+read the configured database URLs. Keep the walkthrough on local settings. If service ports are occupied, use
+the [alternate-port recipe](docs/GETTING_STARTED.md#when-the-default-service-ports-are-busy) before starting
+Docker.
 
 ## Check a change
 
@@ -64,11 +60,10 @@ npm test
 npm run build
 ```
 
-Success means exit code zero. Tests print a passing summary. The build prints a
-route list. Six existing local-media tracing warnings are described in the
-[Phase 2 report](docs/testing/phase-2-cleanup.md).
-See [Testing](docs/TESTING.md) for one canonical full-suite command. Run type
-checking after integration finishes because integration regenerates files it reads.
+Success means exit code zero. Tests print a passing summary. The build prints a route list. Six existing
+local-media tracing warnings are described in the [Phase 2 report](docs/testing/phase-2-cleanup.md). See
+[Testing](docs/TESTING.md) for one canonical full-suite command. Run type checking after integration finishes
+because integration regenerates files it reads.
 
 ## Where to go next
 
