@@ -1,129 +1,84 @@
-# CTIKS IIT Bombay — UAT
+Read this if you are opening this repository for the first time.
 
-Website and administration portal for the Centre for Traditional Indian Knowledge
-and Skills, IIT Bombay. Built with Next.js 16, React 19, TypeScript, Tailwind CSS,
-Prisma/PostgreSQL, Better Auth, and Redis.
+# CTIKS website
 
-## Website snapshots
+This is the website for the Centre for Traditional Indian Knowledge and Skills
+(CTIKS), IIT Bombay. It includes public pages, an administrator portal for managing
+content, and a faculty portal for editing individual profiles.
 
-Captured from the local UAT site on 19 October 2026.
+## What runs here?
 
-### Landing page
+| Tool                   | Meaning and role                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------- |
+| Next.js and React      | Next.js maps web addresses to pages. React builds the interface from reusable components. |
+| Node.js and TypeScript | Node runs server JavaScript. TypeScript checks value shapes before the app runs.          |
+| PostgreSQL and Prisma  | PostgreSQL stores durable records. Prisma generates code to read and write them.          |
+| Redis                  | Stores temporary login sessions and request limits. Protected operations require it.      |
+| Zod                    | Checks actual incoming values while the application runs.                                 |
 
-The public homepage with institute branding and the main introduction.
+More terms are defined in the [glossary](docs/GLOSSARY.md).
 
-![CTIKS landing page](docs/screenshots/landing-page.jpg)
+## Quickstart
 
-### Admin panel — faculty directory
+Use PowerShell, the Windows command shell. Install the prerequisites in
+[Getting started](docs/GETTING_STARTED.md) first. Replace `REPOSITORY_LOCATION`
+with the URL or local path your mentor provides. Use the reviewed version;
+unpublished changes may not exist on GitHub yet.
 
-Search and filter faculty profiles, manage visibility, and edit directory entries.
+```powershell
+$repoSource = 'REPOSITORY_LOCATION'
+git clone $repoSource ctiks-web
+Set-Location ctiks-web
+npm ci
+Copy-Item .env.example .env.local
+node --input-type=module -e "import{readFileSync,writeFileSync}from'node:fs';import{randomBytes}from'node:crypto';const p='.env.local';writeFileSync(p,readFileSync(p,'utf8').replace('generate-a-random-secret-with-at-least-32-characters',randomBytes(32).toString('hex')));console.log('Local auth secret created.');"
+npm run redis:setup
+npm run db:local:up
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
 
-![Faculty administration panel](docs/screenshots/admin-faculty.jpg)
+Expected signals: npm finishes, Redis setup confirms credentials, Docker starts
+two services, Prisma reports a generated client and applied migrations, and seed
+reports the administrator credential file. The app prints `Ready` and eventually
+`Main pages ready`.
 
-### Admin panel — Activities
+Open **http://127.0.0.1:3000**. Open the generated
+`.private/admin-credentials.txt` locally, then sign in at `/login`.
+Never paste that password into a commit, issue, screenshot, or chat.
 
-Manage news, announcements, and events from one place.
+The example environment uses loopback addresses: services on this computer.
+The migration and seed commands read the configured database URLs. Keep the
+walkthrough on local settings. If service ports are occupied, use the
+[alternate-port recipe](docs/GETTING_STARTED.md#when-the-default-service-ports-are-busy)
+before starting Docker.
 
-![Activities administration panel](docs/screenshots/admin-activities.jpg)
+## Check a change
 
-<details>
-<summary>Activity editor</summary>
-
-Create an activity with categories, a description, optional dates and location,
-and a custom link label.
-
-![Activity editor](docs/screenshots/admin-activity-editor.jpg)
-
-</details>
-
-## Local setup
-
-Use Node.js 22.12+ and Docker Desktop (or an existing Redis service). Development
-uses local PostgreSQL and Redis; UAT and production remain on Neon.
-
-1. Run `npm ci` and copy `.env.example` to `.env.local`.
-2. Run `npm run db:local:up` and `npm run redis:up`.
-3. Run `npm run db:generate` and `npm run db:local:migrate`.
-4. For a fresh local database, run `npm run db:local:seed`. This creates local
-   administrator and sample faculty records; it never connects to Neon. Local
-   admin credentials are written to `.private/local-admin-credentials.txt`.
-5. Run `npm run redis:setup` if Redis credentials have not been created yet, or
-   configure your own Redis URL.
-6. For UAT or production, configure values from `.env.uat.example` in that
-   deployment's environment. Keep `.env.migrations.local` local too; deployment
-   migrations should use `DIRECT_URL` explicitly while the application uses the
-   pooled `DATABASE_URL`.
-7. For a fresh deployment, follow [backend setup](docs/backend.md) to seed the
-   initial administrator/faculty records and provision the restricted database role.
-8. Run `npm run dev` and open http://127.0.0.1:3000.
-
-`npm run db:local:down` stops the local PostgreSQL container and preserves its
-Docker volume. Do not use `docker compose down -v` unless you intend to delete
-local database data.
-
-Development generates the Prisma client when missing, after schema changes, or
-after a Prisma version change. Production builds always regenerate it. Use
-`.private/local-admin-credentials.txt` to sign in to the local database. A manual
-`npm run db:seed` writes `.private/admin-credentials.txt` by default for the
-database configured for that command; its password may differ from the local one.
-Environment files, generated credential files, generated clients, build output, and temporary
-previews are excluded from Git. Only the placeholder `.env.example` and
-`.env.uat.example` templates belong in the repository.
-
-### Development speed
-
-`npm run dev` uses Turbopack with its persistent compilation cache and warms the
-main public pages sequentially in the background. Wait for **Main pages ready**
-when previewing the entire site. The first run after installing dependencies or
-changing shared code still needs compilation. Database-backed pages continue to
-read current data; the warm-up does not cache application records.
-
-Keep `.next` between restarts to reuse the compiler cache. If a bundler-specific
-issue occurs, `npm run dev:webpack` starts the Webpack fallback. Set
-`CTIKS_DEV_WARMUP=0` to skip background warm-up. Port overrides such as
-`npm run dev -- --port 3001` are supported; match `BETTER_AUTH_URL` to that origin
-when testing account login locally.
-
-The existing UAT administrator login is shared in [UAT admin access](docs/uat-admin-access.md)
-at the repository owner's request. It applies to the existing UAT database.
-
-## Project structure
-
-- `src/app/` — public pages, administration/faculty portals, and API routes.
-- `src/features/` — feature components, content, forms, and presentation helpers.
-- `src/components/` — shared layout and UI components.
-- `src/server/` — authentication, database access, validation, permissions, and auditing.
-- `prisma/` — database schema and versioned migrations.
-- `public/assets/` — local website images and design assets.
-- `scripts/` — database/Redis setup and isolated integration checks.
-- `tests/` — unit tests.
-- `docs/` — architecture, backend operation, and Activities CMS documentation.
-
-## Verification
-
-```sh
+```powershell
 npm run typecheck
 npm run lint
 npm test
 npm run build
 ```
 
-`npm run test:integration` additionally requires PostgreSQL migration-owner access
-and Redis. It creates and removes a random test schema and Redis namespace; see
-[backend setup](docs/backend.md). It does not seed activities into the application's
-live schema.
+Success means exit code zero. Tests print a passing summary. The build prints a
+route list. Six existing local-media tracing warnings are described in the
+[Phase 2 report](docs/testing/phase-2-cleanup.md).
+See [Testing](docs/TESTING.md) for one canonical full-suite command. Run type
+checking after integration finishes because integration regenerates files it reads.
 
-For headless browser coverage, install the Chromium binary once with
-`npx playwright install chromium`, then run `npm run test:browser`. It uses the same
-isolated integration environment and exercises faculty CRUD in the admin UI and
-draft/reload/research-area/publish flows in the professor portal.
+## Where to go next
 
-## Production
+- [Getting started](docs/GETTING_STARTED.md): setup and troubleshooting.
+- [First change](docs/FIRST_CHANGE.md): a guided small UI change.
+- [Codebase map](docs/CODEBASE_MAP.md): which files to open.
+- [Architecture](docs/ARCHITECTURE.md): how requests reach the database.
+- [Contributing](docs/CONTRIBUTING.md): branches, review, and code conventions.
+- [Environment](docs/ENVIRONMENT.md): settings and safe examples.
+- [Testing](docs/TESTING.md): checks and their limits.
+- [Activities](docs/activities.md): dates, filters, images, and PDFs.
 
-Configure the deployment's environment and persistent services, apply migrations
-with `npm run db:migrate`, then run `npm run build` and `npm start`. Hosting,
-backups, HTTPS, and institute SMTP/storage provisioning are deployment concerns.
-Pushing this repository does not deploy the site or copy database contents.
-
-See [architecture](docs/architecture.md), [Activities CMS](docs/activities.md),
-and the [faculty academic profile schema](docs/faculty-profiles.md).
+Next: [follow the first-day walkthrough](docs/GETTING_STARTED.md).
