@@ -89,7 +89,44 @@ export async function checkAdminFacultyUi(session: Session, origin: string) {
   }
 }
 
+async function checkResearchHydration(session: Session, origin: string) {
+  const ui = await openAuthenticatedPage(session, origin);
+  const { page, browser } = ui;
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  let delayedScripts = 0;
+  try {
+    await page.route('**/*', async (route) => {
+      if (route.request().resourceType() === 'script') {
+        delayedScripts++;
+        await scriptsReady;
+      }
+      await route.continue();
+    });
+    await page.goto(`${origin}/admin/research`, { waitUntil: 'commit' });
+    const button = page.getByRole('button', { name: 'Add area', exact: true });
+    const dialog = page.getByRole('dialog', { name: 'Add research area' });
+    await uiExpect(button).toBeVisible();
+    assert.ok(delayedScripts > 0, 'the test must delay JavaScript before hydration');
+    await uiExpect(button).toBeDisabled();
+    await button.evaluate((element: HTMLButtonElement) => element.click());
+    await uiExpect(dialog).toHaveCount(0);
+    releaseScripts();
+    await uiExpect(button).toBeEnabled();
+    await button.click();
+    await uiExpect(dialog).toBeVisible();
+    ui.assertNoPageErrors();
+    console.log('PASS Research add button remains disabled until hydration, then opens the dialog');
+  } finally {
+    releaseScripts();
+    await browser.close();
+  }
+}
+
 export async function checkAdminResearchUi(session: Session, origin: string) {
+  await checkResearchHydration(session, origin);
   const ui = await openAuthenticatedPage(session, origin);
   const { page, browser } = ui;
   const controlledWarnings: string[] = [];
