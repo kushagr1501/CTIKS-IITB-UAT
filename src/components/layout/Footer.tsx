@@ -46,9 +46,9 @@ export default function Footer() {
             </div>
             <div className={styles.brandText}>
               <p className={styles.brandName}>
-                Centre for Traditional Indian
+                Centre for
                 <br />
-                Knowledge and Skills
+                Traditional Indian Knowledge and Skills
               </p>
               <p className={styles.affiliation}>IIT Bombay</p>
               <div className={styles.brandRule} aria-hidden="true" />

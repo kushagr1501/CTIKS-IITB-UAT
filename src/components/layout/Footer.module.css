@@ -40,7 +40,7 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 40px;
 }
 
@@ -67,7 +67,7 @@
 }
 
 .brandText {
-  width: 328px;
+  width: 385px;
   max-width: 100%;
   font-family: 'Montserrat', sans-serif;
   font-size: 18px;
@@ -195,6 +195,10 @@
     gap: 32px;
   }
 
+  .brandText {
+    font-size: 16px;
+  }
+
   .iitbLogo,
   .ctiksLogo {
     width: 118px;
@@ -227,7 +231,7 @@
 
   .brand {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 24px;
   }
 
@@ -242,8 +246,8 @@
   }
 
   .brandText {
-    width: 236px;
-    font-size: 16px;
+    width: 100%;
+    font-size: clamp(11px, 3.4vw, 16px);
   }
 
   .navigation {
@@ -261,10 +265,6 @@
   .ctiksLogo {
     width: 96px;
     height: 96px;
-  }
-
-  .brandText {
-    width: 212px;
   }
 
   .links a {
