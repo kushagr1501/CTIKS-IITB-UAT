@@ -49,14 +49,14 @@ pushed.
 
 ## Checks and observed outcomes
 
-| Check                          | Working checkout after pool fix          | Clean clone                                              |
-| ------------------------------ | ---------------------------------------- | -------------------------------------------------------- |
-| Focused pool regression        | Passed                                   | Passed; one test, no database connection opened.         |
-| Unit suite                     | 30 passed                                | 30 passed.                                               |
-| ESLint                         | Passed                                   | Passed.                                                  |
-| Type check                     | Passed                                   | Passed, including a final run after integration stopped. |
-| Production build               | Passed; six existing tracing warnings    | Passed; same six warnings.                               |
-| Full integration/browser suite | Passed; final success line and exit zero | Two attempts failed as described below.                  |
+| Check                          | Working checkout after pool fix          | Clean clone                                                                       |
+| ------------------------------ | ---------------------------------------- | --------------------------------------------------------------------------------- |
+| Focused pool regression        | Passed                                   | Passed; one test, no database connection opened.                                  |
+| Unit suite                     | 30 passed                                | 30 passed.                                                                        |
+| ESLint                         | Passed                                   | Passed.                                                                           |
+| Type check                     | Passed                                   | Passed, including a final run after integration stopped.                          |
+| Production build               | Passed; six existing tracing warnings    | Passed; same six warnings.                                                        |
+| Full integration/browser suite | Passed; final success line and exit zero | Two original failures; one later failure and one green retry, as described below. |
 
 The first clean-clone full-suite attempt passed Activities, Research API checks, faculty permissions/drafts,
 autosave/CSV browser checks, deletion, audit history, session expiry, and the administrator People browser
@@ -83,6 +83,41 @@ Evidence remains in ignored local files:
   `.private/documentation-integration-retry.log`.
 - The integration server log is overwritten per run. The latest copy describes the retry.
 
+## Follow-up investigation and clean-clone runs
+
+The two earlier failures above remain historical results. The original failing
+server log was overwritten by its retry, and the Redis wrapper suppresses the
+underlying exception. The current code has one application-generated 503 path:
+`redisOperation`, used by the session and account rate-limit checks. This narrows
+the original response to that guard, but cannot identify which Redis operation or
+underlying error failed. It does not prove an application defect or a setup error.
+
+The working checkout used localhost port 16379; the earlier clean clone used 16380. In each, the URL password matched that checkout's Redis configuration, and
+no inherited REDIS_URL override was present. Both containers subsequently passed
+authenticated PING and were healthy. This confirms current connectivity, not what
+happened at the time of the original 503. No setup or application change was
+justified by the available evidence.
+
+Commit `f9a4b0d` addresses the clock failure. The browser's clock can advance
+while a Node-supplied current time travels to it. The test now pauses one minute
+in the future, while keeping the existing manual-save and autosave assertions.
+Targeted ESLint and all 30 unit tests passed.
+
+A new clone at `C:/Users/skush/AppData/Local/Temp/ctiks-phase3-followup` used
+fresh dependencies, environment settings, a separate Compose project and volumes,
+PostgreSQL port 15434 and Redis port 16381. Its source included the clock fix.
+
+1. First full run: exit 1. Faculty manual-save and autosave browser checks passed.
+   After the Research page loaded, its Add area click did not produce the expected
+   dialog within 20 seconds. The captured log does not establish why.
+2. Second full run: exit 0, including the faculty and Research browser checks and
+   the final line `All integration checks passed in an isolated temporary schema.`
+
+The green retry does not explain the earlier 503 or the failed dialog click. No
+assertions were removed or weakened. Each run's output and server log are retained
+in the new clone under `.private/followup-1.log`, `.private/followup-1-server.log`,
+`.private/followup-2.log`, and `.private/followup-2-server.log`.
+
 ## Documentation checks
 
 All current reference claims were traced to source, configuration, package metadata, or the installed Next.js
@@ -98,12 +133,12 @@ content was updated. No source or documentation file was removed. Suspected orph
 ## Remaining findings and review limits
 
 - All other [Phase 2 findings](phase-2-cleanup.md) remain open and unchanged.
-- The two clean-clone full-suite failures need a separate investigation.
+- The original Redis-backed 503 and the later Research dialog failure still need investigation.
 - The install's dependency advisories were not remediated in this documentation task.
 - Database-role maintenance tools were read, not run. Their forced TLS and current Research grants need review
   before deployment; they are not the local setup path.
-- Previous credentials in Git history need owner review. Removing them from a current guide does not rotate
-  accounts or erase history.
+- **HIGH: Credentials in Git history require owner action to identify affected accounts and rotate credentials.**
+  Editing the current guide does not revoke them or erase history.
 - No fresh Windows/Linux installation, IITB server deployment, reverse proxy, certificate setup, SMTP
   delivery, campus/VPN access policy, production upload storage, backup restoration, or production load
   measurement was tested.

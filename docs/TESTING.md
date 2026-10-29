@@ -49,10 +49,10 @@ npm run test:integration
 Success: `All integration checks passed in an isolated temporary schema.` and exit zero. The runner prints
 PASS lines for its checks; they contain multiple assertions.
 
-The working checkout passed this suite after the pool fix. Two later clean-clone runs failed: a Research save
-returned 503, then the retry failed in Playwright clock setup. See the
-[verification record](testing/documentation-verification.md) for the exact boundaries. Do not treat the
-expected success message as a claim that every run passed.
+A fresh clone passed the full suite with exit zero after the clock fix. Earlier clean-clone runs failed on a
+Research save (503), the browser clock, and a Research dialog that did not open. The clock fix is in place;
+the two Research failures remain unexplained. See the [verification record](testing/documentation-verification.md)
+for every run and the limits of the investigation.
 
 `test:browser` is an alias for the same full runner. Running it as well repeats the database setup, API
 checks, and browser checks. There is currently no separate API-only switch. Use `test:integration` once as the
