@@ -24,7 +24,7 @@ npm test
 npm run build
 ```
 
-Current unit summary: 30 passing tests after the migration-pool regression fix. The build currently emits six
+Current unit summary: 31 passing tests after the migration-pool regression fix. The build currently emits six
 known local-media filesystem tracing warnings. These remain logged; do not suppress them as part of an
 unrelated change.
 
@@ -49,10 +49,10 @@ npm run test:integration
 Success: `All integration checks passed in an isolated temporary schema.` and exit zero. The runner prints
 PASS lines for its checks; they contain multiple assertions.
 
-A fresh clone passed the full suite with exit zero after the clock fix. Earlier clean-clone runs failed on a
-Research save (503), the browser clock, and a Research dialog that did not open. The clock fix is in place;
-the two Research failures remain unexplained. See the [verification record](testing/documentation-verification.md)
-for every run and the limits of the investigation.
+Earlier clean-clone runs exposed a Research save 503, a browser clock error, and a missed Research dialog click.
+The clock and a demonstrated pre-hydration click gap have been addressed. The original 503 and the exact cause
+of the earlier missed click remain unknown. See the [verification record](testing/documentation-verification.md)
+for run results and investigation limits.
 
 `test:browser` is an alias for the same full runner. Running it as well repeats the database setup, API
 checks, and browser checks. There is currently no separate API-only switch. Use `test:integration` once as the

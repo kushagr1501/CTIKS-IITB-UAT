@@ -131,14 +131,46 @@ did not capture hydration state, so its exact cause is still unproven.
 With the same isolated services, an authenticated Research request returned 200
 before Redis was stopped. After stopping Redis it returned 500, not the earlier 503. Redis was restarted afterward. This experiment confirms that a complete
 Redis outage is not sufficient evidence for the earlier 503's specific cause.
-The original exception remains unavailable; the application discards the
-underlying error inside `redisOperation`. A separate change could add safe,
-value-free diagnostics and preserve individual integration server logs.
+The original exception remains unavailable; at the time, the application discarded
+the underlying error inside `redisOperation`. The follow-up below added safe
+diagnostics and preserved individual integration server logs.
 
-The demonstrated early-click gap needs an application fix and a browser test
+The demonstrated early-click gap was addressed in the follow-up below with a browser test
 that delays hydration. The earlier 503 and the observed 500 during a complete
 Redis outage should also be investigated separately. No production database or
 existing developer Redis instance was stopped for these experiments.
+
+## Hydration and diagnostics follow-up
+
+Research Add area is disabled until React attaches its handlers. The same pattern
+was found and guarded on Research row actions; People add, edit, visibility and
+delete; Activities add, edit, visibility and delete; and Audit log detail actions.
+Other non-dialog controls were not changed. The Playwright test delays scripts,
+checks the disabled Research button, then checks the dialog opens after hydration.
+The pre-existing browser assertions remain in place.
+
+Redis guard failures now log a fixed operation name and a safe message. Recognized
+messages are retained; connection details and unfamiliar messages are redacted to
+avoid logging credentials or user data. The HTTP 503 response is unchanged. This
+does not identify the cause of the original incident. Each integration server log
+now has a unique filename and its path is printed in that run's output.
+
+Five sequential full-suite runs used a fresh clone at
+`C:/Users/skush/AppData/Local/Temp/ctiks-hydration-five`, with separate local
+PostgreSQL and Redis containers. All five passed with exit zero and the success
+line, including the delayed-hydration test. Paths below are relative to that clone:
+
+- Run 1 : exit=0 success=True Integration server log: .private/integration-server-ctiks_test_2e43e588f564.log output=.private/five-run-1.log
+- Run 2 : exit=0 success=True Integration server log: .private/integration-server-ctiks_test_a0b04cb98b0a.log output=.private/five-run-2.log
+- Run 3 : exit=0 success=True Integration server log: .private/integration-server-ctiks_test_fe988a31ebe7.log output=.private/five-run-3.log
+- Run 4 : exit=0 success=True Integration server log: .private/integration-server-ctiks_test_994fbf2369e0.log output=.private/five-run-4.log
+- Run 5 : exit=0 success=True Integration server log: .private/integration-server-ctiks_test_448133aa5822.log output=.private/five-run-5.log
+
+Unit tests passed (31), as did lint and type checking. A direct injected Redis
+failure check confirmed the 503 response and redacted a simulated connection URL.
+The original 503's underlying exception and the original failed click's exact
+cause are still unknown. A complete Redis outage previously returned 500 and
+remains a separate finding.
 
 ## Documentation checks
 

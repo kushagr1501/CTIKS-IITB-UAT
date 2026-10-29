@@ -55,7 +55,7 @@ npm test
 npm run build
 ```
 
-Success: exit zero, 30 passing unit tests, and the build's route list. Known build warnings are described in
+Success: exit zero, 31 passing unit tests, and the build's route list. Known build warnings are described in
 [Testing](TESTING.md). Restart the development command from Getting started to inspect the built change again
 if needed.
 
