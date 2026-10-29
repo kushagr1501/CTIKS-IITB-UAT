@@ -11,6 +11,7 @@ import type { ResearchAreaRecord as Area } from '../research-types';
 import ResearchPhotoField from './ResearchPhotoField';
 import ResearchProfessorField from './ResearchProfessorField';
 import ResearchAreaList from './ResearchAreaList';
+import { useHydrated } from './use-hydrated';
 
 type Values = Pick<Area, 'title' | 'description' | 'imageUrl' | 'displayOrder' | 'visible'>;
 const blank: Values = {
@@ -34,6 +35,7 @@ export default function ResearchManager({
   teacherNames: string[];
 }) {
   const router = useRouter();
+  const hydrated = useHydrated();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const dirty = useRef(false);
@@ -264,7 +266,7 @@ export default function ResearchManager({
           <Link className="text-sm font-medium text-ctiks-maroon underline" href="/research" target="_blank">
             View Research page ↗
           </Link>
-          <button className="admin-primary" type="button" disabled={busy} onClick={() => open('new')}>
+          <button className="admin-primary" type="button" disabled={busy || !hydrated} onClick={() => open('new')}>
             Add area
           </button>
         </div>
