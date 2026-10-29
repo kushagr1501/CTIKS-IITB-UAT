@@ -118,6 +118,28 @@ assertions were removed or weakened. Each run's output and server log are retain
 in the new clone under `.private/followup-1.log`, `.private/followup-1-server.log`,
 `.private/followup-2.log`, and `.private/followup-2-server.log`.
 
+## Additional Research investigation
+
+In an isolated local clone, a browser test deliberately held JavaScript requests
+while loading the Research admin page. The Add area button was visible and
+enabled before React attached its handler; clicking it did not open the dialog.
+After JavaScript loaded and the handler was attached, clicking opened the dialog.
+This confirms an early-interaction gap that can affect users with slow loading.
+It is a plausible explanation for the earlier test failure, but the earlier run
+did not capture hydration state, so its exact cause is still unproven.
+
+With the same isolated services, an authenticated Research request returned 200
+before Redis was stopped. After stopping Redis it returned 500, not the earlier 503. Redis was restarted afterward. This experiment confirms that a complete
+Redis outage is not sufficient evidence for the earlier 503's specific cause.
+The original exception remains unavailable; the application discards the
+underlying error inside `redisOperation`. A separate change could add safe,
+value-free diagnostics and preserve individual integration server logs.
+
+The demonstrated early-click gap needs an application fix and a browser test
+that delays hydration. The earlier 503 and the observed 500 during a complete
+Redis outage should also be investigated separately. No production database or
+existing developer Redis instance was stopped for these experiments.
+
 ## Documentation checks
 
 All current reference claims were traced to source, configuration, package metadata, or the installed Next.js
