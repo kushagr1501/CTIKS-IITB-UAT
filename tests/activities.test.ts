@@ -20,8 +20,11 @@ test('activity dates round trip in IST independent of host timezone', () => {
   assert.equal(utc, '2027-01-11T18:45:00.000Z');
   assert.deepEqual(toIndiaInputs(utc), { date: '2027-01-12', time: '00:15' });
   assert.equal(fromIndiaInputs('', ''), null);
-  assert.throws(() => fromIndiaInputs('2027-01-12', ''), /both/);
-  assert.throws(() => fromIndiaInputs('', '10:00'), /both/);
+  assert.equal(fromIndiaInputs('2027-01-12', ''), '2027-01-11T18:30:00.000Z');
+  assert.equal(fromIndiaInputs('2027-01-12', '', true), '2027-01-12T18:29:59.999Z');
+  assert.deepEqual(toIndiaInputs(fromIndiaInputs('2027-01-12', ''), false), { date: '2027-01-12', time: '' });
+  assert.equal(eventSchedule(fromIndiaInputs('2027-01-12', ''), fromIndiaInputs('2027-01-12', '', true), false)?.time, '');
+  assert.throws(() => fromIndiaInputs('', '10:00'), /date/);
   assert.equal(eventSchedule(null, null), null);
   const schedule = eventSchedule(entry.eventStartAt, entry.eventEndAt)!;
   assert.match(schedule.time, /10:00 AM.*4:30 PM.*IST/);
@@ -36,6 +39,7 @@ test('activity validation rejects bad ranges and unsafe links while accepting ex
   );
   for (const changes of [
     { eventEndAt: entry.eventStartAt },
+    { eventEndAt: null, eventHasTime: true },
     { eventEndAt: '2027-01-11T00:00:00Z' },
     { eventStartAt: null },
     { eventStartAt: '2027-01-12T10:00:00' },
@@ -54,6 +58,7 @@ test('activity validation rejects bad ranges and unsafe links while accepting ex
       false,
       JSON.stringify(changes),
     );
+  assert.equal(activityCreateSchema.safeParse({ ...entry, eventHasTime: false, eventStartAt: fromIndiaInputs('2027-01-12', ''), eventEndAt: fromIndiaInputs('2027-01-12', '', true) }).success, true);
   const cleared = {
     ...entry,
     eventStartAt: null,

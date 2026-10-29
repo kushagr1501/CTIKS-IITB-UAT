@@ -227,14 +227,10 @@ export async function checkActivities(
     'Integration newer announcement 3',
     'Integration newer announcement 2',
     'Integration eligible ongoing event',
+    'Integration eligible future event',
   ])
     assert.ok(homepage.includes(title), title);
-  for (const title of [
-    'Integration newer announcement 1',
-    'Integration eligible future event',
-    'Integration excluded',
-    base.title,
-  ])
+  for (const title of ['Integration newer announcement 1', 'Integration excluded', base.title])
     assert.ok(!homepage.includes(title), title);
   activity = (
     await (
@@ -249,9 +245,16 @@ export async function checkActivities(
     'editing does not bump old entries',
   );
   const eventsHtml = await (await response(anonymous, '/events', 200)).text();
-  assert.ok(eventsHtml.includes('Integration excluded past event'));
-  assert.ok(eventsHtml.includes('Integration excluded undated event'));
+  assert.ok(eventsHtml.includes('Integration eligible future event'));
+  assert.ok(eventsHtml.includes('Integration eligible ongoing event'));
+  assert.ok(!eventsHtml.includes('Integration excluded past event'));
+  assert.ok(!eventsHtml.includes('Integration excluded undated event'));
   assert.ok(!eventsHtml.includes('Integration excluded hidden event'));
+  const pastEventsHtml = await (await response(anonymous, '/events?time=past', 200)).text();
+  assert.ok(pastEventsHtml.includes('Integration excluded past event'));
+  assert.ok(!pastEventsHtml.includes('Integration eligible future event'));
+  const allEventsHtml = await (await response(anonymous, '/events?time=all', 200)).text();
+  assert.ok(allEventsHtml.includes('Integration excluded undated event'));
   const searchHtml = await (await response(anonymous, '/news?q=admission', 200)).text();
   assert.ok(searchHtml.includes(base.title));
   assert.ok(

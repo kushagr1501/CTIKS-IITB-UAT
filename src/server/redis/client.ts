@@ -2,6 +2,7 @@ import 'server-only';
 import { Redis } from 'ioredis';
 import { getEnvironment } from '@/server/env';
 import { HttpError } from '@/server/http/errors';
+import { safeRedisFailureMessage } from './failure-message';
 
 const shared = globalThis as unknown as { ctiksRedis?: Redis };
 
@@ -23,10 +24,18 @@ export function redisPrefix() {
   return getEnvironment().REDIS_NAMESPACE;
 }
 
-export async function redisOperation<T>(operation: () => Promise<T>): Promise<T> {
+type RedisOperationName =
+  | 'read session expiries'
+  | 'acknowledge session expiry'
+  | 'revoke faculty sessions'
+  | 'touch session'
+  | 'consume rate limit';
+
+export async function redisOperation<T>(name: RedisOperationName, operation: () => Promise<T>): Promise<T> {
   try {
     return await operation();
-  } catch {
+  } catch (error) {
+    console.error('Redis operation failed:', name, safeRedisFailureMessage(error));
     throw new HttpError(503, 'Authentication storage is temporarily unavailable. Please try again.');
   }
 }

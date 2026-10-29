@@ -7,12 +7,14 @@ import { apiJson } from '../api-client';
 import ActivityEditor from './ActivityEditor';
 import DeleteActivityDialog from './DeleteActivityDialog';
 import AdminNotice from './AdminNotice';
+import { useHydrated } from './use-hydrated';
 import { useActionConfirmation } from './ActionConfirmation';
 import { ACTIVITY_SECTIONS, type ActivityRecord, type ActivityValues } from '@/features/activities/types';
 import { eventSchedule, formatActivityDate } from '@/features/activities/dates';
 
 export default function ActivityManager({ initialActivities }: { initialActivities: ActivityRecord[] }) {
   const router = useRouter();
+  const hydrated = useHydrated();
   const [activities, setActivities] = useState(initialActivities);
   const [editor, setEditor] = useState<ActivityRecord | 'new' | null>(null);
   const [pendingDelete, setPendingDelete] = useState<ActivityRecord | null>(null);
@@ -45,7 +47,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
       setBusy(false);
     }
   }
-  async function save(values: ActivityValues) {
+  async function save(values: ActivityValues, files: { poster: File | null; document: File | null }) {
     if (
       !(await confirm({
         title: selected ? 'Save activity changes?' : 'Add this activity?',
@@ -55,6 +57,19 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
     )
       return;
     await run(async () => {
+      async function upload(file: File, kind: 'poster' | 'document') {
+        const csrfResponse = await fetch('/api/auth/csrf', { cache: 'no-store' });
+        const csrf = await csrfResponse.json();
+        if (!csrfResponse.ok || !csrf.token) throw new Error('Please sign in again.');
+        const form = new FormData();
+        form.set('file', file); form.set('kind', kind); form.set('title', values.title);
+        const response = await fetch('/api/admin/activities/media', { method: 'POST', headers: { 'x-csrf-token': csrf.token }, body: form });
+        const result = await response.json();
+        if (!response.ok || !result.url) throw new Error(result.error || 'Upload failed.');
+        return result.url as string;
+      }
+      if (files.poster) values.imageUrl = await upload(files.poster, 'poster');
+      if (files.document) values.supportingDocumentUrl = await upload(files.document, 'document');
       const result = await apiJson<{ activity: ActivityRecord }>(
         selected ? `/api/admin/activities/${selected.id}` : '/api/admin/activities',
         {
@@ -143,7 +158,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
           </button>
           <button
             className="admin-primary"
-            disabled={busy}
+            disabled={busy || !hydrated}
             onClick={() => {
               setEditor('new');
               setPendingDelete(null);
@@ -223,13 +238,23 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
         <p className="mb-4 text-sm text-stone-500">{filtered.length} entries · Newest added first</p>
         <ul className="divide-y divide-stone-200">
           {filtered.slice((currentPage - 1) * 20, currentPage * 20).map((activity) => {
-            const schedule = eventSchedule(activity.eventStartAt, activity.eventEndAt);
+            const schedule = eventSchedule(activity.eventStartAt, activity.eventEndAt, activity.eventHasTime);
             return (
               <li
                 key={activity.id}
                 className="flex flex-col gap-4 py-5 lg:flex-row lg:items-center lg:justify-between"
               >
-                <div className="min-w-0">
+                <div className="flex min-w-0 flex-1 items-start gap-4">
+                  {activity.imageUrl && (
+                    <img
+                      src={activity.imageUrl}
+                      alt={`Image for ${activity.title}`}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      className="h-auto max-h-20 w-auto max-w-20 shrink-0 rounded-md border border-[#e7d4b8] object-contain sm:max-h-24 sm:max-w-24"
+                    />
+                  )}
+                  <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap gap-2 text-xs">
                     <span
                       className={`rounded px-2 py-1 ${activity.visible ? 'bg-[#faecd9] text-[#714b33]' : 'bg-stone-100 text-stone-600'}`}
@@ -248,13 +273,14 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                   </p>
                   <p className="mt-2 text-xs text-stone-500">
                     Added {formatActivityDate(activity.createdAt)}
-                    {schedule ? ` · ${schedule.date} · ${schedule.time}` : ''}
+                    {schedule ? ` · ${schedule.date}${schedule.time ? ` · ${schedule.time}` : ''}` : ''}
                   </p>
+                  </div>
                 </div>
                 <div className="flex shrink-0 gap-2">
                   <button
                     className="admin-secondary"
-                    disabled={busy || !!editor || !!pendingDelete}
+                    disabled={busy || !!editor || !!pendingDelete || !hydrated}
                     onClick={() => {
                       setEditor(activity);
                       setError('');
@@ -266,7 +292,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                   </button>
                   <button
                     className="admin-secondary"
-                    disabled={busy || !!editor || !!pendingDelete}
+                    disabled={busy || !!editor || !!pendingDelete || !hydrated}
                     onClick={() => toggle(activity)}
                     aria-label={`${activity.visible ? 'Hide' : 'Show'} ${activity.title}`}
                     data-admin-action={activity.visible ? 'hide' : 'show'}
@@ -275,7 +301,7 @@ export default function ActivityManager({ initialActivities }: { initialActiviti
                   </button>
                   <button
                     className="admin-secondary text-red-700"
-                    disabled={busy || !!editor || !!pendingDelete}
+                    disabled={busy || !!editor || !!pendingDelete || !hydrated}
                     onClick={() => {
                       setPendingDelete(activity);
                       setError('');

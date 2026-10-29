@@ -1,16 +1,20 @@
-# UAT administrator access
+Read this if you need access to the separate UAT installation.
 
-These credentials are shared in this private repository at the owner's request.
+# UAT access
 
-- Login: http://127.0.0.1:3000/login
-- Email: `admin@ctiks.local`
-- Password: `R6jRFpkitdZOfbhDtcFk6FcwHoXNcK3K`
+UAT means user acceptance testing: a separate environment used to review the site. Ask the authorized
+environment owner for the current URL and access through an approved private channel. This file intentionally
+contains no live credentials. Do not reuse a UAT account or database for the first-day local walkthrough.
 
-Verified against the configured UAT database on 19 October 2026.
+UAT admin password: stored in password manager.
 
-These credentials apply to the existing UAT database. A fresh database receives
-its own administrator password during setup.
+For local development, follow Getting started. A fresh seed writes a generated administrator credential file
+under the ignored `.private` folder. Keep it local. The initial faculty passwords are created through the
+administrator's People form, not emailed automatically.
 
-Anyone with repository access can read this password, including in Git history.
-Change it through `/admin/security` when it should no longer be shared. If the
-password changes, update this document; removing it does not erase Git history.
+Historical credentials previously placed in Git remain an owner review concern; editing this document does not
+rotate an account or erase repository history. Credential rotation and access authorization belong to the
+environment owner.
+
+Next: [Getting started](GETTING_STARTED.md), [Environment](ENVIRONMENT.md), and
+[backend boundaries](backend.md).

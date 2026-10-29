@@ -9,7 +9,7 @@ export function privateRateKey(value: string) {
 }
 
 export async function consumeRateLimit(key: string, maximum: number, windowSeconds: number) {
-  const count = await redisOperation(() =>
+  const count = await redisOperation('consume rate limit', () =>
     getRedis().eval(
       `
     local count = redis.call('INCR', KEYS[1])

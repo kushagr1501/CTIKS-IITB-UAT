@@ -7,6 +7,7 @@ export function revalidateActivities() {
     '/news',
     '/announcements',
     '/events',
+    '/past-events',
     '/campus-updates',
     '/admin/activities',
   ])

@@ -16,8 +16,10 @@ import DeleteFacultyDialog from './DeleteFacultyDialog';
 import AdminNotice from './AdminNotice';
 import { useActionConfirmation } from './ActionConfirmation';
 import filterStyles from './FacultyFilters.module.css';
+import { useHydrated } from './use-hydrated';
 
 export default function FacultyManager({ initialFaculty }: { initialFaculty: FacultyRecord[] }) {
+  const hydrated = useHydrated();
   const [faculty, setFaculty] = useState(initialFaculty);
   const [editor, setEditor] = useState<FacultyRecord | 'new' | null>(null);
   const [query, setQuery] = useState('');
@@ -166,7 +168,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
         <button
           type="button"
           className="admin-primary min-h-11 gap-2"
-          disabled={busy || Boolean(editor)}
+          disabled={busy || Boolean(editor) || !hydrated}
           onClick={() => {
             setEditor('new');
             setError('');
@@ -347,7 +349,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                       <button
                         type="button"
                         className="inline-flex min-h-10 items-center justify-center rounded-lg border border-stone-300 bg-white px-3.5 text-sm font-semibold text-stone-800 hover:border-stone-400 hover:bg-stone-50 disabled:cursor-wait disabled:opacity-50"
-                        disabled={busy || Boolean(editor)}
+                        disabled={busy || Boolean(editor) || !hydrated}
                         aria-label={`Edit ${person.name}`}
                         data-admin-action="edit"
                         aria-haspopup="dialog"
@@ -362,7 +364,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                       <button
                         type="button"
                         className="inline-flex min-h-10 min-w-[68px] items-center justify-center rounded-lg border border-stone-200 bg-white px-3 text-sm font-medium text-stone-700 hover:border-stone-300 hover:bg-stone-50 disabled:cursor-wait disabled:opacity-50"
-                        disabled={busy || Boolean(editor)}
+                        disabled={busy || Boolean(editor) || !hydrated}
                         onClick={() => changeVisibility(person)}
                         data-admin-action={person.visible ? 'hide' : 'show'}
                         aria-label={`${person.visible ? 'Hide' : 'Show'} ${person.name} on the website`}
@@ -372,7 +374,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
                       <button
                         type="button"
                         className="inline-flex min-h-10 items-center justify-center rounded-lg px-3 text-sm font-medium text-red-700 hover:bg-red-50 disabled:cursor-wait disabled:opacity-50"
-                        disabled={busy || Boolean(editor)}
+                        disabled={busy || Boolean(editor) || !hydrated}
                         aria-label={`Delete ${person.name}`}
                         data-admin-action="delete"
                         aria-haspopup="dialog"

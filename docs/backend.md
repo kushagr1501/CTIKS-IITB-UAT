@@ -1,243 +1,79 @@
-# Backend setup and operation
+Read this if you need the server access boundaries after local setup works.
 
-## First setup on a fresh local development database
+# Backend boundaries
 
-1. Use Node.js 22.12+ and run `npm ci`.
-2. Copy `.env.example` to `.env.local`. It points only to the loopback PostgreSQL
-   container and contains no Neon connection. Set a random 32+ character
-   `BETTER_AUTH_SECRET`; keep credentials out of Git and chat.
-3. Start Docker Desktop, run `npm run db:local:up`, `npm run redis:setup`, then
-   `npm run redis:up`.
-   This generates a private Redis password and configures `.env.local`. Alternatively,
-   supply your own `REDIS_URL` and a unique `REDIS_NAMESPACE`.
-4. Run `npm run db:generate`, `npm run db:local:migrate`, and
-   `npm run db:local:seed`.
-5. Run `npm run dev`.
-6. Open `/login` using the generated credentials in
-   `.private/local-admin-credentials.txt`.
-   Store the generated password safely. You can change it on `/admin/security`.
+The backend is the server code under `src/server`. A service carries out an operation; a route is the address
+handling its HTTP request. See the [Architecture](ARCHITECTURE.md) for a real edit traced through both.
 
-## UAT and production on Neon
+## Local setup versus deployment
 
-Use `.env.uat.example` only as a variable-name template. Store real values in the
-deployment environment or an ignored `.env.uat.local`; never copy them into a
-tracked file. The application must use Neon's pooled `DATABASE_URL`. Run migrations
-and initial provisioning with the direct owner `DIRECT_URL`, then run
-`npm run db:restrict` and `npm run db:verify` as described below.
+Use [Getting started](GETTING_STARTED.md) for the tested local setup. It uses PostgreSQL and Redis containers,
+a generated administrator password, and local URLs. Neon is a hosted PostgreSQL service used by the existing
+UAT environment; it is not required for an intern's machine. UAT means user acceptance testing.
 
-Seed imports the existing 13 faculty records once. Existing profiles and admin
-credentials are not overwritten on reruns. Start new deployments on a deliberately
-chosen database; do not apply migrations to an unrelated database.
-Once faculty import or deletion is recorded in audit history, seed reruns skip
-the original faculty import so deleted profiles are not recreated.
+The deployment still requires a Node.js process, persistent database and Redis connections, HTTPS, secrets,
+backups, and an agreed upload storage arrangement. SMTP email delivery and IITB network/VPN restrictions are
+not implemented in this application. Do not describe them as active security controls.
 
-## How requests work
+## Identity and permissions
 
-```text
-Admin React form
-  → /api/admin/... route.ts
-    → verify Origin and signed CSRF token for mutations
-    → validate Redis-backed session and idle/absolute expiry
-    → check the current Neon user and required RBAC permission
-    → consume a Redis-backed request limit
-    → faculty or audit service
-      → validate allowed fields
-      → Prisma transaction
-        → save faculty change and corresponding audit event together
-```
+A session is temporary login state. Better Auth handles credential authentication through the restricted
+routes in `src/app/api/auth/[...all]/route.ts`. Passwords use Argon2id hashes, a one-way representation rather
+than plain text. Public signup, OAuth/social login, and email-based password recovery are not enabled.
 
-The public People page calls `server/faculty/public.ts` directly on the server.
-It only selects public fields from records with `visible: true`. It is dynamic,
-so a new request sees current database content. It does not load private account
-or audit data. Empty faculty categories are omitted from the public page.
+Users and password hashes are stored in PostgreSQL. Redis stores sessions, active session indexes, temporary
+authentication data, and rate-limit counters. A rate limit caps repeated requests. Redis failure denies
+protected operations instead of accepting an unvalidated cookie.
 
-## Server folders
-
-| Folder     | Responsibility                                                                          |
-| ---------- | --------------------------------------------------------------------------------------- |
-| `database` | One pooled Prisma client with verified TLS                                              |
-| `auth`     | Better Auth credential adapter, Argon2id, Redis sessions, permissions, CSRF, throttling |
-| `redis`    | Shared Redis connection and safe infrastructure errors                                  |
-| `faculty`  | Profile validation, public reads, versioned updates, visibility                         |
-| `audit`    | Append-only entries, filters, expiry detection, CSV encoding                            |
-| `http`     | Bounded JSON parsing, admin request guard, safe errors                                  |
-
-Authentication uses Better Auth through a restricted set of `/api/auth` routes.
-Signup, email changes, role changes, and other unused library endpoints are not
-exposed. Role changes are maintenance operations in this phase.
-The browser receives session cookies, never a session token in JSON.
-
-`users.emailVerified`, `sessions`, `rate_limits`, and `verifications` do not exist in PostgreSQL.
-Temporary authentication challenges use Redis exclusively. Application tables
-include `users`, `accounts`, `faculty_profiles`, `audit_events`, `activities`, and
-the academic profile tables described in [faculty academic profiles](faculty-profiles.md).
-The credential adapter projects a constant `emailVerified: false` only into Better
-Auth's internal User shape. It is not stored in Neon or returned by our API. The
-`accounts` table also omits `providerId` and `accountId`: the adapter derives
-`providerId: 'credential'` and `accountId: userId` for internal library calls.
-A unique `userId` permits one password account per user. Identity lookups retain
-all user constraints and reject unsupported providers and compound comparisons.
-The migration refuses non-password identities or duplicate accounts instead of
-discarding them. Existing password hashes are preserved. The
-adapter reads provisioned identities and delegates credential changes to Prisma;
-user writes, verification, signup, email changes, and social login are unsupported.
-This custom adapter is verified through integration tests rather than the stock
-Prisma adapter's core-column schema check. Revisit it before enabling other sign-in methods.
-
-## Permissions and faculty editing
-
-`ADMIN` has `faculty.read`, `faculty.create`, `faculty.update`, `faculty.delete`,
-`faculty.self.read`, `faculty.self.update`, `audit.read`, and `audit.export`. `CORE_FACULTY` has
-`faculty.self.read` and `faculty.self.update`. Unknown roles are denied by default.
-Account roles and faculty categories are independent.
-
-The admin faculty editor can optionally provision a login for a new or existing
-core faculty profile. The write request includes `login: { email, password }`.
-The server normalizes the login email, validates a 6–128 character password,
-hardcodes the `CORE_FACULTY` role, and stores an Argon2id hash. Account creation,
-profile linking, and audit records commit in the same transaction. Duplicate
-emails, stale versions, and duplicate profiles roll everything back. Existing
-logins cannot be overwritten through profile editing. Public and login emails
-are separate. Non-core profiles cannot receive new logins.
-
-The admin can generate a six-character initial password in the form or enter a
-longer one. After success, credentials are displayed from browser memory in a
-one-time popup, with a copy button. They are cleared when that popup closes;
-passwords are never returned by the API, stored in browser storage, or included
-in audit snapshots. There is no automatic email delivery or forced password change.
-
-Both roles use `/login`. The client sends admin users to `/admin` and core
-faculty users to `/faculty`. Faculty can edit and publish their own linked profile through
-`GET`/`PUT /api/faculty/profile` and change their password at `/faculty/security`.
-Profile selection uses the session user ID, not a supplied faculty ID. Faculty
-cannot edit other profiles, create accounts, read admin lists, or read/export audit logs. Own submissions publish immediately; optional drafts stay private. See [faculty profiles](faculty-profiles.md).
-Session creation and every protected request recheck the current role and linked
-profile category. Changing a linked profile away from Core Faculty removes login
-access; hiding the profile from the public website does not.
-
-For existing installations, rerun `npm run db:restrict` once to grant the runtime
-role INSERT on users and accounts, DELETE on faculty profiles and accounts, and
-email UPDATE for retiring deleted identities. No new tables or columns are
-required. Role updates, user deletion, and audit modification remain blocked.
-
-The faculty directory has a Delete button with a confirmation popup. Deletion is
-permanent and requires `faculty.delete`, Origin/CSRF validation, and a matching
-record version through `DELETE /api/admin/faculty/:id` with `{ version }`.
-The transaction removes the profile and linked password credentials, retires the
-login email to an internal random address, and appends a `FACULTY_DELETED` event
-containing only the profile snapshot and login metadata. The user identity stays
-to preserve historical audit references. The original email can be reused by a
-new account with a new user ID. Administrator-linked profiles cannot be deleted.
-Linked Redis sessions are revoked before commit; protected requests also require
-a current linked core profile, so an in-flight login cannot retain access after
-deletion. A stale version or failed audit write leaves the profile and credentials
-unchanged. Redis or commit failures can revoke sessions even if the database
-transaction rolls back; the user can sign in again if their profile remains.
-
-Faculty updates submit the full editable record and its version. Empty optional
-fields clear existing values. A stale version returns 409 without overwriting
-another editor's changes. Profiles have one boolean `visible` field: Visible
-appears on the website, Hidden does not. All profiles remain editable in the
-same admin list. Initial loads and saved updates share the same category, display
-order, name, and ID sorting rule. Visibility changes preserve the profile's position.
-`PATCH /api/admin/faculty/:id/visibility` accepts `{ visible, version }`
-and saves the change and audit event together using `faculty.update` permission.
-Directory visibility is independent of academic revision drafts. Existing published,
-unarchived records become Visible during migration; all others become Hidden.
-Historical audit snapshots remain unchanged. Image URLs allow local `/assets/`
-paths or HTTPS URLs from any host. No image-domain allowlist is applied. The backend never
-fetches arbitrary image URLs. Biographies are plain text rendered by React.
-
-## Session and authentication policy
-
-- Passwords are salted Argon2id hashes; new passwords require 6–128 characters.
-  The form, API validation, and authentication library share `config/password-policy.ts`.
+- `ADMIN` manages People, Activities, Research, and audit access.
+- `CORE_FACULTY` can edit their own linked core profile and change their password.
+- Role and public faculty category are separate. Hiding a core profile does not disable its owner's login.
+  Changing its category away from Core Faculty does.
+- Sessions expire after eight hours, or after 30 minutes without a protected request. Leaving a page open is
+  not the same as making an authenticated request.
 - Password changes are voluntary and revoke other browser sessions.
-- Sessions expire after eight hours and after 30 minutes without a protected
-  request. Reading an open page without making requests does not refresh the timer.
-- Cookies are HttpOnly and SameSite=Strict; production cookies require HTTPS.
-- The application origin must exactly match `BETTER_AUTH_URL`, including the port.
-- CSRF cookies are signed, and writes require the matching custom header plus Origin.
-- Persistent limits apply per login identifier and globally; forwarded IP headers
-  are not trusted in this phase. Edge throttling and trusted-proxy setup belong
-  to the IITB deployment work.
 
-Sessions, active-session indexes, and counters use namespaced Redis keys. Role
-checks always reload the user from Neon so an existing Redis snapshot cannot
-retain revoked permissions. Idle refresh is atomic and cannot recreate a session
-deleted by logout or password rotation. Redis unavailability denies protected
-operations; it does not fall back to accepting an unvalidated cookie.
+The current role and linked profile are checked again on protected requests. The browser gets an HttpOnly
+cookie, which browser JavaScript cannot read as a plain token. Production cookies require HTTPS. Cookie policy
+and Origin checks are in the auth modules, not in a hidden UI button.
 
-The local Compose service binds only `127.0.0.1:16379`, requires a generated password,
-uses a named volume and AOF persistence, and caps data memory at 128 MB with
-`noeviction`. Its container has a 256 MB limit. Credentials are mounted from an
-ignored private file. Never expose this Redis port publicly. `redis:down` stops the
-service without deleting its volume. This Compose file currently runs local Redis;
-it is not the final IITB application deployment bundle.
+## Write requests
 
-## Audit history
+A protected write needs a valid session, permission, and CSRF token. CSRF means cross-site request forgery: a
+write triggered from another site without the user's intent. The guard verifies the request Origin and a
+signed token sent in a header. Zod then checks real input values. Unknown control fields are rejected by
+strict schemas.
 
-Successful and failed login activity, logout, security changes, session expiry,
-faculty changes, and CSV exports are recorded. Failed attempts contain the
-submitted identifier, which is not proof of a person's identity. Passwords
-and session tokens are excluded.
+Services use version counters to detect stale edits. HTTP 409 is a conflict, not permission to overwrite the
+newer record. Optional empty fields explicitly clear stored content. Content changes and audit records are
+written in the same database transaction, so a failed audit write can roll back the content change.
 
-Audit entries cannot be updated/deleted by the runtime database role. A database
-trigger also rejects row updates/deletes. Database owners remain capable of
-maintenance, so this is not a claim of tamper-proof storage against a database
-administrator. Faculty changes are atomic with their audit entries; authentication
-events are recorded around the authentication library's own transactions.
+Audit logs retain historical account/content actions. The runtime role should have read/insert access to audit
+history, not update/delete access. Database owners can still perform privileged maintenance; this is not
+tamper-proof storage against an owner. Expired session history is recorded when queued metadata is processed,
+so detection time can be later than the actual timeout.
 
-Idle/expired Redis sessions are rejected on access. Expiry metadata is queued
-in Redis and copied to audit history when viewing/exporting logs, in bounded batches.
-It is acknowledged only after Neon accepts the deduplicated event. Expiry entries
-can therefore be detected after the actual timeout; they do not show exactly
-when someone stopped using the site. Session revocation is distinct from logout.
-If Redis data is lost, users must log in again and unprocessed expiry metadata
-can be lost. Existing Neon audit history is unaffected.
+## Maintenance boundary
 
-The admin page shows paginated history without filter controls. Activity detail popups
-show only changed fields with readable previous/new values and plain-language
-activity information. Full before/after snapshots remain stored and included in CSV exports.
-On-screen times
-and API date filters use Asia/Kolkata. CSV timestamps use UTC, and
-cells are escaped against spreadsheet formulas. Exports are bounded to 10,000
-records; API date filters can narrow larger histories. Raw audit retention and
-backup retention must be agreed with IITB before production.
+`scripts/restrict-database.ts` provisions a restricted runtime role; a database role is an identity with
+granted database permissions. `scripts/verify-database.ts` checks expected privileges. These tools force
+verified TLS and are not part of the plain local-container walkthrough. They were read, not executed against
+IITB or Neon during documentation verification. Their grants need owner review for the current schema before
+deployment, including the Research table.
 
-## Verification
+Import, publish, restore, UAT, and role-provisioning scripts can target persistent remote data through
+`DIRECT_URL`. A new intern should not run them without explicit owner instructions. The safe defaults and
+setting precedence are in [Environment](ENVIRONMENT.md).
 
-```bash
-npm test
-npm run typecheck
-npm run lint
-npm run test:integration
-npx playwright install chromium  # one-time browser setup for this machine
-npm run test:browser
-npm run db:verify
-npm run build
-```
+## Media and operations
 
-Integration tests require running Redis and use a generated `ctiks_test_<random>`
-schema in the development Neon database, an equally isolated Redis key namespace,
-and a separate app server on port 3002. They do not
-modify the real admin or faculty records. The namespace is dropped in cleanup.
-They need owner access and should only run against development infrastructure.
-Only their generated schema and key prefix are removed during cleanup; Redis is
-never flushed. Logs/results are in ignored `.private/`; generated test build files are ignored.
-The browser command runs those same isolated integration checks plus headless Chromium
-UI flows for admin faculty create/edit/show/hide/delete and professor draft/reload,
-research-area add/remove, and publish behavior.
+Database records store file URLs/paths, not the image/PDF bytes. Existing local media handling requires
+development mode and a local database. Files live outside the source/build directory. It is not a production
+storage integration. Never put sensitive documents in a public URL or assume a private draft makes its linked
+development file a private storage object.
 
-## Production preparation
+Production database migration, TLS certificates, SMTP authorization, backup restore, monitoring, VPN rules,
+and server access remain infrastructure-owner decisions. A pushed commit or passing build does not verify
+those decisions.
 
-Use a supported Node.js runtime, set the real HTTPS `BETTER_AUTH_URL`, and configure
-the runtime with `.env.local` values only. Do not give the running app the migration
-owner connection or deploy `.private/`. Apply migrations separately using the
-owner environment. Deploy `npm run build` output and run `npm start` under the
-IITB process manager.
-
-IITB VPN restrictions, trusted reverse-proxy configuration, backups and restore
-checks, retention, and deployment-specific monitoring still need implementation
-or operational configuration before public production use. Public signup and
-email reset delivery are not enabled in this release.
+Next: [Environment](ENVIRONMENT.md), [Testing](TESTING.md), and [Codebase map](CODEBASE_MAP.md).

@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
-    "db:local:up": "docker compose up -d postgres",
+    "db:local:up": "docker compose up -d postgres redis",
     "db:local:down": "docker compose stop postgres",
     "db:local:migrate": "node scripts/local-database.mjs migrate",
     "db:local:seed": "node scripts/local-database.mjs seed",

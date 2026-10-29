@@ -243,7 +243,7 @@ export async function deleteFaculty(actor: Actor, recordId: string, input: unkno
         // Keep the user identity for immutable historical audit references.
         // Protected requests also recheck the linked profile, closing login/revocation races.
         const context = await getAuth().$context;
-        await redisOperation(() => context.internalAdapter.deleteUserSessions(profile.userId!));
+        await redisOperation('revoke faculty sessions', () => context.internalAdapter.deleteUserSessions(profile.userId!));
       }
       return { id, name: profile.name };
     },

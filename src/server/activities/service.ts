@@ -26,6 +26,8 @@ function snapshot(activity: Activity) {
     description: value.description,
     sections: value.sections,
     imageUrl: value.imageUrl,
+    supportingDocumentUrl: value.supportingDocumentUrl,
+    eventHasTime: value.eventHasTime,
     eventStartAt: value.eventStartAt,
     eventEndAt: value.eventEndAt,
     venue: value.venue,

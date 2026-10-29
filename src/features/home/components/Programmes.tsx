@@ -2,10 +2,6 @@ import ProgrammeBlock from './ProgrammeBlock';
 import { ASSETS } from '@/config/assets';
 import { PROGRAMMES } from '../content';
 
-/**
- * The three programme blocks, over a tiled paper texture. The texture is
- * decorative only, so it is a background layer rather than an <img>.
- */
 export default function Programmes() {
   return (
     <section aria-label="Programmes" className="relative isolate overflow-hidden">

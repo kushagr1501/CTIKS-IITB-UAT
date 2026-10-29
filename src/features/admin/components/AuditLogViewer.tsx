@@ -6,8 +6,10 @@ import type { AuditRecord, AuditResult } from '../types';
 import AuditEventDialog from './AuditEventDialog';
 import AuditLogRow from './AuditLogRow';
 import AdminNotice from './AdminNotice';
+import { useHydrated } from './use-hydrated';
 
 export default function AuditLogViewer({ initialResult }: { initialResult: AuditResult }) {
+  const hydrated = useHydrated();
   const [result, setResult] = useState(initialResult);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -88,7 +90,7 @@ export default function AuditLogViewer({ initialResult }: { initialResult: Audit
             </thead>
             <tbody>
               {result.events.map((event) => (
-                <AuditLogRow key={event.id} event={event} onView={setSelectedEvent} />
+                <AuditLogRow key={event.id} event={event} onView={setSelectedEvent} disabled={!hydrated} />
               ))}
             </tbody>
           </table>

@@ -1,14 +1,15 @@
 import Link from 'next/link';
 import SectionHero from '@/components/ui/SectionHero';
 import { ASSETS } from '@/config/assets';
-import { getPublicActivities, getPublicActivityCounts } from '@/server/activities/public';
+import { getPublicActivities, getPublicActivityCounts, type ActivityTimeFilter } from '@/server/activities/public';
 import { ACTIVITY_PATHS, ACTIVITY_SECTIONS, type ActivitySection } from '../types';
 import { eventSchedule, formatActivityDate } from '../dates';
 import ActivitySearchForm from './ActivitySearchForm';
 import ActivityDescription from './ActivityDescription';
+import ActivityPoster from './ActivityPoster';
 import styles from './Activities.module.css';
 
-export type ActivitySearchParams = Promise<{ q?: string | string[]; page?: string | string[] }>;
+export type ActivitySearchParams = Promise<{ q?: string | string[]; page?: string | string[]; time?: string | string[] }>;
 
 export default async function ActivityListing({
   section,
@@ -21,20 +22,32 @@ export default async function ActivityListing({
   const query = typeof params.q === 'string' ? params.q.trim().slice(0, 200) : '';
   const requestedPage =
     typeof params.page === 'string' && /^\d{1,6}$/.test(params.page) ? Number(params.page) : 1;
-  const [{ items, page, pageCount, total }, counts] = await Promise.all([
-    getPublicActivities(section, query, requestedPage),
-    getPublicActivityCounts(query),
-  ]);
+  const explicitTime = params.time === 'upcoming' || params.time === 'past' || params.time === 'all' ? params.time : undefined;
+  const initialTime: ActivityTimeFilter = explicitTime ?? (section === 'EVENT' ? 'upcoming' : 'all');
+  let result = await getPublicActivities(section, query, requestedPage, initialTime);
+  let time = initialTime;
+  let fallback = false;
+  if (section === 'EVENT' && !explicitTime && initialTime === 'upcoming' && result.total === 0) {
+    const past = await getPublicActivities(section, query, requestedPage, 'past');
+    if (past.total > 0) { result = past; time = 'past'; fallback = true; }
+  }
+  const { items, page, pageCount, total } = result;
+  const counts = await getPublicActivityCounts(query, time);
   const title = section ? ACTIVITY_SECTIONS[section] : 'Activities';
   const path = section ? ACTIVITY_PATHS[section] : '/activities';
-  const pageLink = (number: number) =>
-    `${path}?${new URLSearchParams({ ...(query ? { q: query } : {}), page: String(number) })}`;
+  const makeUrl = (target: string, selectedTime?: ActivityTimeFilter, pageNumber?: number, search = query) => {
+    const params = new URLSearchParams();
+    if (search) params.set('q', search);
+    if (selectedTime) params.set('time', selectedTime);
+    if (pageNumber) params.set('page', String(pageNumber));
+    const suffix = params.toString();
+    return suffix ? `${target}?${suffix}` : target;
+  };
+  const pageLink = (number: number) => makeUrl(path, explicitTime, number);
   const tabs = [
     { href: '/activities', label: 'All', count: counts.total },
     ...Object.entries(ACTIVITY_SECTIONS).map(([key, label]) => ({
-      href: ACTIVITY_PATHS[key as ActivitySection],
-      label,
-      count: counts.sections[key as ActivitySection],
+      href: ACTIVITY_PATHS[key as ActivitySection], label, count: counts.sections[key as ActivitySection],
     })),
   ];
 
@@ -47,7 +60,7 @@ export default async function ActivityListing({
             {tabs.map((tab) => (
               <Link
                 key={tab.href}
-                href={`${tab.href}${query ? `?${new URLSearchParams({ q: query })}` : ''}`}
+                href={makeUrl(tab.href, explicitTime)}
                 scroll={false}
                 aria-current={path === tab.href ? 'page' : undefined}
                 className={styles.tab}
@@ -56,25 +69,29 @@ export default async function ActivityListing({
               </Link>
             ))}
           </nav>
-          <ActivitySearchForm key={path} path={path} title={title} query={query} />
+          <ActivitySearchForm key={`${path}-${explicitTime ?? ''}`} path={path} title={title} query={query} time={explicitTime} />
         </div>
+        <nav aria-label="Filter activities by time" className={styles.timeFilters}>
+          <span>Time</span>
+          {(['upcoming', 'past', 'all'] as const).map((option) => (
+            <Link key={option} href={makeUrl(path, option)} scroll={false} aria-current={time === option ? 'true' : undefined} className={styles.timeFilter}>
+              {option === 'upcoming' ? 'Upcoming' : option === 'past' ? 'Past' : 'All'}
+            </Link>
+          ))}
+        </nav>
+        <p className={styles.timeHelp}>Time filters use the activity dates. Undated items appear in All.</p>
+        {fallback && <p className={styles.fallbackNotice}>No upcoming events. Showing past events.</p>}
         <p className="sr-only" role="status" aria-live="polite">
           {total} {total === 1 ? 'activity' : 'activities'}
           {query ? ` matching ${query}` : ''}, page {page} of {pageCount}
         </p>
         <div className={styles.list}>
           {items.map((activity) => {
-            const schedule = eventSchedule(activity.eventStartAt, activity.eventEndAt);
+            const schedule = eventSchedule(activity.eventStartAt, activity.eventEndAt, activity.eventHasTime);
             return (
               <article key={activity.id} id={`activity-${activity.id}`} className={styles.card}>
                 {activity.imageUrl && (
-                  <img
-                    src={activity.imageUrl}
-                    alt=""
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                    className={styles.thumbnail}
-                  />
+                  <ActivityPoster src={activity.imageUrl} title={activity.title} />
                 )}
                 <div className={styles.cardContent}>
                   <div className={styles.badges}>
@@ -101,7 +118,7 @@ export default async function ActivityListing({
                         </time>
                       </span>
                     </span>
-                    {schedule && (
+                    {schedule?.time && (
                       <span className={styles.metaItem}>
                         <img src={ASSETS.iconClock} alt="" aria-hidden="true" />
                         <span className={styles.metaDetail}>
@@ -118,6 +135,9 @@ export default async function ActivityListing({
                           <span>{activity.venue}</span>
                         </span>
                       </span>
+                    )}
+                    {activity.supportingDocumentUrl && (
+                      <a className={styles.actionLink} href={activity.supportingDocumentUrl} target="_blank" rel="noopener noreferrer">View supporting PDF ↗</a>
                     )}
                     {activity.registrationUrl && (
                       <a
@@ -152,7 +172,7 @@ export default async function ActivityListing({
             <h2>{query ? 'No matching activities' : 'Activity will be updated soon'}</h2>
             {query && <p>Try another keyword or browse all activities.</p>}
             {query && (
-              <Link href={path} scroll={false}>
+              <Link href={makeUrl(path, explicitTime, undefined, '')} scroll={false}>
                 Clear search
               </Link>
             )}

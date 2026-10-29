@@ -24,6 +24,12 @@ const fields = z
       .trim()
       .max(2048)
       .refine(isValidImageUrl, 'Use an HTTPS image URL or an existing /assets/ image.'),
+    supportingDocumentUrl: z.string().trim().max(2048).default('').refine((value) => {
+      if (!value) return true;
+      if (process.env.NODE_ENV === 'development' && /^\/api\/local-media\/[a-z0-9-]+\.pdf$/i.test(value)) return true;
+      try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; } catch { return false; }
+    }, 'Use an HTTPS document URL or upload a PDF.'),
+    eventHasTime: z.boolean().default(true),
     eventStartAt: z.iso.datetime({ offset: true }).nullable(),
     eventEndAt: z.iso.datetime({ offset: true }).nullable(),
     venue: text(300),
@@ -48,8 +54,11 @@ function validRange(values: { eventStartAt: string | null; eventEndAt: string | 
     (values.eventStartAt !== null && Date.parse(values.eventEndAt) > Date.parse(values.eventStartAt))
   );
 }
+function validTimePair(values: { eventHasTime: boolean; eventStartAt: string | null; eventEndAt: string | null }) {
+  return !values.eventHasTime || !values.eventStartAt || Boolean(values.eventEndAt);
+}
 const rangeMessage = { message: 'End date and time must be after the start.', path: ['eventEndAt'] };
-export const activityCreateSchema = fields.refine(validRange, rangeMessage);
+export const activityCreateSchema = fields.refine(validRange, rangeMessage).refine(validTimePair, { message: "Enter an end date and time when a start time is provided.", path: ["eventEndAt"] });
 export const activityUpdateSchema = fields
   .extend({ version: z.number().int().positive() })
-  .refine(validRange, rangeMessage);
+  .refine(validRange, rangeMessage).refine(validTimePair, { message: "Enter an end date and time when a start time is provided.", path: ["eventEndAt"] });
