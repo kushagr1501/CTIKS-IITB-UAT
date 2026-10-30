@@ -29,21 +29,25 @@ export default function FacultyDirectory({ faculty }: { faculty: PublicFaculty[]
     return <p className="px-6 py-20 text-center">People profiles will be available soon.</p>;
   return (
     <>
-      {core.length > 0 && (
-        <CoreFacultySection
-          faculty={core.map((person) => ({
-            ...cardProps(person),
-            tags: person.interests.split(',').slice(0, 3).join(', '),
-            profileUrl: `/people/${person.slug}`,
-            role: person.designation || 'Core Faculty Member',
-          }))}
-        />
-      )}
+      <div id="core" className="scroll-mt-24">
+        {core.length > 0 && (
+          <CoreFacultySection
+            faculty={core.map((person) => ({
+              ...cardProps(person),
+              tags: person.interests.split(',').slice(0, 3).join(', '),
+              profileUrl: `/people/${person.slug}`,
+              role: person.designation || 'Core Faculty Member',
+            }))}
+          />
+        )}
+      </div>
       {otherCategories.map(({ category, title }) => {
         const members = faculty.filter((person) => person.category === category);
-        return members.length > 0 ? (
-          <AssociateFacultySection key={category} title={title} faculty={members.map(cardProps)} />
-        ) : null;
+        return (
+          <div key={category} id={category.toLowerCase().replaceAll('_', '-')} className="scroll-mt-24">
+            {members.length > 0 && <AssociateFacultySection title={title} faculty={members.map(cardProps)} />}
+          </div>
+        );
       })}
     </>
   );
