@@ -18,3 +18,14 @@ export function sortFaculty<T extends OrderedFaculty>(faculty: readonly T[]): T[
 export function replaceFacultyProfile(faculty: readonly FacultyRecord[], profile: FacultyRecord) {
   return sortFaculty([...faculty.filter((item) => item.id !== profile.id), profile]);
 }
+
+export function placeFacultyInCategory<T extends OrderedFaculty>(
+  faculty: readonly T[],
+  id: string,
+  position?: number,
+) {
+  const ids = sortFaculty(faculty).filter((person) => person.id !== id).map((person) => person.id);
+  const index = position === undefined ? ids.length : Math.max(0, Math.min(position, ids.length));
+  ids.splice(index, 0, id);
+  return ids.map((personId, displayOrder) => ({ id: personId, displayOrder }));
+}
