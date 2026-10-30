@@ -4,6 +4,7 @@ dist/
 .env*
 !.env.example
 !.env.uat.example
+!.env.production.example
 .private/
 .next/
 .next-integration/

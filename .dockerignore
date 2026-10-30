@@ -1,0 +1,10 @@
+.git
+.next
+.next-*
+node_modules
+.env*
+.private
+.vercel
+src/generated
+*.log
+*.tsbuildinfo

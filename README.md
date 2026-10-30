@@ -49,6 +49,9 @@ If a port is already in use, follow the [alternate-port instructions](docs/GETTI
 
 - [Project guide](docs/PROJECT_GUIDE.md) — pages, features and the folders behind them.
 - [Getting started](docs/GETTING_STARTED.md) — setup and troubleshooting.
+- [IITB handover](docs/IITB_HANDOVER.md) — one guide for deployment, data transfer, storage, backups and login.
+- [Docker and database setup](docs/DOCKER_DATABASE.md) — server container and PostgreSQL migrations.
+- [Production handover](docs/PRODUCTION_HANDOVER.md) — deployment, backup, restore and initial admin access.
 - [Testing](docs/TESTING.md) — checks and how to run them.
 - [Contributing](docs/CONTRIBUTING.md) — making and reviewing changes.
 
