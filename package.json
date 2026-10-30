@@ -16,6 +16,7 @@
     "db:local:migrate": "node scripts/local-database.mjs migrate",
     "db:local:seed": "node scripts/local-database.mjs seed",
     "db:seed": "tsx scripts/seed.ts",
+    "admin:provision": "node scripts/provision-admin.mjs",
     "db:restrict": "tsx scripts/restrict-database.ts",
     "db:verify": "tsx scripts/verify-database.ts",
     "redis:setup": "tsx scripts/setup-redis.ts",

@@ -3,6 +3,8 @@
 .next-*
 node_modules
 .env*
+env.prod
+backups
 .private
 .vercel
 src/generated

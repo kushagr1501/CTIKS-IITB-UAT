@@ -11,7 +11,9 @@ export function getDatabase() {
   const url = new URL(connectionString);
   if (!['postgres:', 'postgresql:'].includes(url.protocol)) throw new Error('Invalid database protocol.');
   // Verify the server certificate for cloud connections, including Neon.
-  if (!['localhost', '127.0.0.1'].includes(url.hostname)) url.searchParams.set('sslmode', 'verify-full');
+  const internalPostgres = process.env.CTIKS_INTERNAL_POSTGRES === '1' && url.hostname === 'postgres';
+  if (!['localhost', '127.0.0.1'].includes(url.hostname) && !internalPostgres)
+    url.searchParams.set('sslmode', 'verify-full');
   const schema = url.searchParams.get('schema') ?? 'public';
   if (!/^[a-z][a-z0-9_]*$/.test(schema)) throw new Error('Invalid database schema.');
   const adapter = new PrismaPg(

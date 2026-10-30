@@ -1,84 +1,40 @@
-# Production handover
+Read this if you operate CTIKS after the Docker setup.
 
-Read this if you are deploying and operating the CTIKS website on the IITB server.
+# Storage and backups
 
-## Deploy the website
+Start with [Production setup](PRODUCTION_SETUP.md). All commands below use the same `compose.prod.yaml` and private `env.prod` file. The `tools` service is a temporary maintenance container; it does not stay running.
 
-1. Provide Docker, PostgreSQL, Redis, and an HTTPS hostname on the server. Obtain the private
-   repository and the database and Redis connection details through an approved channel.
-2. Follow [Docker and database setup](DOCKER_DATABASE.md) to create `.env.production.local` and build the image.
-   Keep the environment file private. `compose.app.yaml` listens on `127.0.0.1:3000`.
-3. Choose the data source. For an existing Neon database, restore it into a new empty PostgreSQL database using
-   the transfer instructions in the setup guide. For a new installation, apply the migrations in that guide.
-   Do not apply migrations or seed before a full transfer into an empty database.
-4. Start the app using the Compose instructions. Open the HTTPS site and check Home, People, Research, Activities
-   and Login. Sign in as an administrator and check a normal content edit with an agreed test record.
-5. Configure and test backups for PostgreSQL and, separately, uploaded files. Monitor PostgreSQL, Redis, the app
-   and the reverse proxy. Production file uploads and serving are not yet implemented; see the setup guide.
+## Existing images and PDFs
 
-The container build and public page checks have been tested locally with an isolated database. Deployment on the
-IITB server, HTTPS, external Redis, file storage and a production admin login still require server-side verification.
+The database has image and PDF **paths**, not file bytes. Copy the existing `ctiks-local-media` folder separately and preserve filenames. External HTTPS links remain external. Keep the copied files in backed-up persistent storage.
 
-## Back up PostgreSQL
+**Launch limitation:** production uploads and `/api/local-media/` serving are not implemented yet. A Docker mount alone will not make existing local-media URLs or new uploads work. Implement and test production storage, upload and serving before relying on these links. Check an existing image and PDF, upload new ones, restart the app container, and check again.
 
-Use PostgreSQL client tools (`pg_dump` and `pg_restore`) compatible with the server version: `pg_dump` must be at
-least as new as the source PostgreSQL server. Use a direct database connection with permission to read all required
-tables. Arrange connection settings through your server's secret manager or a protected PostgreSQL service/password
-file; do not place credentials in commands, logs or Git. Set the standard libpq environment variables `PGHOST`,
-`PGPORT`, `PGUSER`, `PGDATABASE`, `PGSSLMODE` and, when needed, `PGPASSFILE` before running the commands.
+## Back up the database
 
-Run the repository's backup script on the operations host (Node.js dependencies and PostgreSQL client tools must
-be installed there). Set `DATABASE_URL` privately to the direct URL for the database being backed up. Choose a
-private backup folder and a unique name:
+The backup is written to the repository's ignored `backups/` folder on the server. Create a unique filename each time:
 
 ```bash
-node scripts/backup-restore.mjs backup --output /PRIVATE/BACKUPS/ctiks-backup.dump
-pg_restore --list ctiks-backup.dump
+docker compose --env-file env.prod -f compose.prod.yaml build tools
+docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-restore.mjs backup --output /backups/ctiks-YYYY-MM-DD.dump
 ```
 
-Use the same full backup path for `pg_restore --list`. Success: the script reports `Backup created`, and the
-second command lists the archive contents. The script refuses to overwrite an existing backup. The dump contains website
-accounts and password hashes; restrict access and store copies securely. It does not contain uploaded image or PDF
-files, Redis sessions, PostgreSQL roles or their grants. Back up uploaded files separately.
+Success: `Backup created`. The script refuses to overwrite a file. `backups/` is ignored by Git but still needs restricted access and an off-server copy. Back up the media folder separately. A database backup does not contain image/PDF bytes or Redis sessions.
 
-## Restore a backup
+## Test a restore
 
-1. Create a **new, empty** target database and set the libpq connection variables for that target. Keep the current
-   production database untouched while testing the restore. The target PostgreSQL version must support the backup.
-2. Set `DATABASE_URL` to the **new empty target database**, then run:
-
-   ```bash
-   node scripts/backup-restore.mjs restore --file /PRIVATE/BACKUPS/ctiks-backup.dump --apply
-   ```
-
-3. Success: the script reports `Restore completed`. It refuses a non-empty target and restores in one database
-   transaction. Check the restored records and test the application against the restored
-   database before switching traffic. The account running the restore owns the restored objects; use the agreed
-   account and configure any needed access. Restore the separately backed-up files and test their links once
-   production file serving has been implemented.
-
-This restore does not replace an existing database. Schedule and regularly test backups and restores according to
-IITB's policy. Switch production to a restored database only after coordinating downtime and verifying the data.
-
-## Initial administrator access
-
-If the Neon database is transferred, existing website accounts and password hashes are included. Obtain the
-administrator email and current password **privately** from the existing owner or password manager. They are not in
-this repository. Sign in, then change the password at `/admin/security`.
-The copied login instruction in a seed credential file may say localhost; use the actual HTTPS hostname instead.
-
-For a new, empty installation with no existing admin, the seed command can create an administrator with a random
-password, but it also imports initial faculty content. Review `scripts/seed.ts` first. Apply migrations and set
-`ADMIN_EMAIL` in your shell. Prepare a private server directory writable by container UID 1000, and substitute its
-absolute path below. Do not use this command on an existing database merely to recover credentials.
+Create a separate, empty database **inside the same PostgreSQL container**:
 
 ```bash
-docker compose -f compose.app.yaml run --rm -e ADMIN_EMAIL --volume /PRIVATE/SERVER/DIRECTORY:/app/.private app npm run db:seed
+docker compose --env-file env.prod -f compose.prod.yaml exec -T postgres createdb -U ctiks ctiks_restore_check
 ```
 
-On a new database, the command writes `admin-credentials.txt` in that server directory. Success: the command reports
-that the admin was created and the credentials file was saved. Obtain it through an approved private channel, then
-change the password. If an administrator already exists, the seed does not reset their password. Without the mounted
-private directory, credentials written inside the one-off container would be lost when it is removed.
+Temporarily add `RESTORE_DATABASE_NAME=ctiks_restore_check` to `env.prod`. The `tools` container will use that database while the website continues to use `ctiks`. Then run:
 
-Next: [Docker and database setup](DOCKER_DATABASE.md) · [Environment reference](ENVIRONMENT.md)
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-restore.mjs restore --file /backups/ctiks-YYYY-MM-DD.dump --apply
+```
+
+Success: `Restore completed`. Remove `RESTORE_DATABASE_NAME` from `env.prod` afterward. The restore refuses a database with tables. Check the restored records and separately restored media files. This does not replace the live database. IITB should schedule, retain and regularly test both database and file backups.
+
+Next: [Production setup](PRODUCTION_SETUP.md) · [Production environment](PRODUCTION_ENVIRONMENT.md)
