@@ -11,6 +11,7 @@ Tool terms: [glossary](../docs/GLOSSARY.md).
 | Path in this folder   | Role                                              |
 | --------------------- | ------------------------------------------------- |
 | `dev.mjs`             | Development startup and page warm-up.             |
+| `setup-env.mjs`       | Creates local settings with a fresh auth secret.  |
 | `local-database.mjs`  | Wrappers forcing the original local database URL. |
 | `setup-redis.ts`      | Creates ignored local Redis credentials.          |
 | `seed.ts`             | Initial admin and sample profile import.          |

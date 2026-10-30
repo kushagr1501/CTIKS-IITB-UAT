@@ -193,9 +193,8 @@ content was updated. No source or documentation file was removed. Suspected orph
   before deployment; they are not the local setup path.
 - **Low — Credentials in Git history:** UAT admin password in history, repo private, single owner; rotate before adding collaborators.
   Editing the current guide does not revoke the password or erase history.
-- No fresh Windows/Linux installation, IITB server deployment, reverse proxy, certificate setup, SMTP
-  delivery, campus/VPN access policy, production upload storage, backup restoration, or production load
-  measurement was tested.
+- No fresh Windows/Linux installation, IITB server deployment, reverse proxy, certificate setup, production
+  upload storage, backup restoration, or production load measurement was tested.
 - No remote UAT, import/publish/restore, or database-role provisioning commands were run. Historical reports
   retain old command records; those are not current walkthroughs and were not all repeated. Historical
   content-source and font-download provenance were retained as records, not independently re-collected.

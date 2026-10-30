@@ -71,8 +71,6 @@ ignored `.private/redis-credentials.conf`.
 
 ## Scope limits
 
-No SMTP host/password keys are implemented. There is no OAuth login configuration. IITB VPN/network
-restrictions are not an application setting yet. Production storage, service credentials, backups, and network
-policies need owner confirmation. Keep real credentials in the deployment environment or ignored local files.
+Keep real credentials in the deployment environment or ignored local files.
 
 Next: [Getting started](GETTING_STARTED.md), [Testing](TESTING.md), and [backend boundaries](backend.md).

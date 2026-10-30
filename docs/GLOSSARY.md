@@ -47,7 +47,7 @@ Read this if a word in the setup guide or a code review is unfamiliar.
 | Port / loopback                       | Service connection number; a local address such as `127.0.0.1`.                                                                                          |
 | Environment variable / secret         | Machine-specific setting; sensitive password or signing key.                                                                                             |
 | Build / runtime / generated file      | Preparing deployment output; running the app; a file created by tools.                                                                                   |
-| TLS / HTTPS / SMTP / VPN              | Encrypted transport; encrypted web traffic; email delivery protocol; private network connection. SMTP and IITB VPN restrictions are not integrated here. |
+| TLS / HTTPS | Encrypted transport; encrypted web traffic. |
 | Reverse proxy / deployment / UAT      | Front server forwarding requests; installing a release; user acceptance testing in a separate environment.                                               |
 | Neon                                  | Hosted PostgreSQL provider used by existing UAT. Local development does not require it.                                                                  |
 | Tailwind / CSS Module / Lenis         | Utility-class styling; component-scoped CSS; public smooth-scroll library.                                                                               |
@@ -66,8 +66,7 @@ Read this if a word in the setup guide or a code review is unfamiliar.
 - **CRUD:** create, read, update, and delete records.
 - **UTC / India time:** a shared timestamp reference; the editor uses the Asia/Kolkata time zone, UTC plus 5
   hours 30 minutes.
-- **Better Auth / OAuth:** this project's authentication library; delegated sign-in through another provider,
-  which is disabled here.
+- **Better Auth:** the library used to sign in and manage sessions.
 - **HttpOnly:** a cookie flag that prevents browser JavaScript from reading the cookie.
 - **dotenv / precedence:** the environment-file reader used by scripts; the rule deciding which setting wins.
 - **Bundler / Webpack:** a tool combining source modules into runnable output; the alternative development

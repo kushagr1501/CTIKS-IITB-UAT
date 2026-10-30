@@ -80,11 +80,9 @@ Admin and faculty layouts supply their own protected navigation. Login is outsid
   other public sections still use checked-in content files.
 - Core faculty have their own editor, drafts, autosave, and immediate publishing. Public visibility remains
   controlled by the administrator. See [faculty profiles](faculty-profiles.md).
-- Public login does not mean public editing: every protected request checks access. Campus/VPN restrictions
-  have not been implemented here.
+- Every protected request checks access before it reads or changes private content.
 - Uploaded media routes require development mode and a local database. Persistent production storage needs a
   separate integration. URL-based assets remain supported.
-- SMTP email delivery is not implemented. Passwords are not emailed automatically.
 - This is a Node.js application with a database and Redis, not a static HTML export. A production package and
   the actual IITB server still need deployment verification.
 

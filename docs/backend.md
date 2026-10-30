@@ -12,14 +12,13 @@ a generated administrator password, and local URLs. Neon is a hosted PostgreSQL 
 UAT environment; it is not required for an intern's machine. UAT means user acceptance testing.
 
 The deployment still requires a Node.js process, persistent database and Redis connections, HTTPS, secrets,
-backups, and an agreed upload storage arrangement. SMTP email delivery and IITB network/VPN restrictions are
-not implemented in this application. Do not describe them as active security controls.
+backups, and an agreed upload storage arrangement.
 
 ## Identity and permissions
 
 A session is temporary login state. Better Auth handles credential authentication through the restricted
 routes in `src/app/api/auth/[...all]/route.ts`. Passwords use Argon2id hashes, a one-way representation rather
-than plain text. Public signup, OAuth/social login, and email-based password recovery are not enabled.
+than plain text.
 
 Users and password hashes are stored in PostgreSQL. Redis stores sessions, active session indexes, temporary
 authentication data, and rate-limit counters. A rate limit caps repeated requests. Redis failure denies
@@ -72,8 +71,8 @@ development mode and a local database. Files live outside the source/build direc
 storage integration. Never put sensitive documents in a public URL or assume a private draft makes its linked
 development file a private storage object.
 
-Production database migration, TLS certificates, SMTP authorization, backup restore, monitoring, VPN rules,
-and server access remain infrastructure-owner decisions. A pushed commit or passing build does not verify
+Production database migration, TLS certificates, backup restore, monitoring, and server access remain
+infrastructure-owner decisions. A pushed commit or passing build does not verify
 those decisions.
 
 Next: [Environment](ENVIRONMENT.md), [Testing](TESTING.md), and [Codebase map](CODEBASE_MAP.md).

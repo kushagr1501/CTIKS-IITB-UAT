@@ -20,8 +20,7 @@ Tool terms: [glossary](../../../docs/GLOSSARY.md).
 
 ## Connections and gotchas
 
-Review every change here. OAuth, public signup, and mail-based recovery are not enabled. Do not weaken expiry
-or ownership checks to make a test pass.
+Review every change here. Preserve session expiry and ownership checks when changing sign-in.
 
 These notes describe code responsibility. Ask your mentor for the human reviewer assigned to this area; the
 repository does not name one.
