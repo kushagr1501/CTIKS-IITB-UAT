@@ -8,7 +8,7 @@ export async function apiFetch(path: string, options: RequestInit = {}) {
     const { token } = await csrf.json();
     headers.set('x-csrf-token', token);
   }
-  if (options.body) headers.set('content-type', 'application/json');
+  if (options.body && !(options.body instanceof FormData)) headers.set('content-type', 'application/json');
   const response = await fetch(path, { ...options, headers, cache: 'no-store', credentials: 'same-origin' });
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));

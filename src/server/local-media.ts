@@ -1,8 +1,9 @@
 import 'server-only';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { HttpError } from '@/server/http/errors';
+export { MAX_IMAGE_BYTES, MAX_PDF_BYTES, validateMediaFile } from './media-validation';
 
 export const localMediaIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const localMediaNamePattern = /^[a-z0-9][a-z0-9-]{0,79}$/i;
@@ -42,8 +43,32 @@ export function isOwnedStudentPhotoUrl(slug: string, url: string) {
   ).test(url);
 }
 
-export function requireLocalMediaDevelopment() {
-  if (process.env.NODE_ENV !== 'development') throw new HttpError(404, 'Not found.');
+function facultyMediaPrefix(slug: string) {
+  const digest = createHash('sha256').update(slug).digest('hex').slice(0, 8);
+  return `prof-${slug.slice(0, 24).replace(/-+$/g, '')}-${digest}-`;
+}
+
+export function facultyMediaStem(slug: string, storageName: string) {
+  const prefix = facultyMediaPrefix(slug);
+  const suffix = randomUUID().replace(/-/g, '').slice(0, 16);
+  const title = storageName.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+    .slice(0, 74 - prefix.length - suffix.length - 1).replace(/-+$/g, '') || 'file';
+  return `${prefix}${title}-${suffix}`;
+}
+
+export function isOwnedFacultyMediaUrl(slug: string, url: string) {
+  return url.startsWith(`/api/local-media/${facultyMediaPrefix(slug)}`) &&
+    /^\/api\/local-media\/[a-z0-9][a-z0-9-]{0,79}\.(?:jpg|png|webp|pdf)$/i.test(url);
+}
+
+export function localMediaEnabled() {
+  return process.env.NODE_ENV === 'development' || Boolean(process.env.CTIKS_LOCAL_MEDIA_DIR);
+}
+
+export function requireLocalMediaAvailable() {
+  if (!localMediaEnabled()) throw new HttpError(404, 'Not found.');
+  if (process.env.NODE_ENV !== 'development') return;
   let databaseUrl: URL;
   try {
     databaseUrl = new URL(process.env.DATABASE_URL ?? '');
@@ -57,8 +82,8 @@ export function requireLocalMediaDevelopment() {
 
 export function localMediaDirectory() {
   const configured = process.env.CTIKS_LOCAL_MEDIA_DIR;
-  const directory = path.resolve(configured || path.resolve(process.cwd(), '..', 'ctiks-local-media'));
-  const projectDirectory = path.resolve(process.cwd());
+  const directory = path.resolve(/*turbopackIgnore: true*/ configured || path.resolve(process.cwd(), '..', 'ctiks-local-media'));
+  const projectDirectory = path.resolve(/*turbopackIgnore: true*/ process.cwd());
   if (directory === projectDirectory || directory.startsWith(`${projectDirectory}${path.sep}`)) {
     throw new HttpError(500, 'Local media must be stored outside the project directory.');
   }

@@ -17,7 +17,7 @@ type EditorProps = {
   busy: boolean;
   error: string;
   onCancel: () => void;
-  onSave: (values: FacultySubmission) => Promise<void>;
+  onSave: (values: FacultySubmission, photo: File | null) => Promise<void>;
 };
 
 const emptyValues: FacultyValues = {
@@ -39,12 +39,15 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
   const { confirm, confirmation } = useActionConfirmation();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const dirty = useRef(false);
   const values = profile ?? emptyValues;
   const [slug, setSlug] = useState(values.slug);
   const [category, setCategory] = useState<FacultyCategory>(values.category);
   const [createLogin, setCreateLogin] = useState(!profile);
   const [login, setLogin] = useState<FacultyLogin>({ email: '', password: '' });
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoError, setPhotoError] = useState('');
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -77,13 +80,14 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (photoError) return;
     const data = Object.fromEntries(new FormData(event.currentTarget));
     await onSave({
       ...data,
       ...(profile ? { displayOrder: Number(data.displayOrder) - 1 } : {}),
       visible: data.visible === 'true',
       ...(category === 'CORE' && createLogin && !profile?.loginEmail ? { login } : {}),
-    } as FacultySubmission);
+    } as FacultySubmission, photoFile);
   }
 
   return (
@@ -225,10 +229,42 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
           </label>
           <label className="admin-label sm:col-span-2">
             Photo URL
-            <input name="imageUrl" className="admin-input" defaultValue={values.imageUrl} maxLength={2048} />
+            <input
+              name="imageUrl"
+              className="admin-input"
+              defaultValue={values.imageUrl}
+              maxLength={2048}
+              onChange={() => {
+                setPhotoFile(null);
+                setPhotoError('');
+                if (photoInputRef.current) photoInputRef.current.value = '';
+              }}
+            />
             <span className="text-xs font-normal leading-5 text-stone-500">
-              Paste an HTTPS image URL from any website, or use an existing /assets/ image.
+              Paste an HTTPS image URL or use an existing /assets/ image.
             </span>
+          </label>
+          <label className="admin-label sm:col-span-2">
+            Or upload photo from device
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              disabled={busy}
+              className="admin-input cursor-pointer p-2 file:mr-3 file:rounded-lg file:border-0 file:bg-ctiks-maroon file:px-4 file:py-2 file:font-semibold file:text-white"
+              onChange={(event) => {
+                const file = event.target.files?.[0] ?? null;
+                const validType = file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+                setPhotoError(file && (!validType || !file.size || file.size > 8 * 1024 * 1024)
+                  ? 'Choose a JPEG, PNG, or WebP photo up to 8 MB.'
+                  : '');
+                setPhotoFile(file && validType && file.size > 0 && file.size <= 8 * 1024 * 1024 ? file : null);
+              }}
+            />
+            <span className="text-xs font-normal text-stone-500">
+              {photoFile ? `${photoFile.name} will replace the URL when saved.` : 'JPEG, PNG, or WebP · maximum 8 MB.'}
+            </span>
+            {photoError && <span role="alert" className="text-sm text-red-700">{photoError}</span>}
           </label>
           <label className="admin-label">
             Website URL

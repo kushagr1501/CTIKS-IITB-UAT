@@ -26,7 +26,7 @@ const fields = z
       .refine(isValidImageUrl, 'Use an HTTPS image URL or an existing /assets/ image.'),
     supportingDocumentUrl: z.string().trim().max(2048).default('').refine((value) => {
       if (!value) return true;
-      if (process.env.NODE_ENV === 'development' && /^\/api\/local-media\/[a-z0-9-]+\.pdf$/i.test(value)) return true;
+      if (/^\/api\/local-media\/[a-z0-9][a-z0-9-]{0,79}\.pdf$/i.test(value)) return true;
       try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password; } catch { return false; }
     }, 'Use an HTTPS document URL or upload a PDF.'),
     eventHasTime: z.boolean().default(true),

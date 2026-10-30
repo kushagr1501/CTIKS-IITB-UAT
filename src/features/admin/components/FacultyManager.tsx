@@ -37,7 +37,7 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
     setFaculty((current) => replaceFacultyProfile(current, profile));
   }
 
-  async function save(values: FacultySubmission) {
+  async function save(values: FacultySubmission, photo: File | null) {
     if (
       !(await confirm({
         title: selected ? 'Save profile changes?' : 'Add this person?',
@@ -50,6 +50,13 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
     setError('');
     setMessage('');
     try {
+      if (photo) {
+        const form = new FormData();
+        form.set('file', photo);
+        form.set('slug', values.slug);
+        const uploaded = await apiJson<{ url: string }>('/api/admin/faculty/media', { method: 'POST', body: form });
+        values = { ...values, imageUrl: uploaded.url };
+      }
       const { faculty: profile } = await apiJson<{ faculty: FacultyRecord }>(
         selected ? `/api/admin/faculty/${selected.id}` : '/api/admin/faculty',
         {

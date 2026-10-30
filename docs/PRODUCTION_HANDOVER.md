@@ -6,9 +6,9 @@ Start with [Production setup](PRODUCTION_SETUP.md). All commands below use the s
 
 ## Existing images and PDFs
 
-The database has image and PDF **paths**, not file bytes. Copy the existing `ctiks-local-media` folder separately and preserve filenames. External HTTPS links remain external. Keep the copied files in backed-up persistent storage.
+The database has image and PDF **paths**, not file bytes. Set `CTIKS_MEDIA_HOST_DIR` in `env.prod` to a persistent host directory and create it before starting Compose. The app container runs as UID 1000, so grant that user read and write access without making the folder globally writable. Copy the existing `ctiks-local-media` files into this directory, preserving filenames; external HTTPS links remain external.
 
-**Launch limitation:** production uploads and `/api/local-media/` serving are not implemented yet. A Docker mount alone will not make existing local-media URLs or new uploads work. Implement and test production storage, upload and serving before relying on these links. Check an existing image and PDF, upload new ones, restart the app container, and check again.
+The app mounts this directory at `/data/ctiks-media`. Check an existing image and PDF, upload new ones from an authorized editor, restart the app container, and check again. Back up the host directory alongside PostgreSQL. The upload routes accept JPEG, PNG, and WebP images up to 8 MB, and PDFs up to 25 MB; they check the actual file signature before saving.
 
 ## Back up the database
 

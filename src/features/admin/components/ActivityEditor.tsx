@@ -71,6 +71,10 @@ export default function ActivityEditor({
     const value = (name: string) => String(data.get(name) ?? '').trim();
     try {
       if (!sections.length) throw new Error('Choose at least one section.');
+      if (posterFile && (!['image/jpeg', 'image/png', 'image/webp'].includes(posterFile.type) || !posterFile.size || posterFile.size > 8 * 1024 * 1024))
+        throw new Error('Choose a JPEG, PNG, or WebP image up to 8 MB.');
+      if (documentFile && (documentFile.type !== 'application/pdf' || !documentFile.size || documentFile.size > 25 * 1024 * 1024))
+        throw new Error('Choose a PDF up to 25 MB.');
       const startTime = value('startTime');
       const endTime = value('endTime');
       if (Boolean(startTime) !== Boolean(endTime)) throw new Error('Enter both start and end times, or leave both empty.');
@@ -224,17 +228,17 @@ export default function ActivityEditor({
                   An HTTPS image URL or an existing /assets/ image.
                 </span>
               </label>
-              {process.env.NODE_ENV === 'development' && <label className="admin-label sm:col-span-2">Upload image (local development)
+              <label className="admin-label sm:col-span-2">Or upload image from device
                 <input className="block w-full text-sm text-stone-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ctiks-maroon file:px-4 file:py-2.5 file:font-semibold file:text-white hover:file:bg-ctiks-red" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => setPosterFile(event.target.files?.[0] ?? null)} />
                 <span className="text-xs font-normal text-stone-500">A selected file replaces the image URL when saved. Maximum 8 MB.</span>
-              </label>}
+              </label>
               <label className="admin-label sm:col-span-2">Supporting PDF URL (optional)
                 <input className="admin-input" name="supportingDocumentUrl" maxLength={2048} placeholder="https://" defaultValue={activity?.supportingDocumentUrl ?? ''} />
               </label>
-              {process.env.NODE_ENV === 'development' && <label className="admin-label sm:col-span-2">Upload supporting PDF (local development)
+              <label className="admin-label sm:col-span-2">Or upload supporting PDF from device
                 <input className="block w-full text-sm text-stone-600 file:mr-4 file:cursor-pointer file:rounded-lg file:border-0 file:bg-ctiks-maroon file:px-4 file:py-2.5 file:font-semibold file:text-white hover:file:bg-ctiks-red" type="file" accept="application/pdf" onChange={(event) => setDocumentFile(event.target.files?.[0] ?? null)} />
                 <span className="text-xs font-normal text-stone-500">A selected PDF replaces the document URL when saved. Maximum 25 MB.</span>
-              </label>}
+              </label>
               <fieldset className="min-w-0 rounded-xl border border-stone-200 p-4 sm:col-span-2">
                 <legend className="px-2 text-sm font-semibold">Date and time (IST · optional)</legend>
                 <div className="grid items-start gap-4 sm:grid-cols-2">

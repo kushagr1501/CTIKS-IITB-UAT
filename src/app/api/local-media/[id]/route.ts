@@ -5,12 +5,12 @@ import {
   localMediaExtensions,
   localMediaIdPattern,
   localMediaNamePattern,
-  requireLocalMediaDevelopment,
+  requireLocalMediaAvailable,
 } from '@/server/local-media';
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    requireLocalMediaDevelopment();
+    requireLocalMediaAvailable();
     const { id: fileId } = await params;
     const match =
       /^([0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})(?:\.(jpg|png|webp|pdf))?$/i.exec(
@@ -30,7 +30,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const extensions = requestedExtension ? [requestedExtension] : localMediaExtensions;
     for (const extension of extensions) {
       try {
-        const bytes = await readFile(path.join(directory, `${id}.${extension}`));
+        const bytes = await readFile(path.join(/*turbopackIgnore: true*/ directory, `${id}.${extension}`));
         const contentType =
           extension === 'pdf' ? 'application/pdf' : extension === 'jpg' ? 'image/jpeg' : `image/${extension}`;
         return new Response(bytes, {

@@ -25,7 +25,7 @@ function localMediaUrls(value: unknown): string[] {
 
 export default function FacultyProfileEditor({ initialState }: { initialState: FacultyEditorState }) {
   const [state, setState] = useState(initialState);
-  const allowLocalUploads = initialState.identity.slug === 'vijayaraghavan-m-chariar';
+  const allowLocalUploads = true;
   const [content, setContent] = useState(initialState.content);
   const [areaInput, setAreaInput] = useState('');
   const [areaError, setAreaError] = useState('');
@@ -237,8 +237,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                 <div className={styles.profileAside}>
                   <div className={`${styles.portrait} ${!content.imageUrl ? styles.emptyPortrait : ''}`}>
                     <FacultyPortrait name={content.name} image={content.imageUrl || undefined} />
-                    {process.env.NODE_ENV === 'development' && (
-                      <LocalMediaUpload
+                    <LocalMediaUpload
                         accept="image/jpeg,image/png,image/webp"
                         storageName={`${content.name}-profile-picture`}
                         value={content.imageUrl}
@@ -247,8 +246,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                           setField('imageUrl', url);
                         }}
                         variant="profile-picture"
-                      />
-                    )}
+                    />
                   </div>
                   <div className={styles.photoField}>
                     {textField('imageUrl', 'Photograph URL (HTTPS or /assets/)', 2048, undefined, 'url')}
@@ -450,7 +448,7 @@ export default function FacultyProfileEditor({ initialState }: { initialState: F
                       <AcademicEntries
                         name="students"
                         {...collections.students}
-                        allowLocalUploads={process.env.NODE_ENV === 'development'}
+                        allowLocalUploads={allowLocalUploads}
                         onLocalMediaUploaded={rememberUploadedMedia}
                         sectionId={`editor-${status === 'GRADUATED' ? 'graduated' : 'current'}-students`}
                         label={label}

@@ -76,8 +76,12 @@ export default function LocalMediaUpload({
 
   async function upload(file?: File) {
     if (!file) return;
-    if (isPdf && file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      setError('Choose a PDF file to upload.');
+    const limit = isPdf ? 25 * 1024 * 1024 : 8 * 1024 * 1024;
+    const supportedType = isPdf
+      ? file.type === 'application/pdf' || (!file.type && file.name.toLowerCase().endsWith('.pdf'))
+      : ['image/jpeg', 'image/png', 'image/webp'].includes(file.type);
+    if (!supportedType || !file.size || file.size > limit) {
+      setError(isPdf ? 'Choose a PDF up to 25 MB.' : 'Choose a JPEG, PNG, or WebP photo up to 8 MB.');
       setMessage('');
       return;
     }

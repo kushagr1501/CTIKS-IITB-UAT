@@ -18,7 +18,6 @@ const url = z
   .refine((value) => {
     if (!value) return true;
     if (
-      process.env.NODE_ENV === 'development' &&
       /^\/api\/local-media\/(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}(?:\.(?:jpg|png|webp|pdf))?|[a-z0-9][a-z0-9-]{0,79}\.(?:jpg|png|webp|pdf))$/i.test(value)
     ) return true;
     try {

@@ -23,8 +23,9 @@ Open **`env.prod`** in the repository root. It is the only private settings file
 | `BETTER_AUTH_URL` | Final public HTTPS address, such as `https://ctiks.example.edu`. |
 | `REDIS_NAMESPACE` | Leave `ctiks` unless another CTIKS installation shares Redis. |
 | `ADMIN_EMAIL` | Leave `admin@ctiks.local`. |
+| `CTIKS_MEDIA_HOST_DIR` | Existing host folder for uploaded images and PDFs. The example `../ctiks-media` is beside the repository; use IITB's persistent storage path on the server. |
 
-Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; configure IITB's HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network.
+Create the `CTIKS_MEDIA_HOST_DIR` directory before starting the app and grant the container user (UID 1000) read and write access. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; configure IITB's HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network.
 
 ## 2. Choose the database content
 
@@ -77,6 +78,6 @@ Success: the website, PostgreSQL and Redis show as running. Open the HTTPS site.
 
 ## 5. Files and backups
 
-PostgreSQL stores image and PDF **paths**, not file bytes. Copy the existing media folder separately and preserve filenames. Current upload and `/api/local-media/` routes are development only; production upload and serving support still needs implementation and testing. A storage mount alone does not enable those routes. Follow [Storage and backups](PRODUCTION_HANDOVER.md).
+PostgreSQL stores image and PDF **paths**, not file bytes. Create the directory set by `CTIKS_MEDIA_HOST_DIR` before starting Compose, give the container user (UID 1000) read and write access, and copy existing media files into it with filenames unchanged. The app mounts this folder and serves `/api/local-media/` files from it. Test an existing image and PDF, a new upload, and a container restart. Follow [Storage and backups](PRODUCTION_HANDOVER.md).
 
 Next: [Storage and backups](PRODUCTION_HANDOVER.md) · [Production environment](PRODUCTION_ENVIRONMENT.md)

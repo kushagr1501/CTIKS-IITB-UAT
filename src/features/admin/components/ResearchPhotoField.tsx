@@ -30,7 +30,6 @@ export default function ResearchPhotoField({
         >
           Paste URL
         </button>
-        {process.env.NODE_ENV === 'development' && (
           <button
             type="button"
             aria-pressed={imageMode === 'upload'}
@@ -39,7 +38,6 @@ export default function ResearchPhotoField({
           >
             Upload photo
           </button>
-        )}
       </div>
       {imageMode === 'url' ? (
         <label key="photo-url" className="admin-label mt-3 block">
@@ -67,7 +65,7 @@ export default function ResearchPhotoField({
             onChange={(event) => onFileChange(event.target.files?.[0] ?? null)}
           />
           <span className="mt-1 block text-xs text-stone-500">
-            JPEG, PNG, or WebP up to 8 MB. Local development only.
+            JPEG, PNG, or WebP up to 8 MB.
           </span>
         </label>
       )}

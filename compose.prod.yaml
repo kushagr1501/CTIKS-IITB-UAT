@@ -37,6 +37,13 @@ services:
       DIRECT_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
       REDIS_URL: redis://redis:6379
       CTIKS_INTERNAL_POSTGRES: '1'
+      CTIKS_LOCAL_MEDIA_DIR: /data/ctiks-media
+    volumes:
+      - type: bind
+        source: ${CTIKS_MEDIA_HOST_DIR:?Set CTIKS_MEDIA_HOST_DIR in env.prod}
+        target: /data/ctiks-media
+        bind:
+          create_host_path: false
     ports:
       - '127.0.0.1:3000:3000'
     depends_on:

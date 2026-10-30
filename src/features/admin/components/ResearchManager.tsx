@@ -45,6 +45,7 @@ export default function ResearchManager({
   const [names, setNames] = useState<string[]>([]);
   const [newProfessor, setNewProfessor] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [fileError, setFileError] = useState('');
   const [imageMode, setImageMode] = useState<'url' | 'upload'>('url');
   const [filePreview, setFilePreview] = useState('');
   const previewRef = useRef('');
@@ -76,6 +77,14 @@ export default function ResearchManager({
   );
 
   function chooseFile(next: File | null) {
+    if (next && (!['image/jpeg', 'image/png', 'image/webp'].includes(next.type) || !next.size || next.size > 8 * 1024 * 1024)) {
+      setFileError('Choose a JPEG, PNG, or WebP image up to 8 MB.');
+      setError('Choose a JPEG, PNG, or WebP image up to 8 MB.');
+      next = null;
+    } else {
+      setFileError('');
+      if (next) setError('');
+    }
     if (previewRef.current) URL.revokeObjectURL(previewRef.current);
     const preview = next ? URL.createObjectURL(next) : '';
     previewRef.current = preview;
@@ -173,6 +182,10 @@ export default function ResearchManager({
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!editing) return;
+    if (fileError) {
+      setError(fileError);
+      return;
+    }
     const current = editing === 'new' ? null : editing;
     const professorNames = names;
     if (new Set(professorNames).size !== professorNames.length) {
