@@ -55,6 +55,35 @@ export async function checkFacultyDirectory(database: PrismaClient, browser: Bro
     values.imageUrl,
     'external image URL is persisted',
   );
+  const secondProfile: FacultyRecord = (
+    await (
+      await expectStatus(
+        await browser.request('/api/admin/faculty', {
+          method: 'POST',
+          body: { ...values, name: 'Second Integration Faculty', slug: 'second-integration-faculty' },
+        }),
+        201,
+        'new faculty appends despite an old client sending order zero',
+      )
+    ).json()
+  ).faculty;
+  assert.equal(secondProfile.displayOrder, 1);
+  profile = (
+    await (
+      await expectStatus(
+        await browser.request(`/api/admin/faculty/${profile.id}`, {
+          method: 'PATCH',
+          body: { ...values, displayOrder: 1, version: profile.version },
+        }),
+        200,
+        'moving the first faculty member to second position',
+      )
+    ).json()
+  ).faculty;
+  assert.equal(profile.displayOrder, 1);
+  const shifted = await database.facultyProfile.findUniqueOrThrow({ where: { id: secondProfile.id } });
+  assert.equal(shifted.displayOrder, 0);
+  assert.ok(shifted.version > secondProfile.version, 'shifted profiles receive a new version');
   assert.ok(
     !(await (await browser.request('/people')).text()).includes('Integration Faculty'),
     'hidden faculty must remain private',

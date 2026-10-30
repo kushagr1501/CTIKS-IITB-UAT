@@ -30,7 +30,10 @@ export type FacultyRecord = FacultyValues & {
 };
 
 export type FacultyLogin = { email: string; password: string };
-export type FacultySubmission = FacultyValues & { login?: FacultyLogin };
+export type FacultySubmission = Omit<FacultyValues, 'displayOrder'> & {
+  displayOrder?: number;
+  login?: FacultyLogin;
+};
 
 export type AuditRecord = {
   id: string;

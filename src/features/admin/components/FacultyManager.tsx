@@ -59,9 +59,17 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
       );
       replaceProfile(profile);
       setEditor(null);
+      let refreshed = true;
+      try {
+        const latest = await apiJson<{ faculty: FacultyRecord[] }>('/api/admin/faculty');
+        setFaculty(latest.faculty);
+      } catch {
+        refreshed = false;
+        setMessage('Profile saved. Reload the directory to see all updated positions.');
+      }
       if (values.login) {
         setCredentials({ name: profile.name, email: profile.loginEmail!, password: values.login.password });
-      } else setMessage(`${profile.name} was saved.`);
+      } else if (refreshed) setMessage(`${profile.name} was saved.`);
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Unable to save.');
     } finally {
@@ -112,7 +120,13 @@ export default function FacultyManager({ initialFaculty }: { initialFaculty: Fac
       );
       setFaculty((current) => current.filter((profile) => profile.id !== deleted.id));
       setPendingDelete(null);
-      setMessage(`${deleted.name} was deleted.`);
+      try {
+        const latest = await apiJson<{ faculty: FacultyRecord[] }>('/api/admin/faculty');
+        setFaculty(latest.faculty);
+        setMessage(`${deleted.name} was deleted.`);
+      } catch {
+        setMessage('Profile deleted. Reload the directory to see all updated positions.');
+      }
     } catch (failure) {
       setDeleteError(failure instanceof Error ? failure.message : 'Unable to delete this profile.');
     } finally {
