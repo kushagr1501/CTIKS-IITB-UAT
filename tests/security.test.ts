@@ -16,7 +16,15 @@ import { hashPassword, verifyPassword } from '../src/server/auth/passwords';
 import { authRequestSchemas, isAuthPath } from '../src/server/auth/request-schema';
 import { credentialAccountWhere } from '../src/server/auth/credential-fields';
 import { presentAuditEvent } from '../src/features/admin/audit-presentation';
-import { trustedOriginsFor } from '../src/server/auth/trusted-origins';
+import { localHttpEnabled, trustedOriginsFor } from '../src/server/auth/trusted-origins';
+
+test('local HTTP override only accepts an explicit loopback origin', () => {
+  assert.equal(localHttpEnabled('http://localhost:3000', '1'), true);
+  assert.equal(localHttpEnabled('http://127.0.0.1:3000', '1'), true);
+  assert.equal(localHttpEnabled('http://localhost:3000', undefined), false);
+  assert.equal(localHttpEnabled('http://example.com', '1'), false);
+  assert.equal(localHttpEnabled('https://localhost:3443', '1'), false);
+});
 
 test('development trusts both loopback names while production stays exact', () => {
   assert.deepEqual(trustedOriginsFor('http://127.0.0.1:3000', false), [
@@ -214,12 +222,14 @@ test('faculty input rejects privilege injection and supports clearing optional f
   assert.equal(schema.safeParse({ ...input, websiteUrl: 'javascript:alert(1)' }).success, false);
 
   const login = { email: ' Core.Faculty@ctiks.local ', password: 'Ab3!x9' };
-  const provisioned = facultyCreateSchema.parse({ ...input, login });
+  const newFaculty = Object.fromEntries(Object.entries(input).filter(([field]) => field !== 'displayOrder'));
+  const provisioned = facultyCreateSchema.parse({ ...newFaculty, login });
   assert.equal(provisioned.login?.email, 'core.faculty@ctiks.local');
   assert.equal(provisioned.login?.password, login.password);
+  assert.equal(Object.hasOwn(facultyCreateSchema.parse({ ...input, login }), 'displayOrder'), false);
   assert.equal(facultyUpdateSchema.safeParse({ ...input, version: 1, login }).success, true);
   for (const category of ['ADJUNCT', 'ASSOCIATE', 'VISITING'])
-    assert.equal(facultyCreateSchema.safeParse({ ...input, category, login }).success, false);
+    assert.equal(facultyCreateSchema.safeParse({ ...newFaculty, category, login }).success, false);
   for (const badLogin of [
     { ...login, role: 'ADMIN' },
     { ...login, userId: 'another-user' },
@@ -227,7 +237,7 @@ test('faculty input rejects privilege injection and supports clearing optional f
     { ...login, password: 'a'.repeat(129) },
     { ...login, email: 'invalid' },
   ])
-    assert.equal(facultyCreateSchema.safeParse({ ...input, login: badLogin }).success, false);
+    assert.equal(facultyCreateSchema.safeParse({ ...newFaculty, login: badLogin }).success, false);
 });
 
 test('request body limits apply to actual bytes as well as declared length', async () => {

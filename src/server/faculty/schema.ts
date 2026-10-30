@@ -79,7 +79,15 @@ const coreLoginOnly = (values: { category: string; login?: unknown }) =>
   !values.login || values.category === 'CORE';
 const coreLoginMessage = { message: 'Only core faculty can have a login.', path: ['login'] };
 
-export const facultyCreateSchema = facultyWriteSchema.refine(coreLoginOnly, coreLoginMessage);
+export const facultyCreateSchema = facultyWriteSchema
+  .partial({ displayOrder: true })
+  .transform((values) => {
+    // Older clients may still send an order; new profiles always append.
+    const data = { ...values };
+    delete data.displayOrder;
+    return data;
+  })
+  .refine(coreLoginOnly, coreLoginMessage);
 export const facultyUpdateSchema = facultyWriteSchema
   .extend({ version: z.number().int().positive() })
   .refine(coreLoginOnly, coreLoginMessage);

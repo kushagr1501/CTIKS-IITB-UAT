@@ -2,7 +2,8 @@ import 'server-only';
 import { randomUUID } from 'node:crypto';
 import type { Prisma } from '@/generated/prisma/client';
 import { getDatabase } from '@/server/database/client';
-import { sortFaculty } from '@/features/admin/faculty-order';
+import { placeFacultyInCategory, sortFaculty } from '@/features/admin/faculty-order';
+import type { FacultyCategory } from '@/features/admin/types';
 import { assertPermission, type Actor } from '@/server/auth/session';
 import { auditData } from '@/server/audit/write';
 import { HttpError } from '@/server/http/errors';
@@ -18,6 +19,41 @@ import {
 } from './schema';
 
 const loginInclude = { user: { select: { email: true } } } as const;
+const orderSelect = { id: true, name: true, category: true, displayOrder: true, version: true } as const;
+
+async function lockFacultyOrder(transaction: Prisma.TransactionClient) {
+  // PostgreSQL returns void; Prisma cannot decode that type from a raw query.
+  await transaction.$queryRaw`SELECT pg_advisory_xact_lock(72184123)::text`;
+}
+
+function categoryProfiles(transaction: Prisma.TransactionClient, category: FacultyCategory) {
+  return transaction.facultyProfile.findMany({
+    where: { category },
+    select: orderSelect,
+  });
+}
+
+async function applyPositions(
+  transaction: Prisma.TransactionClient,
+  original: Awaited<ReturnType<typeof categoryProfiles>>,
+  positions: { id: string; displayOrder: number }[],
+  skipId?: string,
+) {
+  const previous = new Map(original.map((profile) => [profile.id, profile]));
+  for (const position of positions) {
+    const profile = previous.get(position.id);
+    if (!profile || profile.id === skipId || profile.displayOrder === position.displayOrder) continue;
+    try {
+      await transaction.facultyProfile.update({
+        where: { id: profile.id, version: profile.version },
+        data: { displayOrder: position.displayOrder, version: { increment: 1 } },
+      });
+    } catch (error) {
+      if (isRecordNotFound(error)) throw new HttpError(409, 'The directory changed. Reload it and try again.');
+      throw error;
+    }
+  }
+}
 const editableFields = [
   'name',
   'slug',
@@ -87,9 +123,14 @@ export async function createFaculty(actor: Actor, input: unknown) {
   const { login: credentials, ...data } = facultyCreateSchema.parse(input);
   const login = await prepareLogin(credentials);
   return getDatabase().$transaction(async (transaction) => {
+    await lockFacultyOrder(transaction);
+    const existing = await categoryProfiles(transaction, data.category);
+    const id = randomUUID();
+    const displayOrder = existing.length;
+    await applyPositions(transaction, existing, placeFacultyInCategory(existing, id));
     if (login) await createLogin(transaction, data.name, login);
     const profile = await transaction.facultyProfile.create({
-      data: { ...data, userId: login?.id },
+      data: { ...data, id, displayOrder, userId: login?.id },
       include: loginInclude,
     });
     await transaction.auditEvent.create({
@@ -98,7 +139,7 @@ export async function createFaculty(actor: Actor, input: unknown) {
         action: 'FACULTY_CREATED',
         targetId: profile.id,
         targetName: profile.name,
-        after: data,
+        after: { ...data, displayOrder },
       }),
     });
     if (login) await auditLogin(transaction, actor, profile, login.email);
@@ -112,22 +153,35 @@ export async function updateFaculty(actor: Actor, recordId: string, input: unkno
   const { version, login: credentials, ...data } = facultyUpdateSchema.parse(input);
   const login = await prepareLogin(credentials);
   return getDatabase().$transaction(async (transaction) => {
+    await lockFacultyOrder(transaction);
     const before = await transaction.facultyProfile.findUnique({ where: { id } });
     if (!before) throw new HttpError(404, 'Faculty profile not found.');
     if (login && before.userId) throw new HttpError(409, 'This faculty member already has a login.');
+    const oldCategory = await categoryProfiles(transaction, before.category);
+    const sameCategory = before.category === data.category;
+    const newCategory = sameCategory ? oldCategory : await categoryProfiles(transaction, data.category);
+    const ordered = placeFacultyInCategory(newCategory, id, sameCategory ? data.displayOrder : undefined);
+    const displayOrder = ordered.find((profile) => profile.id === id)!.displayOrder;
     if (login) await createLogin(transaction, data.name, login);
     let updatedProfile: Prisma.FacultyProfileGetPayload<{ include: typeof loginInclude }>;
     try {
       // Return the updated row from the write instead of issuing a follow-up read.
       updatedProfile = await transaction.facultyProfile.update({
         where: { id, version },
-        data: { ...data, ...(login ? { userId: login.id } : {}), version: { increment: 1 } },
+        data: { ...data, displayOrder, ...(login ? { userId: login.id } : {}), version: { increment: 1 } },
         include: loginInclude,
       });
     } catch (error) {
       if (isRecordNotFound(error))
         throw new HttpError(409, 'This profile changed while you were editing. Reload it and try again.');
       throw error;
+    }
+    if (sameCategory) {
+      await applyPositions(transaction, oldCategory, ordered, id);
+    } else {
+      const remaining = sortFaculty(oldCategory.filter((profile) => profile.id !== id));
+      await applyPositions(transaction, oldCategory, remaining.map((profile, displayOrder) => ({ id: profile.id, displayOrder })));
+      await applyPositions(transaction, newCategory, ordered, id);
     }
     // Preserve history even if an older value no longer meets current URL policy.
     const publicBefore = Object.fromEntries(editableFields.map((key) => [key, before[key]]));
@@ -138,7 +192,7 @@ export async function updateFaculty(actor: Actor, recordId: string, input: unkno
         targetId: id,
         targetName: data.name,
         before: publicBefore,
-        after: data,
+        after: { ...data, displayOrder },
       }),
     });
     if (login) await auditLogin(transaction, actor, { id, name: data.name }, login.email);
@@ -209,6 +263,7 @@ export async function deleteFaculty(actor: Actor, recordId: string, input: unkno
   const { version } = versionSchema.parse(input);
   return getDatabase().$transaction(
     async (transaction) => {
+      await lockFacultyOrder(transaction);
       const profile = await transaction.facultyProfile.findUnique({
         where: { id },
         include: { user: { select: { role: true, email: true } } },
@@ -218,6 +273,8 @@ export async function deleteFaculty(actor: Actor, recordId: string, input: unkno
         throw new HttpError(409, 'A profile linked to an administrator account cannot be deleted.');
       const deleted = await transaction.facultyProfile.deleteMany({ where: { id, version } });
       if (deleted.count !== 1) throw new HttpError(409, 'This profile changed. Reload it before deleting.');
+      const remaining = await categoryProfiles(transaction, profile.category);
+      await applyPositions(transaction, remaining, sortFaculty(remaining).map((person, displayOrder) => ({ id: person.id, displayOrder })));
       if (profile.userId) {
         await transaction.account.deleteMany({ where: { userId: profile.userId } });
         // Preserve the audit identity while freeing the login email for a future new account.

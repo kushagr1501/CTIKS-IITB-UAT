@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { replaceFacultyProfile, sortFaculty } from '../src/features/admin/faculty-order';
+import { placeFacultyInCategory, replaceFacultyProfile, sortFaculty } from '../src/features/admin/faculty-order';
 import type { FacultyCategory, FacultyRecord } from '../src/features/admin/types';
 
 function member(id: string, category: FacultyCategory, displayOrder: number, name: string): FacultyRecord {
@@ -33,6 +33,20 @@ const initialFaculty = [
   member('visiting-0', 'VISITING', 0, 'Visiting Professor'),
 ];
 const ids = (faculty: readonly FacultyRecord[]) => faculty.map((profile) => profile.id);
+
+test('placing a profile shifts existing positions instead of duplicating them', () => {
+  const core = initialFaculty.filter((person) => person.category === 'CORE');
+  assert.deepEqual(placeFacultyInCategory(core, 'core-0', 1), [
+    { id: 'core-1', displayOrder: 0 },
+    { id: 'core-0', displayOrder: 1 },
+  ]);
+  assert.deepEqual(placeFacultyInCategory(core, 'core-new'), [
+    { id: 'core-0', displayOrder: 0 },
+    { id: 'core-1', displayOrder: 1 },
+    { id: 'core-new', displayOrder: 2 },
+  ]);
+  assert.deepEqual(placeFacultyInCategory(core, 'core-0', 99).map((item) => item.id), ['core-1', 'core-0']);
+});
 
 test('hiding and showing any faculty keeps category groups and display positions unchanged', () => {
   let faculty = initialFaculty;

@@ -80,8 +80,7 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
     const data = Object.fromEntries(new FormData(event.currentTarget));
     await onSave({
       ...data,
-      // Stored order is zero-based; admins enter positions starting at 1.
-      displayOrder: Number(data.displayOrder) - 1,
+      ...(profile ? { displayOrder: Number(data.displayOrder) - 1 } : {}),
       visible: data.visible === 'true',
       ...(category === 'CORE' && createLogin && !profile?.loginEmail ? { login } : {}),
     } as FacultySubmission);
@@ -252,21 +251,23 @@ export default function FacultyEditor({ profile, busy, error, onCancel, onSave }
               maxLength={254}
             />
           </label>
-          <label className="admin-label">
-            Display order
-            <input
-              name="displayOrder"
-              type="number"
-              min={1}
-              max={10001}
-              className="admin-input"
-              defaultValue={values.displayOrder + 1}
-              required
-            />
-            <span className="text-xs font-normal text-stone-500">
-              Start at 1. Lower numbers appear first within this category.
-            </span>
-          </label>
+          {profile && (
+            <label className="admin-label">
+              Position in category
+              <input
+                name="displayOrder"
+                type="number"
+                min={1}
+                max={10001}
+                className="admin-input"
+                defaultValue={values.displayOrder + 1}
+                required
+              />
+              <span className="text-xs font-normal text-stone-500">
+                Moving this person shifts the others to keep positions unique.
+              </span>
+            </label>
+          )}
           <label className="admin-label">
             Visibility
             <select name="visible" className="admin-input" defaultValue={String(values.visible)}>
