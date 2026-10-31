@@ -75,7 +75,7 @@ try {
       '--exit-on-error', '--single-transaction', '--no-owner', '--no-privileges',
       '--dbname', environment.PGDATABASE, filename,
     ], environment);
-    console.log('Restore completed. Verify the data and site before switching traffic.');
+    console.log('Database archive loaded into the target database.');
   }
 } catch (error) {
   if (error && typeof error === 'object' && 'code' in error && error.code === 'EEXIST') {

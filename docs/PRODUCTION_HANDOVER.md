@@ -6,35 +6,74 @@ Start with [Production setup](PRODUCTION_SETUP.md). All commands below use the s
 
 ## Existing images and PDFs
 
-The database has image and PDF **paths**, not file bytes. Set `CTIKS_MEDIA_HOST_DIR` in `env.prod` to a persistent host directory and create it before starting Compose. The app container runs as UID 1000, so grant that user read and write access without making the folder globally writable. Copy the existing `ctiks-local-media` files into this directory, preserving filenames; external HTTPS links remain external.
+The database has image and PDF **paths**, not file bytes. Set `CTIKS_MEDIA_HOST_DIR` in `env.prod` to a persistent host directory and create it before starting Compose. The app container runs as UID 1000, so grant that user read and write access without making the folder globally writable. Copy existing `ctiks-local-media` files into this directory, preserving filenames; external HTTPS links remain external. Check an existing image and PDF and a new upload before launch.
 
-The app mounts this directory at `/data/ctiks-media`. Check an existing image and PDF, upload new ones from an authorized editor, restart the app container, and check again. Back up the host directory alongside PostgreSQL. The upload routes accept JPEG, PNG, and WebP images up to 8 MB, and PDFs up to 25 MB; they check the actual file signature before saving.
+## Daily backups
 
-## Back up the database
+When Docker starts, the `backup` container saves the database and uploaded files once. It then saves them every 24 hours. If a backup fails, it tries again after one hour. Login sessions in Redis are not included.
 
-The backup is written to the repository's ignored `backups/` folder on the server. Create a unique filename each time:
+Choose where the copies live in `env.prod`:
 
-```bash
-docker compose --env-file env.prod -f compose.prod.yaml build tools
-docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-restore.mjs backup --output /backups/ctiks-YYYY-MM-DD.dump
+```env
+CTIKS_BACKUP_HOST_DIR=../ctiks-backups
+BACKUP_KEEP=14
 ```
 
-Success: `Backup created`. The script refuses to overwrite a file. `backups/` is ignored by Git but still needs restricted access and an off-server copy. Back up the media folder separately. A database backup does not contain image/PDF bytes or Redis sessions.
+`CTIKS_BACKUP_HOST_DIR` is the folder **on the Docker host**, just like `CTIKS_MEDIA_HOST_DIR`. The example is beside the repository. On the server, use its persistent backup path, such as `/mnt/iitb-storage/ctiks-backups`, and create the folder before starting Docker. If you change this path later, copy the existing backup sets to the new folder first.
 
-## Test a restore
+`BACKUP_KEEP=14` means **keep the latest 14 routine backup sets**. After a 15th succeeds, the oldest routine set is removed. Pre-restore safety copies are kept separately. Change `14` to another number if needed. Each set contains `database.dump`, `media/` (images and PDFs), and `manifest.json` (a file used to check the backup).
 
-Create a separate, empty database **inside the same PostgreSQL container**:
-
-```bash
-docker compose --env-file env.prod -f compose.prod.yaml exec -T postgres createdb -U ctiks ctiks_restore_check
-```
-
-Temporarily add `RESTORE_DATABASE_NAME=ctiks_restore_check` to `env.prod`. The `tools` container will use that database while the website continues to use `ctiks`. Then run:
+Check that the first backup succeeded:
 
 ```bash
-docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-restore.mjs restore --file /backups/ctiks-YYYY-MM-DD.dump --apply
+docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 backup
+docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-manager.mjs list
 ```
 
-Success: `Restore completed`. Remove `RESTORE_DATABASE_NAME` from `env.prod` afterward. The restore refuses a database with tables. Check the restored records and separately restored media files. This does not replace the live database. IITB should schedule, retain and regularly test both database and file backups.
+Success: the log says `Backup ready`, and `list` shows a backup ID such as `ctiks-20261031T120000Z-1a2b3c4d`. To make an extra backup now:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-manager.mjs run
+```
+
+Keep the folder set by `CTIKS_BACKUP_HOST_DIR` private and copy completed sets to protected storage **off this server**. Keeping 14 local sets is not a substitute for an off-server copy. The database and media are copied one after another; edits made during a backup may not be perfectly synchronized, so test restores regularly.
+
+## Restore a chosen backup to the live site
+
+Each backup ID represents one saved database and media set. Restoring an older ID replaces the current website content with that saved version. Schedule downtime and run these commands from the repository folder:
+
+1. List the backups and copy the ID you want:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-manager.mjs list
+```
+
+2. Stop the website and automatic backups:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml stop app backup
+```
+
+3. Replace `BACKUP_ID` with the chosen ID. This checks the backup, saves the current state as a protected safety copy, then restores its database **and** uploaded files:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/backup-manager.mjs restore-live BACKUP_ID --apply
+```
+
+4. **Only after** `Live restore completed`, apply any database migrations added since that backup:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml run --rm app npm run db:migrate
+```
+
+5. Restart and check the website:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml up -d app backup
+```
+
+If step 3 fails, keep the site stopped and investigate. The command attempts to put the original data back; it prints the safety backup ID for recovery. Safety copies are not removed by `BACKUP_KEEP`; review and remove them manually when no longer needed. Redis login sessions are not restored.
+
+An optional `restore-test BACKUP_ID` checks a backup in a temporary database without changing the live site. Everyday backups and live restores do not need `RESTORE_DATABASE_NAME`.
 
 Next: [Production setup](PRODUCTION_SETUP.md) · [Production environment](PRODUCTION_ENVIRONMENT.md)

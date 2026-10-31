@@ -24,7 +24,7 @@ Screenshots show an example build. The admin screenshot uses a test account.
 
 ## Production setup
 
-Follow [Production setup](docs/PRODUCTION_SETUP.md) for the full sequence, including Neon transfer and initial admin access. The IITB server needs Git, Docker with Compose and HTTPS. It uses one private `env.prod` file and one `compose.prod.yaml` stack; Node.js, PostgreSQL and Redis run inside Docker.
+Follow [Production setup](docs/PRODUCTION_SETUP.md) for the full sequence, including Neon transfer and initial admin access. The IITB server needs Git, Docker with Compose and HTTPS. It uses one private `env.prod` file and one `compose.prod.yaml` stack; Node.js, PostgreSQL, Redis and daily backups run inside Docker.
 
 To get the source and create the private settings file:
 

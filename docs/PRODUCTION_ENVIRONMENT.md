@@ -11,10 +11,12 @@ Copy `env.prod.example` to **`env.prod`** in the repository root. Edit only the 
 | `BETTER_AUTH_URL` | Always | Public HTTPS origin of the website. |
 | `REDIS_NAMESPACE` | Optional | Redis key prefix; `ctiks` is the default. |
 | `ADMIN_EMAIL` | Admin setup | `admin@ctiks.local`. |
-| `CTIKS_MEDIA_HOST_DIR` | Always | Existing host directory for uploaded images and PDFs. Docker mounts it at `/data/ctiks-media` in the app. Back it up separately. |
+| `CTIKS_MEDIA_HOST_DIR` | Always | Existing host directory for uploaded images and PDFs. Docker mounts it at `/data/ctiks-media`; the daily backup service copies it with the database dump. Keep an off-server copy too. |
+| `CTIKS_BACKUP_HOST_DIR` | Always | Existing host directory for backup sets. Example: `../ctiks-backups` beside the repository, or an absolute persistent path on the server. |
+| `BACKUP_KEEP` | Optional | Number of routine backup sets to keep in that folder. `14` keeps the latest 14; pre-restore safety copies are retained separately. |
 | `SOURCE_DATABASE_URL` | Neon transfer only | Direct Neon source URL. Add it before transfer, remove it afterward. |
 | `ADMIN_INITIAL_PASSWORD` | Admin setup only | Initial password from the private handover. Remove after provisioning. |
-| `RESTORE_DATABASE_NAME` | Restore test only | Name of an empty test database, such as `ctiks_restore_check`. Remove after the test. |
+| `RESTORE_DATABASE_NAME` | Manual maintenance only | Overrides the database selected by the `tools` container. The optional `restore-test` command creates its own test database and does not need this setting. Leave it out of normal `env.prod`. |
 
 The Neon **source** comes from `SOURCE_DATABASE_URL` in `env.prod`. The **target** is the `ctiks` PostgreSQL container configured in `compose.prod.yaml` from `POSTGRES_PASSWORD`. Both are accessed by the temporary `tools` container. The website uses only the target after transfer.
 

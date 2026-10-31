@@ -24,8 +24,10 @@ Open **`env.prod`** in the repository root. It is the only private settings file
 | `REDIS_NAMESPACE` | Leave `ctiks` unless another CTIKS installation shares Redis. |
 | `ADMIN_EMAIL` | Leave `admin@ctiks.local`. |
 | `CTIKS_MEDIA_HOST_DIR` | Existing host folder for uploaded images and PDFs. The example `../ctiks-media` is beside the repository; use IITB's persistent storage path on the server. |
+| `CTIKS_BACKUP_HOST_DIR` | Existing host folder for database and media backups. The example `../ctiks-backups` is beside the repository; use the server's persistent backup path. |
+| `BACKUP_KEEP` | `14` keeps the latest 14 routine backups. Pre-restore safety copies are kept separately. |
 
-Create the `CTIKS_MEDIA_HOST_DIR` directory before starting the app and grant the container user (UID 1000) read and write access. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; configure IITB's HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network.
+Create both the media and backup host directories before starting Docker. Grant the app container user (UID 1000) read and write access to media; restrict backup-folder access to operators. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; configure IITB's HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network.
 
 ## 2. Choose the database content
 
@@ -74,7 +76,7 @@ docker compose --env-file env.prod -f compose.prod.yaml up -d
 docker compose --env-file env.prod -f compose.prod.yaml ps
 ```
 
-Success: the website, PostgreSQL and Redis show as running. Open the HTTPS site. Check Home, People, Research, Activities and `/login`, then sign in and make a test content edit. For a startup error, check `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=50 app` and the values in `env.prod`.
+Success: the website, PostgreSQL, Redis and backup service show as running. Check for `Backup ready` with `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 backup`. Open the HTTPS site. Check Home, People, Research, Activities and `/login`, then sign in and make a test content edit. For a startup error, check `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=50 app` and the values in `env.prod`.
 
 ## 5. Files and backups
 
