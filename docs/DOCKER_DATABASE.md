@@ -5,7 +5,7 @@ Read this if you need to locate the CTIKS production Docker and database files.
 | File | Purpose |
 | --- | --- |
 | `Dockerfile` | Builds the website with Node.js 22.23.4. |
-| `Dockerfile.tools` | Builds the Node.js and PostgreSQL 17 client image for transfers, daily backups and restore checks. |
+| `Dockerfile.tools` | Builds the Node.js and PostgreSQL 18 client image for transfers, daily backups and restore checks. |
 | `compose.prod.yaml` | Starts the website, one PostgreSQL database, Redis and daily backups; runs maintenance commands. |
 | `env.prod.example` | Template for the one private `env.prod` settings file. |
 | `prisma/schema.prisma` | Current database models. |

@@ -4,7 +4,9 @@ Read this if you are installing CTIKS on the IITB server.
 
 CTIKS is a website for people, research, academics and activities. Administrators manage content, and core faculty edit their own profiles. One Docker Compose file runs the website, **one PostgreSQL database**, and Redis. PostgreSQL holds website data; Redis holds login sessions.
 
-You need Git and Docker Engine with Docker Compose for a local test. Hosting the site also requires an HTTPS hostname. You do **not** need to install Node.js, PostgreSQL, Redis, `pg_dump`, or `pg_restore` on the server. Docker images provide them. The supplied database and maintenance images use PostgreSQL 17; check that the Neon source is version 17 or older before transfer.
+You need Git and Docker Engine with Docker Compose for a local test. Hosting the site also requires an HTTPS hostname. You do **not** need to install Node.js, PostgreSQL, Redis, `pg_dump`, or `pg_restore` on the server. Docker images provide them. The supplied database and maintenance images use PostgreSQL 18, matching the current Neon source.
+
+This Compose file uses a new `postgres-data-v18` volume. It does not open or delete an older PostgreSQL 17 volume. If this host already has data in a PostgreSQL 17 volume that you need, back it up and plan a database migration before starting this stack; changing the image version alone does not upgrade its data.
 
 ## 1. Get the repository
 
