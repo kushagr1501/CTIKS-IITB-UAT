@@ -24,12 +24,12 @@ Screenshots show an example build. The admin screenshot uses a test account.
 
 ## Production setup
 
-Follow [Production setup](docs/PRODUCTION_SETUP.md) for the full sequence, including Neon transfer and initial admin access. The IITB server needs Git, Docker with Compose and HTTPS. It uses one private `env.prod` file and one `compose.prod.yaml` stack; Node.js, PostgreSQL, Redis and daily backups run inside Docker.
+Follow [Production setup](docs/PRODUCTION_SETUP.md) for the full sequence, including Neon transfer and initial admin access. A local Docker test uses `http://localhost:3000`; hosting requires HTTPS. It uses one private `env.prod` file and one `compose.prod.yaml` stack; the website, PostgreSQL, Redis and daily backups run in Docker.
 
 To get the source and create the private settings file:
 
 ```bash
-git clone https://github.com/kushagr1501/CTIKS-IITB-UAT.git
+git clone --branch prod --single-branch https://github.com/kushagr1501/CTIKS-IITB-UAT.git
 cd CTIKS-IITB-UAT
 cp env.prod.example env.prod
 ```

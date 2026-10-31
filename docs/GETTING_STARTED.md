@@ -29,12 +29,11 @@ Windows installation. The clean-clone check used the installed tools listed abov
 
 ## 2. Clone and install
 
-Replace `REPOSITORY_LOCATION` with your mentor's URL or local repository path. The published URL is
-`https://github.com/kushagr1501/CTIKS-IITB-UAT.git`. It may be behind local work. A commit is a saved source
-version; use the version your mentor reviewed, rather than guessing from the newest folder.
+Replace `REPOSITORY_LOCATION` with the repository URL or a local repository path. The published URL is
+`https://github.com/kushagr1501/CTIKS-IITB-UAT.git`. Clone the `prod` branch used for the Docker handover.
 
 ```bash
-git clone "REPOSITORY_LOCATION" ctiks-web
+git clone --branch prod --single-branch "REPOSITORY_LOCATION" ctiks-web
 cd ctiks-web
 npm ci
 ```

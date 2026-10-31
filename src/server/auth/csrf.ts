@@ -5,7 +5,7 @@ import { HttpError } from '@/server/http/errors';
 import { isValidCsrfToken } from './csrf-token';
 
 export function csrfCookieName() {
-  return process.env.NODE_ENV === 'production' ? '__Host-ctiks-csrf' : 'ctiks-csrf';
+  return getEnvironment().secureCookies ? '__Host-ctiks-csrf' : 'ctiks-csrf';
 }
 
 export function verifyCsrf(request: Request) {

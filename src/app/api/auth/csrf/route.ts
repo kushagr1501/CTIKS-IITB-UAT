@@ -12,7 +12,7 @@ export async function GET() {
     const response = NextResponse.json({ token }, { headers: { 'Cache-Control': 'no-store' } });
     response.cookies.set(csrfCookieName(), token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: getEnvironment().secureCookies,
       sameSite: 'strict',
       path: '/',
       maxAge: 3600,

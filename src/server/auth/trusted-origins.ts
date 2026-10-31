@@ -1,5 +1,10 @@
 const LOCAL_HOSTS = new Set(['127.0.0.1', 'localhost']);
 
+export function localHttpEnabled(applicationUrl: string, setting: string | undefined) {
+  const url = new URL(applicationUrl);
+  return setting === '1' && url.protocol === 'http:' && LOCAL_HOSTS.has(url.hostname);
+}
+
 export function trustedOriginsFor(applicationUrl: string, production: boolean) {
   const configured = new URL(applicationUrl);
   const origins = new Set([configured.origin]);

@@ -4,12 +4,12 @@ Read this if you are installing CTIKS on the IITB server.
 
 CTIKS is a website for people, research, academics and activities. Administrators manage content, and core faculty edit their own profiles. One Docker Compose file runs the website, **one PostgreSQL database**, and Redis. PostgreSQL holds website data; Redis holds login sessions.
 
-You need Git, Docker Engine with Docker Compose, and an HTTPS hostname. You do **not** need to install Node.js, PostgreSQL, Redis, `pg_dump`, or `pg_restore` on the server. Docker images provide them. The supplied database and maintenance images use PostgreSQL 17; check that the Neon source is version 17 or older before transfer.
+You need Git and Docker Engine with Docker Compose for a local test. Hosting the site also requires an HTTPS hostname. You do **not** need to install Node.js, PostgreSQL, Redis, `pg_dump`, or `pg_restore` on the server. Docker images provide them. The supplied database and maintenance images use PostgreSQL 17; check that the Neon source is version 17 or older before transfer.
 
 ## 1. Get the repository
 
 ```bash
-git clone https://github.com/kushagr1501/CTIKS-IITB-UAT.git
+git clone --branch prod --single-branch https://github.com/kushagr1501/CTIKS-IITB-UAT.git
 cd CTIKS-IITB-UAT
 cp env.prod.example env.prod
 ```
@@ -20,14 +20,15 @@ Open **`env.prod`** in the repository root. It is the only private settings file
 | --- | --- |
 | `POSTGRES_PASSWORD` | New long password using letters, numbers, `_` or `-`. Docker builds the database URL from it. |
 | `BETTER_AUTH_SECRET` | New random string of at least 32 characters. |
-| `BETTER_AUTH_URL` | Final public HTTPS address, such as `https://ctiks.example.edu`. |
+| `BETTER_AUTH_URL` | Leave `http://localhost:3000` for a local Docker test. Before hosting, change it to the public HTTPS address, such as `https://ctiks.example.edu`. |
+| `CTIKS_LOCAL_HTTP` | Leave `1` for a local Docker test. It applies only to `localhost` or `127.0.0.1`; an HTTPS address uses secure cookies regardless of this value. |
 | `REDIS_NAMESPACE` | Leave `ctiks` unless another CTIKS installation shares Redis. |
 | `ADMIN_EMAIL` | Leave `admin@ctiks.local`. |
 | `CTIKS_MEDIA_HOST_DIR` | Existing host folder for uploaded images and PDFs. The example `../ctiks-media` is beside the repository; use IITB's persistent storage path on the server. |
 | `CTIKS_BACKUP_HOST_DIR` | Existing host folder for database and media backups. The example `../ctiks-backups` is beside the repository; use the server's persistent backup path. |
 | `BACKUP_KEEP` | `14` keeps the latest 14 routine backups. Pre-restore safety copies are kept separately. |
 
-Create both the media and backup host directories before starting Docker. Grant the app container user (UID 1000) read and write access to media; restrict backup-folder access to operators. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; configure IITB's HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network.
+Create both the media and backup host directories before starting Docker. Grant the app container user (UID 1000) read and write access to media; restrict backup-folder access to operators. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; on the hosting server, configure an HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network. When you change `BETTER_AUTH_URL`, recreate the app container so it reads the new value.
 
 ## 2. Choose the database content
 
@@ -76,7 +77,7 @@ docker compose --env-file env.prod -f compose.prod.yaml up -d
 docker compose --env-file env.prod -f compose.prod.yaml ps
 ```
 
-Success: the website, PostgreSQL, Redis and backup service show as running. Check for `Backup ready` with `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 backup`. Open the HTTPS site. Check Home, People, Research, Activities and `/login`, then sign in and make a test content edit. For a startup error, check `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=50 app` and the values in `env.prod`.
+Success: the website, PostgreSQL, Redis and backup service show as running. Open `http://localhost:3000` for a local Docker test, or the configured HTTPS address when hosted. Check Home, People, Research, Activities and `/login`, then sign in and make a test content edit. Check for `Backup ready` with `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 backup`. For a startup error, check `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=50 app` and the values in `env.prod`.
 
 ## 5. Files and backups
 

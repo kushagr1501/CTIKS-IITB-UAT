@@ -1,6 +1,6 @@
 import 'server-only';
 import { z } from 'zod';
-import { trustedOriginsFor } from '@/server/auth/trusted-origins';
+import { localHttpEnabled, trustedOriginsFor } from '@/server/auth/trusted-origins';
 
 const environmentSchema = z.object({
   DATABASE_URL: z.string().min(1),
@@ -17,13 +17,15 @@ export function getEnvironment() {
   const result = environmentSchema.safeParse(process.env);
   if (!result.success) throw new Error('Backend environment is incomplete. See .env.example.');
   const url = new URL(result.data.BETTER_AUTH_URL);
-  if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:') {
+  const localHttp = localHttpEnabled(url.origin, process.env.CTIKS_LOCAL_HTTP);
+  if (process.env.NODE_ENV === 'production' && url.protocol !== 'https:' && !localHttp) {
     throw new Error('Production authentication requires an HTTPS application URL.');
   }
-  const production = process.env.NODE_ENV === 'production';
+  const production = process.env.NODE_ENV === 'production' && !localHttp;
   return {
     ...result.data,
     origin: url.origin,
+    secureCookies: production,
     trustedOrigins: trustedOriginsFor(url.origin, production),
   };
 }

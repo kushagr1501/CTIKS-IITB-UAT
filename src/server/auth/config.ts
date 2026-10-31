@@ -45,7 +45,7 @@ function createAuth() {
       },
     },
     advanced: {
-      useSecureCookies: process.env.NODE_ENV === 'production',
+      useSecureCookies: environment.secureCookies,
       cookiePrefix: 'ctiks',
       defaultCookieAttributes: { httpOnly: true, sameSite: 'strict', path: '/' },
       // Proxy trust is deferred. The API wrapper applies Redis-backed account
