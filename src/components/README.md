@@ -12,7 +12,6 @@ Tool terms: [glossary](../../docs/GLOSSARY.md).
 | ------------------------- | ---------------------------------------- |
 | `layout/Footer.tsx`       | Footer markup shared by the application. |
 | `layout/Nav.tsx`          | Public navigation and nested menus.      |
-| `layout/FontSwitcher.tsx` | Browser font preference.                 |
 | `ui`                      | Small shared presentation components.    |
 | `providers`               | Browser motion and scrolling behavior.   |
 
