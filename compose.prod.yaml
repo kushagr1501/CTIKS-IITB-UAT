@@ -30,12 +30,16 @@ services:
   app:
     build: .
     restart: unless-stopped
-    env_file:
-      - env.prod
     environment:
       DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
       DIRECT_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
       REDIS_URL: redis://redis:6379
+      REDIS_NAMESPACE: ${REDIS_NAMESPACE:-ctiks}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET in env.prod or Coolify}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?Set BETTER_AUTH_URL in env.prod or Coolify}
+      CTIKS_LOCAL_HTTP: ${CTIKS_LOCAL_HTTP:-0}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ctiks.local}
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-}
       CTIKS_INTERNAL_POSTGRES: '1'
       CTIKS_LOCAL_MEDIA_DIR: /data/ctiks-media
     volumes:
@@ -56,12 +60,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.tools
-    env_file:
-      - env.prod
     environment:
       DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/${RESTORE_DATABASE_NAME:-ctiks}
       CTIKS_LIVE_DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
       TARGET_DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
+      SOURCE_DATABASE_URL: ${SOURCE_DATABASE_URL:-}
     volumes:
       - type: bind
         source: ${CTIKS_BACKUP_HOST_DIR:?Set CTIKS_BACKUP_HOST_DIR in env.prod}
@@ -81,8 +84,6 @@ services:
       context: .
       dockerfile: Dockerfile.tools
     restart: unless-stopped
-    env_file:
-      - env.prod
     environment:
       DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
       CTIKS_MEDIA_DIR: /data/ctiks-media
