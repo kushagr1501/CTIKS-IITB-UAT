@@ -29,14 +29,14 @@ export default function Header() {
             </span>
           </Link>
 
-          <div className="relative h-[24px] w-[120px] sm:h-[30px] sm:w-[150px] md:h-[42px] md:w-[204px] mx-auto mt-1">
+          <div className="relative mx-auto mt-1 h-[25px] w-[132px] sm:h-[33px] sm:w-[166px] md:h-[45px] md:w-[228px]">
             <img
               src={ASSETS.iitbPill}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-contain"
             />
-            <span className="absolute inset-0 flex items-center justify-center font-display text-[10px] sm:text-[12px] md:text-[19px] font-semibold uppercase tracking-widest md:tracking-[2.3px] text-ctiks-gold">
+            <span className="absolute inset-0 flex items-center justify-center font-display text-[10px] sm:text-[12px] md:text-[19px] font-semibold uppercase tracking-widest md:tracking-[2.3px] text-ctiks-maroon">
               IIT Bombay
             </span>
           </div>
