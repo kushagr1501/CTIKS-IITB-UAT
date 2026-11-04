@@ -334,7 +334,21 @@ async function serve() {
   for (;;) {
     let delay = day;
     try {
-      await makeBackup();
+      const database = new pg.Client({ connectionString: liveDatabaseUrl });
+      let ready;
+      try {
+        await database.connect();
+        const result = await database.query(
+          "SELECT to_regclass('public.activities') IS NOT NULL AND to_regclass('public.users') IS NOT NULL AS ready");
+        ready = result.rows[0].ready;
+      } finally {
+        await database.end().catch(() => {});
+      }
+      if (ready) await makeBackup();
+      else {
+        console.log('Waiting for database import before the first automatic backup.');
+        delay = 60 * 1000;
+      }
     } catch {
       console.error('Automatic backup failed; retrying in one hour. Check database, media storage and backup disk.');
       delay = 60 * 60 * 1000;

@@ -24,11 +24,8 @@ Open **`env.prod`** in the repository root. It is the only private settings file
 | `BETTER_AUTH_SECRET` | New random string of at least 32 characters. |
 | `BETTER_AUTH_URL` | Leave `http://localhost:3000` for a local Docker test. Before hosting, change it to the public HTTPS address, such as `https://ctiks.example.edu`. |
 | `CTIKS_LOCAL_HTTP` | Leave `1` for a local Docker test. It applies only to `localhost` or `127.0.0.1`; an HTTPS address uses secure cookies regardless of this value. |
-| `REDIS_NAMESPACE` | Leave `ctiks` unless another CTIKS installation shares Redis. |
-| `ADMIN_EMAIL` | Leave `admin@ctiks.local`. |
 | `CTIKS_MEDIA_HOST_DIR` | Existing host folder for uploaded images and PDFs. The example `../ctiks-media` is beside the repository; use IITB's persistent storage path on the server. |
 | `CTIKS_BACKUP_HOST_DIR` | Existing host folder for database and media backups. The example `../ctiks-backups` is beside the repository; use the server's persistent backup path. |
-| `BACKUP_KEEP` | `14` keeps the latest 14 routine backups. Pre-restore safety copies are kept separately. |
 
 Create both the media and backup host directories before starting Docker. Grant the app container user (UID 1000) read and write access to media; restrict backup-folder access to operators. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; on the hosting server, configure an HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network. When you change `BETTER_AUTH_URL`, recreate the app container so it reads the new value.
 
@@ -46,16 +43,18 @@ Success: `docker compose --env-file env.prod -f compose.prod.yaml ps` shows Post
 
 The **target** is already set in `compose.prod.yaml` as `postgresql://ctiks:<POSTGRES_PASSWORD>@postgres:5432/ctiks`. It is the same PostgreSQL database the website will use. Do not set a second target database or run migrations before this full transfer.
 
+Build the `backup` image before transferring. It also contains the PostgreSQL 18 transfer tools. Building it does not start the website or change either database. Docker may reuse cached build steps, so it can finish quickly.
+
 ```bash
-docker compose --env-file env.prod -f compose.prod.yaml build tools
-docker compose --env-file env.prod -f compose.prod.yaml run --rm tools scripts/transfer-postgres.mjs --apply
+docker compose --env-file env.prod -f compose.prod.yaml build backup
+docker compose --env-file env.prod -f compose.prod.yaml run --rm backup scripts/transfer-postgres.mjs --apply
 ```
 
 Success: `Transfer completed`. This copies the schema, content, website accounts and password hashes. The script refuses a target that already contains tables. Remove `SOURCE_DATABASE_URL` from `env.prod` immediately afterward. The transfer does **not** copy image/PDF files, Redis sessions or PostgreSQL server roles. See [Storage and backups](PRODUCTION_HANDOVER.md).
 
-If you want a new empty website instead, skip this transfer. Step 3 creates the tables.
+For this handover, transfer Neon first. A new empty website needs a separately provisioned admin account.
 
-## 3. Build, migrate and set the admin password
+## 3. Build and migrate
 
 ```bash
 docker compose --env-file env.prod -f compose.prod.yaml build app
@@ -64,13 +63,7 @@ docker compose --env-file env.prod -f compose.prod.yaml run --rm app npm run db:
 
 Success: the image builds and Prisma applies migrations or says none are pending. If Neon was transferred, this applies only migrations newer than the source data.
 
-Temporarily add `ADMIN_INITIAL_PASSWORD` to **`env.prod`** using the password in the private handover. Then run:
-
-```bash
-docker compose --env-file env.prod -f compose.prod.yaml run --rm app npm run admin:provision
-```
-
-Success: `Administrator credential provisioned`. This creates `admin@ctiks.local` on an empty database or sets its password after a Neon transfer. It refuses a different existing administrator. Remove `ADMIN_INITIAL_PASSWORD` from `env.prod` immediately. Change the password after first sign-in.
+The Neon transfer includes the existing administrator account and password hash. Sign in with that account after startup; do not run `admin:provision` after the transfer. An installation that skips Neon needs a separate admin provisioning step.
 
 ## 4. Start and verify the site
 

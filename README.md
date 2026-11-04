@@ -24,7 +24,7 @@ Screenshots show an example build. The admin screenshot uses a test account.
 
 ## Production setup
 
-Follow [Production setup](docs/PRODUCTION_SETUP.md) for the full sequence, including Neon transfer and initial admin access. A local Docker test uses `http://localhost:3000`; hosting requires HTTPS. It uses one private `env.prod` file and one `compose.prod.yaml` stack; the website, PostgreSQL, Redis and daily backups run in Docker.
+Follow [Production setup](docs/PRODUCTION_SETUP.md) for the full sequence, including Neon transfer and existing admin access. A local Docker test uses `http://localhost:3000`; hosting requires HTTPS. It uses one private `env.prod` file and one `compose.prod.yaml` stack; the website, PostgreSQL, Redis and daily backups run in Docker.
 
 To get the source and create the private settings file:
 
@@ -40,6 +40,7 @@ Edit `env.prod`, then follow the setup guide before starting the stack. Do not c
 
 - [Project guide](docs/PROJECT_GUIDE.md) — pages, features and the folders behind them.
 - [Production setup](docs/PRODUCTION_SETUP.md) — Docker-only IITB deployment.
+- [Coolify setup](docs/COOLIFY_SETUP.md) — deploy and import Neon through Coolify.
 - [IITB handover](docs/IITB_HANDOVER.md) — one guide for deployment, data transfer, storage, backups and login.
 - [Docker and database setup](docs/DOCKER_DATABASE.md) — server container and PostgreSQL migrations.
 - [Production handover](docs/PRODUCTION_HANDOVER.md) — deployment, backup, restore and initial admin access.
