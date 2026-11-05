@@ -27,6 +27,18 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+  bootstrap:
+    build:
+      context: .
+      dockerfile: Dockerfile.tools
+    restart: 'no'
+    environment:
+      TARGET_DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
+      SOURCE_DATABASE_URL: ${SOURCE_DATABASE_URL:-}
+    command: ['scripts/bootstrap-prod.mjs']
+    depends_on:
+      postgres:
+        condition: service_healthy
   app:
     build: .
     restart: unless-stopped
@@ -52,6 +64,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      bootstrap:
+        condition: service_completed_successfully
   backup:
     build:
       context: .
@@ -60,7 +74,6 @@ services:
     environment:
       DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
       TARGET_DATABASE_URL: postgresql://ctiks:${POSTGRES_PASSWORD}@postgres:5432/ctiks
-      SOURCE_DATABASE_URL: ${SOURCE_DATABASE_URL:-}
       CTIKS_MEDIA_DIR: /data/ctiks-media
       BACKUP_KEEP: '14'
     command: ['scripts/backup-manager.mjs', 'serve']
@@ -78,6 +91,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      bootstrap:
+        condition: service_completed_successfully
 volumes:
   postgres-data-v18:
   redis-data:

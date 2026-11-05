@@ -12,9 +12,9 @@ Copy `env.prod.example` to **`env.prod`** in the repository root. Edit only the 
 | `CTIKS_LOCAL_HTTP` | Local Docker test only | Leave `1` for a loopback HTTP test. It cannot enable HTTP for a public hostname; with an HTTPS URL it has no effect. |
 | `CTIKS_MEDIA_HOST_DIR` | Always | Existing host directory for uploaded images and PDFs. Docker mounts it at `/data/ctiks-media`; the daily backup service copies it with the database dump. Keep an off-server copy too. |
 | `CTIKS_BACKUP_HOST_DIR` | Always | Existing host directory for backup sets. Example: `../ctiks-backups` beside the repository, or an absolute persistent path on the server. |
-| `SOURCE_DATABASE_URL` | Neon transfer only | Direct Neon source URL. Add it before transfer, remove it afterward. |
+| `SOURCE_DATABASE_URL` | First deployment only | Direct Neon source URL. Set it before the first deployment; remove it after the import succeeds. |
 
-The Neon **source** comes from `SOURCE_DATABASE_URL` in `env.prod`. The **target** is the `ctiks` PostgreSQL container configured in `compose.prod.yaml` from `POSTGRES_PASSWORD`. A one-time run of the `backup` image copies the source. The website uses only the target after transfer. The existing admin account comes with the Neon data.
+The Neon **source** comes from `SOURCE_DATABASE_URL` in `env.prod`. The **target** is the `ctiks` PostgreSQL container configured in `compose.prod.yaml` from `POSTGRES_PASSWORD`. On first startup, the short `bootstrap` job imports Neon if the target is empty. The app then applies pending migrations. Later starts skip the import because the target has data. The existing admin account comes with the Neon data.
 
 Compose sets `REDIS_NAMESPACE=ctiks` and keeps 14 routine backups. Change these defaults in `compose.prod.yaml` only when needed. The database URLs shown by Coolify are derived from `POSTGRES_PASSWORD`; they do not need separate values.
 

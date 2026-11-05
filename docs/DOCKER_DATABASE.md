@@ -7,11 +7,12 @@ Read this if you need to locate the CTIKS production Docker and database files.
 | `Dockerfile` | Builds the website with Node.js 22.23.4. |
 | `Dockerfile.tools` | Builds the small Node.js and PostgreSQL 18 client image for transfers, daily backups and restore checks. |
 | `docker/tools/` | Locked dependency list for the maintenance image (`pg` only). |
-| `compose.prod.yaml` | Starts the website, one PostgreSQL database, Redis and daily backups; runs maintenance commands. |
+| `compose.prod.yaml` | Starts the website, one PostgreSQL database, Redis and daily backups; runs a short setup job before the website. |
 | `env.prod.example` | Template for the one private `env.prod` settings file. |
 | `prisma/schema.prisma` | Current database models. |
 | `prisma/migrations/` | Ordered schema changes applied after transfer or on a new database. |
 | `scripts/transfer-postgres.mjs` | Copies Neon into the empty `ctiks` database. |
+| `scripts/bootstrap-prod.mjs` | Runs the Neon transfer once when the target is empty; otherwise skips it. |
 | `scripts/backup-restore.mjs` | Database dump and restore used by the backup manager. |
 | `scripts/backup-manager.mjs` | Daily database and media backups, listing, optional restore checks, and selected-ID live restore. |
 

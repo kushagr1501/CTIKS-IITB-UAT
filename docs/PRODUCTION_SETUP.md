@@ -31,48 +31,27 @@ Create both the media and backup host directories before starting Docker. Grant 
 
 ## 2. Choose the database content
 
-### Copy the existing Neon database
+For this handover, copy the existing Neon database. Before the first startup, add `SOURCE_DATABASE_URL` to **`env.prod`**. Use the **direct Neon URL**, with no `-pooler` in the hostname. Keep it private. The target is the one `ctiks` PostgreSQL container configured by Compose; do not set another target URL.
 
-First start the empty PostgreSQL container:
+The short `bootstrap` job imports Neon only if the target database is empty. It then exits. The app waits for it and applies pending Prisma migrations before starting the website. The import includes the existing administrator account and password hash. If the import fails, the app will not start. An installation without Neon needs a separate admin provisioning plan.
 
-```bash
-docker compose --env-file env.prod -f compose.prod.yaml up -d postgres
-```
-
-Success: `docker compose --env-file env.prod -f compose.prod.yaml ps` shows PostgreSQL healthy. Temporarily add `SOURCE_DATABASE_URL` to **`env.prod`**. Use the **direct Neon URL**, with no `-pooler` in the hostname. Keep it private.
-
-The **target** is already set in `compose.prod.yaml` as `postgresql://ctiks:<POSTGRES_PASSWORD>@postgres:5432/ctiks`. It is the same PostgreSQL database the website will use. Do not set a second target database or run migrations before this full transfer.
-
-Build the `backup` image before transferring. It also contains the PostgreSQL 18 transfer tools. Building it does not start the website or change either database. Docker may reuse cached build steps, so it can finish quickly.
+## 3. Build and start
 
 ```bash
-docker compose --env-file env.prod -f compose.prod.yaml build backup
-docker compose --env-file env.prod -f compose.prod.yaml run --rm backup scripts/transfer-postgres.mjs --apply
-```
-
-Success: `Transfer completed`. This copies the schema, content, website accounts and password hashes. The script refuses a target that already contains tables. Remove `SOURCE_DATABASE_URL` from `env.prod` immediately afterward. The transfer does **not** copy image/PDF files, Redis sessions or PostgreSQL server roles. See [Storage and backups](PRODUCTION_HANDOVER.md).
-
-For this handover, transfer Neon first. A new empty website needs a separately provisioned admin account.
-
-## 3. Build and migrate
-
-```bash
-docker compose --env-file env.prod -f compose.prod.yaml build app
-docker compose --env-file env.prod -f compose.prod.yaml run --rm app npm run db:migrate
-```
-
-Success: the image builds and Prisma applies migrations or says none are pending. If Neon was transferred, this applies only migrations newer than the source data.
-
-The Neon transfer includes the existing administrator account and password hash. Sign in with that account after startup; do not run `admin:provision` after the transfer. An installation that skips Neon needs a separate admin provisioning step.
-
-## 4. Start and verify the site
-
-```bash
+docker compose --env-file env.prod -f compose.prod.yaml build
 docker compose --env-file env.prod -f compose.prod.yaml up -d
 docker compose --env-file env.prod -f compose.prod.yaml ps
 ```
 
-Success: the website, PostgreSQL, Redis and backup service show as running. Open `http://localhost:3000` for a local Docker test, or the configured HTTPS address when hosted. Check Home, People, Research, Activities and `/login`, then sign in and make a test content edit. Check for `Backup ready` with `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 backup`. For a startup error, check `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=50 app` and the values in `env.prod`.
+Success: `bootstrap` exits with code 0 after logging `Transfer completed`; `app`, PostgreSQL, Redis and `backup` run. Check the logs:
+
+```bash
+docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 bootstrap app
+```
+
+The app log should say migrations were applied or none are pending. Remove `SOURCE_DATABASE_URL` from `env.prod` after the import succeeds, then run `docker compose --env-file env.prod -f compose.prod.yaml up -d --force-recreate bootstrap app` so the temporary Neon credential is removed from the container. The next `bootstrap` run logs `Existing PostgreSQL data found; Neon import skipped.`
+
+Open `http://localhost:3000` for a local Docker test, or the configured HTTPS address when hosted. Check Home, People, Research, Activities and `/login`, then sign in and make a test content edit. Check for `Backup ready` with `docker compose --env-file env.prod -f compose.prod.yaml logs --tail=30 backup`. For a startup error, check the `bootstrap` and `app` logs and the values in `env.prod`.
 
 ## 5. Files and backups
 
