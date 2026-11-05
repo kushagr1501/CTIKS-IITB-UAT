@@ -6,19 +6,19 @@ Start with [Production setup](PRODUCTION_SETUP.md). All commands below use the s
 
 ## Existing images and PDFs
 
-The database has image and PDF **paths**, not file bytes. Set `CTIKS_MEDIA_HOST_DIR` in `env.prod` to a persistent host directory and create it before starting Compose. The app container runs as UID 1000, so grant that user read and write access without making the folder globally writable. Copy existing `ctiks-local-media` files into this directory, preserving filenames; external HTTPS links remain external. Check an existing image and PDF and a new upload before launch.
+The database has image and PDF **paths**, not file bytes. Compose uses `/data/ctiks-media` on the Docker host by default. Create that directory before starting Compose, or set `CTIKS_MEDIA_HOST_DIR` in `env.prod` to another existing persistent host directory. The app container runs as UID 1000, so grant that user read and write access without making the folder globally writable. Copy existing `ctiks-local-media` files into this directory, preserving filenames; external HTTPS links remain external. Check an existing image and PDF and a new upload before launch.
 
 ## Daily backups
 
 When Docker starts, the `backup` container saves the database and uploaded files once. It then saves them every 24 hours. If a backup fails, it tries again after one hour. Login sessions in Redis are not included.
 
-Choose where the copies live in `env.prod`:
+By default the copies live in `/data/ctiks-backups` on the Docker host. To use a different location, set this in `env.prod`:
 
 ```env
-CTIKS_BACKUP_HOST_DIR=../ctiks-backups
+CTIKS_BACKUP_HOST_DIR=/mnt/iitb-storage/ctiks-backups
 ```
 
-`CTIKS_BACKUP_HOST_DIR` is the folder **on the Docker host**, just like `CTIKS_MEDIA_HOST_DIR`. The example is beside the repository. On the server, use its persistent backup path, such as `/mnt/iitb-storage/ctiks-backups`, and create the folder before starting Docker. If you change this path later, copy the existing backup sets to the new folder first.
+`CTIKS_BACKUP_HOST_DIR` is the folder **on the Docker host**, just like `CTIKS_MEDIA_HOST_DIR`. Create the folder before starting Docker. If you change this path later, copy the existing backup sets to the new folder first.
 
 The backup container keeps the latest **14 routine backup sets**. After a 15th succeeds, the oldest routine set is removed. Pre-restore safety copies are kept separately. An operator can change the `BACKUP_KEEP` value in `compose.prod.yaml` if a different limit is needed. Each set contains `database.dump`, `media/` (images and PDFs), and `manifest.json` (a file used to check the backup).
 

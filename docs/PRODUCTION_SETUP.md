@@ -24,8 +24,8 @@ Open **`env.prod`** in the repository root. It is the only private settings file
 | `BETTER_AUTH_SECRET` | New random string of at least 32 characters. |
 | `BETTER_AUTH_URL` | Leave `http://localhost:3000` for a local Docker test. Before hosting, change it to the public HTTPS address, such as `https://ctiks.example.edu`. |
 | `CTIKS_LOCAL_HTTP` | Leave `1` for a local Docker test. It applies only to `localhost` or `127.0.0.1`; an HTTPS address uses secure cookies regardless of this value. |
-| `CTIKS_MEDIA_HOST_DIR` | Existing host folder for uploaded images and PDFs. The example `../ctiks-media` is beside the repository; use IITB's persistent storage path on the server. |
-| `CTIKS_BACKUP_HOST_DIR` | Existing host folder for database and media backups. The example `../ctiks-backups` is beside the repository; use the server's persistent backup path. |
+| `CTIKS_MEDIA_HOST_DIR` | Defaults to `/data/ctiks-media` on the Docker host. Change it if IITB uses another persistent storage path. |
+| `CTIKS_BACKUP_HOST_DIR` | Defaults to `/data/ctiks-backups` on the Docker host. Change it if IITB uses another persistent backup path. |
 
 Create both the media and backup host directories before starting Docker. Grant the app container user (UID 1000) read and write access to media; restrict backup-folder access to operators. Keep `env.prod` private. Git ignores it, and the Docker build excludes it. PostgreSQL and Redis use persistent Docker volumes. The website listens on `127.0.0.1:3000`; on the hosting server, configure an HTTPS reverse proxy to forward to it. PostgreSQL listens on `127.0.0.1:15432` for server maintenance only. Redis is available only inside the Docker network. When you change `BETTER_AUTH_URL`, recreate the app container so it reads the new value.
 
