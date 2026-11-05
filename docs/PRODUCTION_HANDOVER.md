@@ -2,7 +2,7 @@ Read this if you operate CTIKS after the Docker setup.
 
 # Storage and backups
 
-Start with [Production setup](PRODUCTION_SETUP.md). All commands below use the same `compose.prod.yaml` and private `env.prod` file. The `backup` image also runs one-time maintenance commands.
+Start with [Production setup](PRODUCTION_SETUP.md). **If you use Coolify, follow the [Coolify backup steps](COOLIFY_SETUP.md#backups-in-coolify)**; its server terminal and resource ID are different from a direct Compose installation. The commands below are for running Compose directly from a repository checkout with its private `env.prod` file.
 
 ## Existing images and PDFs
 
@@ -59,16 +59,11 @@ docker compose --env-file env.prod -f compose.prod.yaml stop app backup
 docker compose --env-file env.prod -f compose.prod.yaml run --rm backup scripts/backup-manager.mjs restore-live BACKUP_ID --apply
 ```
 
-4. **Only after** `Live restore completed`, apply any database migrations added since that backup:
+4. **Only after** `Live restore completed`, start the app. It applies any pending database migrations on startup. Check the website, then restart automatic backups:
 
 ```bash
-docker compose --env-file env.prod -f compose.prod.yaml run --rm app npm run db:migrate
-```
-
-5. Restart and check the website:
-
-```bash
-docker compose --env-file env.prod -f compose.prod.yaml up -d app backup
+docker compose --env-file env.prod -f compose.prod.yaml start app
+docker compose --env-file env.prod -f compose.prod.yaml start backup
 ```
 
 If step 3 fails, keep the site stopped and investigate. The command attempts to put the original data back; it prints the safety backup ID for recovery. Safety copies are not removed by `BACKUP_KEEP`; review and remove them manually when no longer needed. Redis login sessions are not restored.
