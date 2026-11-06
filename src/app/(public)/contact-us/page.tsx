@@ -57,7 +57,7 @@ export default function ContactPage() {
               </ContactRow>
               <ContactRow icon="phone">
                 <strong className="block text-ctiks-maroon">Phone:</strong>
-                <p>+91-22-2576-XXXX</p>
+                <p>+91-22-2576-5151</p>
               </ContactRow>
             </div>
           </section>
