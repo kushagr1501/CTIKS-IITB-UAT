@@ -31,7 +31,7 @@ export default function AdmissionsBanner() {
         <div className={styles.milestone}>
           <img src="/assets/figma/admissions-calendar.svg" alt="" aria-hidden="true" />
           <div>
-            <strong>02 DEC 2026</strong>
+            <strong>07 DEC 2026</strong>
             <b>Written test</b>
             <span>In person</span>
           </div>
@@ -41,7 +41,7 @@ export default function AdmissionsBanner() {
             <img src="/assets/figma/admissions-people.svg" alt="" aria-hidden="true" />
           </span>
           <div>
-            <strong>03 DEC 2026</strong>
+            <strong>08 DEC 2026</strong>
             <b>Interview</b>
             <span>In person</span>
           </div>
