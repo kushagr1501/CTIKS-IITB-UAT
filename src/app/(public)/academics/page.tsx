@@ -50,7 +50,7 @@ const programmes: ProgrammeCard[] = [
 export default function AcademicsPage() {
   return (
     <>
-      <InteriorHero title="Academics Programmes">
+      <InteriorHero title="Academic Programmes">
         Nurturing deep knowledge through rigorous research, interdisciplinary
         learning, and the living traditions of India.
       </InteriorHero>
