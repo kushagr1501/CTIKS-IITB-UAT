@@ -1,4 +1,3 @@
-import { ASSETS } from '@/config/assets';
 import FacultyPortrait from './FacultyPortrait';
 import type { CoreFaculty } from '../types';
 import Link from 'next/link';
@@ -98,17 +97,9 @@ export default function FacultyCard({
           {name}
         </h3>
 
-        <div className="relative flex h-[30px] w-full max-w-[345px] items-center justify-center">
-          <img
-            src={ASSETS.roleBadgeShape}
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 h-full w-full"
-          />
-          <span className="relative max-w-full truncate px-3 font-body text-[11px] font-semibold uppercase tracking-[0.4px] text-white xl:text-[12px]">
-            {role}
-          </span>
-        </div>
+        <span className="max-w-full truncate font-body text-[11px] font-semibold uppercase tracking-[0.4px] text-ctiks-maroon xl:text-[12px]">
+          {role}
+        </span>
 
         <div className="flex flex-col gap-3 sm:gap-5">
           <p className="font-body text-[14px] sm:text-[16px] leading-[1.4] text-[#4a4235] xl:min-h-[2.8em]">{department}</p>
